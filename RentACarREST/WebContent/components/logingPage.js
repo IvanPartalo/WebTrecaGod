@@ -1,16 +1,16 @@
 Vue.component("logingPage",{
 	data:function(){
 		return{
-			costumers: null
+			user: {id:0, username:"", password:""}
 		}
 	},
 	template: `
 	<div>
 		<form>
 		<label>Username</label>
-		<input type="text">
+		<input type="text" v-model="user.username">
 		<label>Password</label>
-		<input type="password">
+		<input type="password" v-model="user.password">
 		<input type="submit" v-on:click="loggin">
 		</form>
 		<label>Don't have an account?</label>
@@ -18,7 +18,6 @@ Vue.component("logingPage",{
 	</div>
 	`,
 	mounted(){
-		axios.get("rest/customers/").then(response => (this.customers = response.data))
 	},
 	methods:{
 		register: function(){
@@ -27,6 +26,7 @@ Vue.component("logingPage",{
 		},
 		loggin: function(){
 			event.preventDefault()
+			axios.post("rest/login/", this.user).then(response => (this.user = response.data, router.push(`/${this.user.id}`) ))
 		}
 	}
 })
