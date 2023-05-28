@@ -1,0 +1,2 @@
+2;bosko;ftn;Bosko;Kulusic;M;C;20-12-2003;0
+3;ivan;ftn;Ivan;Partalo;M;C;11-11-1999;0

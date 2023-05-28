@@ -1,7 +1,7 @@
 Vue.component("logingPage",{
 	data:function(){
 		return{
-			
+			costumers: null
 		}
 	},
 	template: `
@@ -18,7 +18,7 @@ Vue.component("logingPage",{
 	</div>
 	`,
 	mounted(){
-		
+		axios.get("rest/customers/").then(response => (this.customers = response.data))
 	},
 	methods:{
 		register: function(){
