@@ -34,7 +34,7 @@ Vue.component("registerPage",{
 	methods:{
 		registerCustomer: function(){
 			event.preventDefault()
-			axios.post("rest/customers/", this.customer).then(response => (router.push(`/`)))
+			axios.post("rest/customers/", this.customer).then(response => ( router.push(`/`)))
 		}
 	}
 })

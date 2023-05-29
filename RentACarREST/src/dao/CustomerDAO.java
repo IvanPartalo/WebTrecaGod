@@ -26,6 +26,7 @@ import models.Gender;
 import models.Renting;
 import models.Role;
 import models.ShoppingCart;
+import models.User;
 
 public class CustomerDAO {
 	private HashMap<Integer, Customer> customers = new HashMap<>();
@@ -93,5 +94,15 @@ public class CustomerDAO {
 		maxId++;
 		c.setId(maxId);
 		customers.put(c.getId(), c);
+	}
+	public User find(String username, String password) {
+		for(Customer c : customers.values()){
+			if (c.getUsername().equals(username)) {
+				if(c.getPassword().equals(password)) {
+					return c;
+				}
+			}
+		}
+		return null;
 	}
 }

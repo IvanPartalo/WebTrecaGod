@@ -1,7 +1,4 @@
 /.DS_Store
-/User.class
-/models/
 /dao/
-/services.class
+/models/
 /services/
-/customers.txt
