@@ -15,6 +15,7 @@ import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -30,12 +31,16 @@ import models.User;
 
 public class CustomerDAO {
 	private HashMap<Integer, Customer> customers = new HashMap<>();
-	
+
 	public CustomerDAO() {
 	}
 	@SuppressWarnings("deprecation")
 	public CustomerDAO(String contextPath) {
-		customers.put(1, new Customer(1, "Kime",  "sifra", "ime", "przime", Gender.male, Role.customer, new Date(89,11,12), 0, new ShoppingCart(), new CustomerType(),
+		Calendar cal = Calendar.getInstance();
+		cal.set(Calendar.YEAR, 1988);
+		cal.set(Calendar.MONTH, Calendar.JANUARY);
+		cal.set(Calendar.DAY_OF_MONTH, 1);
+		customers.put(1, new Customer(1, "Kime",  "sifra", "ime", "przime", Gender.male, Role.customer, cal.getTime(), 0, new ShoppingCart(), new CustomerType(),
 				new ArrayList<Renting>()));
 		loadCustomers(contextPath);
 	}
@@ -84,6 +89,10 @@ public class CustomerDAO {
 		return customers.values();
 	}
 	
+	public Customer getById(Integer id){
+		return customers.get(id);
+	}
+	
 	public void saveCustomer(Customer c){
 		Integer maxId = 0;
 		for (Integer id : customers.keySet()) {
@@ -95,6 +104,16 @@ public class CustomerDAO {
 		c.setId(maxId);
 		customers.put(c.getId(), c);
 	}
+	public void editCustomer(Customer c){
+		Customer oldCustomer = customers.get(c.getId());
+		oldCustomer.setUsername(c.getUsername());
+		oldCustomer.setPassword(c.getPassword());
+		oldCustomer.setFirstName(c.getFirstName());
+		oldCustomer.setLastName(c.getLastName());
+		oldCustomer.setGender(c.getGender());
+		oldCustomer.setDateOfBirth(c.getDateOfBirth());
+		SaveToFile();
+	}
 	public User find(String username, String password) {
 		for(Customer c : customers.values()){
 			if (c.getUsername().equals(username)) {
@@ -104,5 +123,31 @@ public class CustomerDAO {
 			}
 		}
 		return null;
+	}
+	private void SaveToFile() {
+		BufferedWriter bw = null;
+		SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy");
+		try {
+			File fout = new File("D:\\edit\\customers.txt");
+			FileOutputStream fos = new FileOutputStream(fout);
+			bw = new BufferedWriter(new OutputStreamWriter(fos));
+			for(Customer c : customers.values()) {
+				String date = formatter.format(c.getDateOfBirth());
+				String lineToWrite = 
+				c.getId()+";"+c.getUsername()+";"+c.getPassword()+";"+c.getFirstName()+";"+c.getLastName()+";"+c.getGender()+";"+c.getRole()+";"+date+";"+c.getCollectedPoints();
+				bw.write(lineToWrite);
+				bw.newLine();
+			}
+		}catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			if(bw!=null) {
+				try {
+					bw.close();
+				} catch (Exception e2) {
+					// TODO: handle exception
+				}
+			}
+		}
 	}
 }

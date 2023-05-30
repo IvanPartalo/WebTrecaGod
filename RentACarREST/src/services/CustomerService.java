@@ -7,7 +7,9 @@ import javax.servlet.ServletContext;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
@@ -38,6 +40,13 @@ public class CustomerService {
 		CustomerDAO dao = (CustomerDAO) context.getAttribute("customerDAO");
 		return dao.getAll();
 	}
+	@GET
+	@Path("/{id}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Customer getById(@PathParam("id") Integer id){
+		CustomerDAO dao = (CustomerDAO) context.getAttribute("customerDAO");
+		return dao.getById(id);
+	}
 	
 	@POST
 	@Path("/")
@@ -45,5 +54,13 @@ public class CustomerService {
 	public void save(Customer c){
 		CustomerDAO dao = (CustomerDAO) context.getAttribute("customerDAO");
 		dao.saveCustomer(c);
+	}
+	@PUT
+	@Path("/edit")
+	@Consumes(MediaType.APPLICATION_JSON)
+	public void edit(Customer c){
+		System.out.println("jel dodje dovde");
+		CustomerDAO dao = (CustomerDAO) context.getAttribute("customerDAO");
+		dao.editCustomer(c);
 	}
 }
