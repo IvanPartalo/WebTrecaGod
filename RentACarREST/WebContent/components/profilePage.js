@@ -16,7 +16,6 @@ Vue.component("profilePage",{
 	    <div style="border:1px solid black; padding-left: 5px;">
 			<h1 style="color:red;">Profile page</h1>
 	        <h2>{{customer.firstName}} {{customer.lastName}}</h2>
-	    
 	    <div style="padding-left: 5px; font-size:20px">
 	        <label>Username:</label>
 	        <label>{{customer.username}}</label>
