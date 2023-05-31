@@ -1,7 +1,7 @@
 Vue.component("logingPage",{
 	data:function(){
 		return{
-			user: {id:0, username:"", password:""}
+			user: {id:0, username:"", password:"", role:null}
 		}
 	},
 	template: `
@@ -26,7 +26,7 @@ Vue.component("logingPage",{
 		},
 		loggin: function(){
 			event.preventDefault()
-			axios.post("rest/login/", this.user).then(response => (this.user = response.data, router.push(`/${this.user.id}`) ))
+			axios.post("rest/login/", this.user).then(response => (this.user = response.data, router.push(`/${this.user.role}/${this.user.id}`) ))
 		}
 	}
 })

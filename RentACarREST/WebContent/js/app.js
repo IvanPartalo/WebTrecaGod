@@ -8,8 +8,8 @@ const router = new VueRouter({
 	routes: [
 		{path: '/', name: 'home', component: LogingIn},
 		{path: '/register/', component: RegisterPage},
-		{path: '/:id', component: ProfilePage},
-		{path: '/edit/:id', component: EditProfile}
+		{path: '/:customer/:id', component: ProfilePage},
+		{path: '/:customer/edit/:id', component: EditProfile}
 	]
 })
 

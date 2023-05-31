@@ -38,19 +38,19 @@ Vue.component("editProfile",{
      
      setTimeout(() => {
         this.formatDate()
-      }, 2000);
+      }, 1000);
   },
 	methods:{
 		editCustomer: function(){
 			event.preventDefault()
-			axios.put("rest/customers/edit", this.customer).then(response => ( router.push(`/`)))
+			axios.put("rest/customers/edit", this.customer).then(response => ( router.push(`/customer/${this.customer.id}`)))
 		},
 		loadData: function(){
-			id = this.$route.params.id
-			axios.get("rest/customers/"+id)
+			this.id = this.$route.params.id
+			axios.get("rest/customers/"+this.id)
 			.then(response =>	
 				this.customer = response.data
-		)	
+			)	
 		},
 		formatDate: function(){
 			let date = new Date(this.customer.dateOfBirth)

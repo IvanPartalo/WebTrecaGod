@@ -31,18 +31,15 @@ import models.User;
 
 public class CustomerDAO {
 	private HashMap<Integer, Customer> customers = new HashMap<>();
+	private String path = null;
 
 	public CustomerDAO() {
 	}
 	@SuppressWarnings("deprecation")
 	public CustomerDAO(String contextPath) {
 		Calendar cal = Calendar.getInstance();
-		cal.set(Calendar.YEAR, 1988);
-		cal.set(Calendar.MONTH, Calendar.JANUARY);
-		cal.set(Calendar.DAY_OF_MONTH, 1);
-		customers.put(1, new Customer(1, "Kime",  "sifra", "ime", "przime", Gender.male, Role.customer, cal.getTime(), 0, new ShoppingCart(), new CustomerType(),
-				new ArrayList<Renting>()));
-		loadCustomers(contextPath);
+		path = contextPath;
+		loadCustomers(path);
 	}
 	
 	public void loadCustomers(String contextPath) {
@@ -102,7 +99,9 @@ public class CustomerDAO {
 		}
 		maxId++;
 		c.setId(maxId);
+		c.setCollectedPoints(0);
 		customers.put(c.getId(), c);
+		SaveToFile();
 	}
 	public void editCustomer(Customer c){
 		Customer oldCustomer = customers.get(c.getId());
@@ -128,7 +127,7 @@ public class CustomerDAO {
 		BufferedWriter bw = null;
 		SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy");
 		try {
-			File fout = new File("D:\\edit\\customers.txt");
+			File fout = new File(path + "/customers.txt");
 			FileOutputStream fos = new FileOutputStream(fout);
 			bw = new BufferedWriter(new OutputStreamWriter(fos));
 			for(Customer c : customers.values()) {
