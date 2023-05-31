@@ -1,2 +1,6 @@
-2;bosko;ftn;Bosko;Kulusic;M;C;20-12-2003;0
-3;ivan;ftn;Ivan;Partalo;M;C;11-11-1999;0
+1;Kime;sifra;ime;przime;male;customer;01-01-1988;0
+2;bosko;ftn;Bosko;Maric;male;customer;30-04-2023;0
+3;ivan;ftn;Ivan;Partalo;male;customer;11-11-1999;0
+4;cd;123;c;c;male;customer;10-05-2023;0
+5;marko;123;c;c;male;customer;10-05-2023;0
+6;laki;123;Lazar;Ninkovicc;male;customer;16-05-2023;0
