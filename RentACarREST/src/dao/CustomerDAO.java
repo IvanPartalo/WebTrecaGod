@@ -90,7 +90,18 @@ public class CustomerDAO {
 		return customers.get(id);
 	}
 	
-	public void saveCustomer(Customer c){
+	public String saveCustomer(Customer c){
+		if(c.getUsername() == null || c.getFirstName() == null || c.getPassword() == null
+				|| c.getFirstName() == null || c.getLastName() == null || c.getGender() == null || c.getDateOfBirth() == null) {
+			return "Can not register this user, not all fields have been filled correctly";
+		}
+		if(c.getUsername().isBlank() || c.getFirstName().isBlank() || c.getPassword().isBlank()
+				|| c.getFirstName().isBlank() || c.getLastName().isBlank()) {
+			return "Can not register this user, not all fields have been filled correctly";
+		}
+		if(!isUsernameUnique(c.getUsername())) {
+			return "This username already exists, please choose a different one";
+		}
 		Integer maxId = 0;
 		for (Integer id : customers.keySet()) {
 			if (id > maxId) {
@@ -102,6 +113,15 @@ public class CustomerDAO {
 		c.setCollectedPoints(0);
 		customers.put(c.getId(), c);
 		SaveToFile();
+		return "ok";
+	}
+	public Boolean isUsernameUnique(String username) {
+		for(User u : customers.values()) {
+			if(u.getUsername().equals(username)) {
+				return false;
+			}
+		}
+		return true;
 	}
 	public void editCustomer(Customer c){
 		Customer oldCustomer = customers.get(c.getId());
@@ -137,6 +157,7 @@ public class CustomerDAO {
 				bw.write(lineToWrite);
 				bw.newLine();
 			}
+			bw.close();
 		}catch (Exception e) {
 			e.printStackTrace();
 		} finally {

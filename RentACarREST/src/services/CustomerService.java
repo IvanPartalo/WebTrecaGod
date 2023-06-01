@@ -4,6 +4,7 @@ import java.util.Collection;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.ServletContext;
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -13,6 +14,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 import dao.CustomerDAO;
 import models.Customer;
@@ -51,9 +53,14 @@ public class CustomerService {
 	@POST
 	@Path("/")
 	@Consumes(MediaType.APPLICATION_JSON)
-	public void save(Customer c){
+	public Response save(Customer c, @Context HttpServletRequest request){
 		CustomerDAO dao = (CustomerDAO) context.getAttribute("customerDAO");
-		dao.saveCustomer(c);
+		String message = dao.saveCustomer(c);
+		if(!message.equals("ok")) {
+			return Response.status(400).entity(message).build();
+		}else {
+			return Response.status(200).build();
+		}
 	}
 	@PUT
 	@Path("/edit")

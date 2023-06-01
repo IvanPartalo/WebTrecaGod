@@ -2,7 +2,8 @@ Vue.component("registerPage",{
 	data:function(){
 		return{
 			customer: {id:0, username:"", password:"", firstName:"", lastName:"", gender:"male", role:"customer", dateOfBirth:null},
-			errorMessage: ""
+			errorMessage: "",
+			confirmedPassword : ""
 		}
 	},
 	template: `
@@ -21,7 +22,7 @@ Vue.component("registerPage",{
 					</div>
 					<div style="margin:10px">
 						<label>Confirm password*</label>
-						<input id="confirmPasswordInput" type="password" placeholder="Reenter password" style="float:right; font-size:17px"><br>
+						<input v-model="confirmedPassword" type="password" placeholder="Reenter password" style="float:right; font-size:17px"><br>
 					</div>
 					<div style="margin:10px">
 						<label>First name*</label>
@@ -47,7 +48,7 @@ Vue.component("registerPage",{
 					<input type="submit" value="Register!" v-on:click="registerCustomer" style="background-color:powderblue; font-size:20px">
 				</div>
 				<br>
-				<p id="errorMessage" style="color:red; width:200px; margin:auto" hidden=true>{{errorMessage}}</p>
+				<p v-if="errorMessage.length" style="color:red; width:200px; margin:auto">{{errorMessage}}</p>
 			</form>
 		</div>
 	</div>
@@ -57,48 +58,37 @@ Vue.component("registerPage",{
 	methods:{
 		registerCustomer: function(){
 			event.preventDefault()
-			let userName = document.getElementById("usernameInput").value 
-			let password = document.getElementById("passwordInput").value 
-			let confirmedPassword = document.getElementById("confirmPasswordInput").value 
-			let firstName = document.getElementById("firstNameInput").value 
-			let lastName = document.getElementById("lastNameInput").value 
-			let date = document.getElementById("dateInput").value 
-			if(userName.trim().length == 0){
+			this.errorMessage = ""
+			if(this.customer.username.trim().length == 0){
 				this.errorMessage = "Enter username!"
-				document.getElementById("errorMessage").hidden = false
 				return;
 			}
-			else if(password.trim().length == 0){
+			else if(this.customer.password.trim().length == 0){
 				this.errorMessage = "Enter password!"
-				document.getElementById("errorMessage").hidden = false
 				return;
 			}
-			else if(confirmedPassword.trim().length == 0){
+			else if(this.confirmedPassword.trim().length == 0){
 				this.errorMessage = "Confirm passwor!"
-				document.getElementById("errorMessage").hidden = false
 				return;
 			}
-			else if(firstName.trim().length == 0){
-				this.errorMessage = "Enter first name!"
-				document.getElementById("errorMessage").hidden = false
-				return;
-			}
-			else if(lastName.trim().length == 0){
-				this.errorMessage = "Enter last name!"
-				document.getElementById("errorMessage").hidden = false
-				return;
-			}
-			else if(!date){
-				this.errorMessage = "Choose birthday!"
-				document.getElementById("errorMessage").hidden = false
-				return;
-			}
-			if(password != confirmedPassword){
+			else if(this.customer.password != this.confirmedPassword){
 				this.errorMessage = "Passwords have to match!"
-				document.getElementById("errorMessage").hidden = false
 				return;
 			}
-			axios.post("rest/customers/", this.customer).then(response => ( router.push(`/`)))
+			else if(this.customer.firstName.trim().length == 0){
+				this.errorMessage = "Enter first name!"
+				return;
+			}
+			else if(this.customer.lastName.trim().length == 0){
+				this.errorMessage = "Enter last name!"
+				return;
+			}
+			else if(!this.customer.dateOfBirth){
+				this.errorMessage = "Choose birthday!"
+				return;
+			}
+			
+			axios.post("rest/customers/", this.customer).then(response => ( router.push(`/`))).catch(error => this.errorMessage = error.response.data)
 		}
 	}
 })
