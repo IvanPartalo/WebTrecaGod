@@ -65,9 +65,19 @@ public class CustomerService {
 	@PUT
 	@Path("/edit")
 	@Consumes(MediaType.APPLICATION_JSON)
-	public void edit(Customer c){
-		System.out.println("jel dodje dovde");
+	public Response edit(Customer c){
 		CustomerDAO dao = (CustomerDAO) context.getAttribute("customerDAO");
-		dao.editCustomer(c);
+		String message = dao.editCustomer(c);
+		if(!message.equals("ok")) {
+			return Response.status(400).entity(message).build();
+		}else {
+			return Response.status(200).build();
+		}
+	}
+	@PUT
+	@Path("/changepassword/{id}/{oldPassword}/{newPassword}")
+	public boolean changePassword(@PathParam("id") Integer id, @PathParam("oldPassword") String oldPassword, @PathParam("newPassword") String newPassword){
+		CustomerDAO dao = (CustomerDAO) context.getAttribute("customerDAO");
+		return dao.changePassword(id, oldPassword, newPassword);
 	}
 }
