@@ -3,6 +3,7 @@ const RegisterPage = {template: '<registerPage></registerPage>'}
 const ProfilePage = {template: '<profilePage></profilePage>'}
 const EditProfile = {template: '<editProfile></editProfile>'}
 const ChangePassword = {template: '<changePassword></changePassword>'}
+const RentACar = {template: '<rentACar></rentACar>'}
 
 const router = new VueRouter({
 	mode: 'hash',
@@ -11,7 +12,8 @@ const router = new VueRouter({
 		{path: '/register/', component: RegisterPage},
 		{path: '/:customer/:id', component: ProfilePage},
 		{path: '/:customer/edit/:id', component: EditProfile},
-		{path: '/:customer/changepassword/:id', component: ChangePassword}
+		{path: '/:customer/changepassword/:id', component: ChangePassword},
+		{path: '/rentacar/', component: RentACar}
 	]
 })
 

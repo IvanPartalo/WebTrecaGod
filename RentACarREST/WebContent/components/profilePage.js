@@ -9,7 +9,7 @@ Vue.component("profilePage",{
 	template: `
 	<div>
 		<div style="background-color:powderblue; font-size:20px">
-			<a href="" v-on:click="edit" style="margin-left:15px">Rent a car shops</a>
+			<a href="" v-on:click="rentACar" style="margin-left:15px">Rent a car shops</a>
 			<a href="" v-on:click="edit" style="margin-left:15px">Edit profile</a>
 			<a href="" v-on:click="changePassword" style="margin-left:15px">Change password</a>
 			<a href="" v-on:click="logOut" style="float:right; margin-right:30px">Log out</a>
@@ -51,6 +51,10 @@ Vue.component("profilePage",{
 		changePassword: function(){
 			event.preventDefault()
 			router.push(`/${this.customer.role}/changepassword/${this.id}`)
+		},
+		rentACar: function(){
+			event.preventDefault()
+			router.push(`/rentacar/`)
 		},
 		formatDate: function(){
 			let date = new Date(this.customer.dateOfBirth)
