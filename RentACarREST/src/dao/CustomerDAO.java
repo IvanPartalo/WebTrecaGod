@@ -140,6 +140,17 @@ public class CustomerDAO {
 		SaveToFile();
 		return "ok";
 	}
+	public boolean changePassword(Integer id, String oldPassword, String newPassword) {
+		Customer c = getById(id);
+		if(c.getPassword().equals(oldPassword)) {
+			c.setPassword(newPassword);
+			SaveToFile();
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
 	public User find(String username, String password) {
 		for(Customer c : customers.values()){
 			if (c.getUsername().equals(username)) {

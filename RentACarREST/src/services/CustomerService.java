@@ -74,4 +74,10 @@ public class CustomerService {
 			return Response.status(200).build();
 		}
 	}
+	@PUT
+	@Path("/changepassword/{id}/{oldPassword}/{newPassword}")
+	public boolean changePassword(@PathParam("id") Integer id, @PathParam("oldPassword") String oldPassword, @PathParam("newPassword") String newPassword){
+		CustomerDAO dao = (CustomerDAO) context.getAttribute("customerDAO");
+		return dao.changePassword(id, oldPassword, newPassword);
+	}
 }
