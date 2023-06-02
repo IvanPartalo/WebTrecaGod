@@ -123,7 +123,13 @@ public class CustomerDAO {
 		}
 		return true;
 	}
-	public void editCustomer(Customer c){
+	public String editCustomer(Customer c){
+		if(c.getFirstName().isBlank() || c.getLastName().isBlank()) {
+			return "First name and last name can't contain only white spaces";
+		}
+		if(c.getFirstName().isEmpty() || c.getLastName().isEmpty()) {
+			return "First name and last name can't be empty";
+		}
 		Customer oldCustomer = customers.get(c.getId());
 		oldCustomer.setUsername(c.getUsername());
 		oldCustomer.setPassword(c.getPassword());
@@ -132,6 +138,7 @@ public class CustomerDAO {
 		oldCustomer.setGender(c.getGender());
 		oldCustomer.setDateOfBirth(c.getDateOfBirth());
 		SaveToFile();
+		return "ok";
 	}
 	public User find(String username, String password) {
 		for(Customer c : customers.values()){
