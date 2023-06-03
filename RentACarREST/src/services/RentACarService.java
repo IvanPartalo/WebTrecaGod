@@ -1,5 +1,6 @@
 package services;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 import javax.annotation.PostConstruct;
@@ -34,7 +35,7 @@ public class RentACarService {
 	@GET
 	@Path("/")
 	@Produces(MediaType.APPLICATION_JSON)
-	public Collection<RentACar> getAll(){
+	public ArrayList<RentACar> getAll(){
 		RentACarDAO dao = (RentACarDAO) ctx.getAttribute("rentACarDAO");
 		return dao.getAll();
 	}

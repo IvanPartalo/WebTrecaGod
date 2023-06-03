@@ -22,7 +22,7 @@ Vue.component("rentACar",{
 				<div style="float: left; margin-left:10px">
 			        <p>{{r.location.address}} <br> {{r.location.longitude}}, {{r.location.latitude}}</p>
 		        </div>
-		    	<p><br><br><br>Radno vreme: {{r.startHour}}:{{r.startMinute}} - {{r.endHour}}:{{r.endMinute}} Radi</p>
+		    	<p><br><br><br>Radno vreme: {{r.startHour}}:{{r.startMinute}} - {{r.endHour}}:{{r.endMinute}} {{r.status}}</p>
 		    	<p>Ocena: {{r.grade}}/10</p>
 	    	</div>
 	    	

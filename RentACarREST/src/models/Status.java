@@ -1,9 +1,9 @@
 package models;
 
 public enum Status {
-	work, doesNotWork;
+	working, notWorking;
 	public String getRole() {
-		if(this == work) {
+		if(this == working) {
 			return "W";
 		}
 		else {
