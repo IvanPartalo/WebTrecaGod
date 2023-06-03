@@ -32,7 +32,7 @@ import models.User;
 public class CustomerDAO {
 	private HashMap<Integer, Customer> customers = new HashMap<>();
 	private String path = null;
-
+	
 	public CustomerDAO() {
 	}
 	@SuppressWarnings("deprecation")
