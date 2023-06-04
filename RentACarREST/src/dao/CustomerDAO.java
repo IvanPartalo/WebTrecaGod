@@ -67,7 +67,7 @@ public class CustomerDAO {
 					dateOfBirth = st.nextToken().trim();
 					collectedPoints = st.nextToken().trim();
 				}
-				customers.put(Integer.parseInt(id), new Customer(Integer.parseInt(id), username, password, firstName, lastName, Gender.male, Role.customer, formatter.parse(dateOfBirth), Integer.parseInt(collectedPoints)));
+				customers.put(Integer.parseInt(id), new Customer(Integer.parseInt(id), username, password, firstName, lastName, Gender.male, Role.valueOf(role), formatter.parse(dateOfBirth), Integer.parseInt(collectedPoints)));
 			}
 		} catch (Exception e) {
 			System.out.println("greska");

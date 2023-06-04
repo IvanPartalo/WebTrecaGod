@@ -25,14 +25,15 @@ Vue.component("profilePage",{
 	        <label>Gender:</label>
 	        <label>{{customer.gender}}</label><br>
 	        <label>Date of birth:</label>
-	        <label>{{customer.dateOfBirth}}</label>
+	        <label>{{customer.dateOfBirth}}</label><br>
+	        <label>Role:</label>
+	        <label>{{customer.role}}</label><br>
 	    </div>
 	    </div>
 	</div>
 	`,
 	mounted: function() {
-    	this.id = this.$route.params.id;
-    	axios.get("rest/customers/"+this.id)
+    	axios.get("rest/currentUser")
 			.then(response =>	
 				this.customer = response.data)
 		setTimeout(() => {
@@ -42,15 +43,16 @@ Vue.component("profilePage",{
 	methods:{
 		edit: function(){
 			event.preventDefault()
-			router.push(`/customer/edit/${this.id}`)
+			router.push(`/user/edit/`)
 		},
 		logOut: function(){
 			event.preventDefault()
-			router.push(`/`)
+			axios.post("rest/logout")
+			.then(response =>	router.push(`/`))
 		},
 		changePassword: function(){
 			event.preventDefault()
-			router.push(`/${this.customer.role}/changepassword/${this.id}`)
+			router.push(`/user/changepassword/`)
 		},
 		rentACar: function(){
 			event.preventDefault()

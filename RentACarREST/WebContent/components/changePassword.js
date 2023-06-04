@@ -1,6 +1,8 @@
 Vue.component("changePassword",{
 	data:function(){
 		return{
+			customer: {id: null,firstName: null, 
+			lastName: null, gender: null, role: null, dateOfBirth: null},
 			role: null,
 			id: null,
 			oldPassword: '',
@@ -41,8 +43,9 @@ Vue.component("changePassword",{
 	</div>
 	`,
 	mounted: function() {
-    	this.id = this.$route.params.id
-    	this.role = this.$route.params.customer
+    	axios.get("rest/currentUser")
+			.then(response =>	
+				(this.customer = response.data, this.id = this.customer.id, this.role = this.customer.role))
   },
 	methods:{
 		changePassword: function(){
@@ -58,7 +61,7 @@ Vue.component("changePassword",{
 			}
 			let conf = confirm("Are you sure? Click ok to confirm.")
 			if(conf){
-			let success
+			//let success
 			axios.put("rest/customers/changepassword/"+this.id+"/"+this.oldPassword+"/"+this.newPassword)
 			.then(response => this.success = response.data)
 			setTimeout(() => {
@@ -69,7 +72,7 @@ Vue.component("changePassword",{
 		},
 		checkIfSucceded: function(){
 			if(this.success){
-				router.push(`/${this.role}/${this.id}`)
+				router.push(`/user/`)
 			}
 			else{
 				this.errorMessage = "Old password is not correct!"
@@ -77,7 +80,7 @@ Vue.component("changePassword",{
 		},
 		goBack: function(){
 			event.preventDefault()
-			router.push(`/${this.role}/${this.id}`)
+			router.push(`/user/`)
 		}
 	}
 })

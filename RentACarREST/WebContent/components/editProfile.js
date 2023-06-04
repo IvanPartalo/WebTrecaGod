@@ -70,15 +70,13 @@ Vue.component("editProfile",{
 			}
 			let conf = confirm("Are you sure? Click ok to confirm.")
 			if(conf){
-			axios.put("rest/customers/edit", this.customer).then(response => ( router.push(`/customer/${this.customer.id}`)))
+			axios.put("rest/customers/edit", this.customer).then(response => ( router.push(`/user/`)))
 			}
 		},
 		loadData: function(){
-			this.id = this.$route.params.id
-			axios.get("rest/customers/"+this.id)
+			axios.get("rest/currentUser")
 			.then(response =>	
-				this.customer = response.data
-			)	
+				this.customer = response.data)
 		},
 		formatDate: function(){
 			let date = new Date(this.customer.dateOfBirth)
@@ -97,7 +95,7 @@ Vue.component("editProfile",{
 		},
 		goBack: function(){
 			event.preventDefault()
-			router.push(`/${this.customer.role}/${this.id}`)
+			router.push(`/user/`)
 		}
 	}
 })
