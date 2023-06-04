@@ -88,7 +88,8 @@ Vue.component("registerPage",{
 				return;
 			}
 			
-			axios.post("rest/customers/", this.customer).then(response => ( router.push(`/`))).catch(error => this.errorMessage = error.response.data)
+			axios.post("rest/customers/", this.customer)
+			.then(response => ( router.push(`/`))).catch(error => this.errorMessage = error.response.data)
 		}
 	}
 })

@@ -15,6 +15,7 @@ Vue.component("logingPage",{
 		</form>
 		<label>Don't have an account?</label>
 		<a href="" v-on:click="register">Register now</a>
+		<rentACarTemplate></rentACarTemplate>
 	</div>
 	`,
 	mounted(){
@@ -26,7 +27,9 @@ Vue.component("logingPage",{
 		},
 		loggin: function(){
 			event.preventDefault()
-			axios.post("rest/login/", this.user).then(response => (router.push(`/user/`) ))
+			axios.post("rest/login/", this.user)
+			.then(response => (router.push(`/user/`) ))
+			.catch(error => alert('wrong username and/or password'))
 		}
 	}
 })
