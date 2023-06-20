@@ -4,6 +4,7 @@ const ProfilePage = {template: '<profilePage></profilePage>'}
 const EditProfile = {template: '<editProfile></editProfile>'}
 const ChangePassword = {template: '<changePassword></changePassword>'}
 const RentACar = {template: '<rentACar></rentACar>'}
+const RentACarCreate = {template: '<rentACarCreate></rentACarCreate>'}
 const RentACarTemplate = {template: '<rentACarTemplate></rentACarTemplate>'}
 const RentACarMenu = {template: '<rentACarMenu></rentACarMenu>'}
 
@@ -16,6 +17,7 @@ const router = new VueRouter({
 		{path: '/:user/edit/', component: EditProfile},
 		{path: '/:user/changepassword/', component: ChangePassword},
 		{path: '/rentacar/', component: RentACar},
+		{path: '/rentacarcreate/', component: RentACarCreate},
 		{path: '/rentacartemplate/', component: RentACarTemplate},
 		{path: '/rentacarmenu/', component: RentACarMenu}
 	]

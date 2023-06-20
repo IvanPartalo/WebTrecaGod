@@ -2,6 +2,7 @@ package models;
 
 public class RentACar {
 	private Integer id;
+	private int locationId;
 	private String name;
 	private int startHour;
 	private int startMinute;
@@ -15,9 +16,10 @@ public class RentACar {
 
 	}
 	
-	public RentACar(Integer id, String name, int startHour, int startMinute, int endHour, int endMinute, Status status,
-			String logoImg, double grade, Location location) {
+	public RentACar(Integer id, int locationId, String name, int startHour, int startMinute, int endHour, int endMinute, Status status,
+			String logoImg, double grade) {
 		this.id = id;
+		this.locationId = locationId;
 		this.name = name;
 		this.startHour = startHour;
 		this.startMinute = startMinute;
@@ -26,7 +28,6 @@ public class RentACar {
 		this.status = status;
 		this.logoImg = logoImg;
 		Grade = grade;
-		this.location = location;
 	}
 
 	public Integer getId() {
@@ -35,6 +36,15 @@ public class RentACar {
 	public void setId(Integer id) {
 		this.id = id;
 	}
+	
+	public int getLocationId() {
+		return locationId;
+	}
+
+	public void setLocationId(int locationId) {
+		this.locationId = locationId;
+	}
+
 	public String getName() {
 		return name;
 	}

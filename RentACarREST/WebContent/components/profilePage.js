@@ -1,8 +1,9 @@
 Vue.component("profilePage",{
 	data:function(){
 		return{
+			notAdmin: false,
 			id: null,
-			customer: {id: null, username: null, password: null, firstName: null, 
+			user: {id: null, username: null, password: null, firstName: null, 
 			lastName: null, gender: null, role: null, dateOfBirth: null}
 		}
 	},
@@ -16,18 +17,21 @@ Vue.component("profilePage",{
 		</div>
 	    <div style="border:1px solid black; padding-left: 5px;">
 			<h1 style="color:red;">Profile page</h1>
-	        <h2>{{customer.firstName}} {{customer.lastName}}</h2>
+	        <h2>{{user.firstName}} {{user.lastName}}</h2>
 	    <div style="padding-left: 5px; font-size:20px">
 	        <label>Username:</label>
-	        <label>{{customer.username}}</label>
+	        <label>{{user.username}}</label>
 	    </div>
 	    <div style="padding-left: 5px;">
 	        <label>Gender:</label>
-	        <label>{{customer.gender}}</label><br>
+	        <label>{{user.gender}}</label><br>
 	        <label>Date of birth:</label>
-	        <label>{{customer.dateOfBirth}}</label><br>
+	        <label>{{user.dateOfBirth}}</label><br>
 	        <label>Role:</label>
-	        <label>{{customer.role}}</label><br>
+	        <label>{{user.role}}</label><br>
+	    </div>
+	    <div v-bind:class="{hiddenClass: notAdmin}" style="margin-top: 20px; font-size:15px">
+	        <button v-on:click="createRentACar"> Create new rent a car </button>
 	    </div>
 	    </div>
 	</div>
@@ -35,10 +39,10 @@ Vue.component("profilePage",{
 	mounted: function() {
     	axios.get("rest/currentUser")
 			.then(response =>	
-				this.customer = response.data)
+				this.user = response.data)
 		setTimeout(() => {
-        	this.formatDate()
-      	}, 1000)
+        	this.setAppearance()
+      	}, 200)
     },
 	methods:{
 		edit: function(){
@@ -58,8 +62,12 @@ Vue.component("profilePage",{
 			event.preventDefault()
 			router.push(`/rentacar/`)
 		},
-		formatDate: function(){
-			let date = new Date(this.customer.dateOfBirth)
+		createRentACar: function(){
+			event.preventDefault()
+			router.push(`/rentacarcreate/`)
+		},
+		setAppearance: function(){
+			let date = new Date(this.user.dateOfBirth)
 			let day = date.getDate()
 			let month = date.getMonth()+1
 			let year = date.getFullYear()
@@ -71,8 +79,11 @@ Vue.component("profilePage",{
 			if(month<10){
 				zeroAtMonth = '0'
 			}
-			this.customer.dateOfBirth = year+'-'+zeroAtMonth+month+'-'+zeroAtDay+day
-			console.log(this.customer.dateOfBirth)	
+			this.user.dateOfBirth = year+'-'+zeroAtMonth+month+'-'+zeroAtDay+day
+			console.log(this.user.dateOfBirth)
+			if(this.user.role != "administrator"){
+				this.notAdmin = true
+			}	
 		}
 	}
 })
