@@ -12,7 +12,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import dao.CustomerDAO;
+import dao.UserDAO;
 import models.User;
 
 @Path("")
@@ -26,9 +26,9 @@ public class LoginService {
 	
 	@PostConstruct
 	public void init() {
-		if (ctx.getAttribute("customerDAO") == null) {
+		if (ctx.getAttribute("userDAO") == null) {
 	    	String contextPath = ctx.getRealPath("");
-			ctx.setAttribute("customerDAO", new CustomerDAO(contextPath));
+			ctx.setAttribute("userDAO", new UserDAO(contextPath));
 		}
 	}
 	
@@ -37,8 +37,8 @@ public class LoginService {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response login(User user, @Context HttpServletRequest request) {
-		CustomerDAO customerDAO = (CustomerDAO) ctx.getAttribute("customerDAO");
-		User loggedUser = customerDAO.find(user.getUsername(), user.getPassword());
+		UserDAO userDAO = (UserDAO) ctx.getAttribute("userDAO");
+		User loggedUser = userDAO.find(user.getUsername(), user.getPassword());
 		if(loggedUser == null) {
 			return Response.status(400).entity("Wrong username or password").build();
 		}

@@ -29,14 +29,14 @@ import models.Role;
 import models.ShoppingCart;
 import models.User;
 
-public class CustomerDAO {
-	private HashMap<Integer, Customer> customers = new HashMap<>();
+public class UserDAO {
+	private HashMap<Integer, Customer> users = new HashMap<>();
 	private String path = null;
 	
-	public CustomerDAO() {
+	public UserDAO() {
 	}
 	@SuppressWarnings("deprecation")
-	public CustomerDAO(String contextPath) {
+	public UserDAO(String contextPath) {
 		Calendar cal = Calendar.getInstance();
 		path = contextPath;
 		loadCustomers(path);
@@ -46,7 +46,7 @@ public class CustomerDAO {
 		BufferedReader in = null;
 		SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy");
 		try {
-			File file = new File(contextPath + "/customers.txt");
+			File file = new File(contextPath + "/users.txt");
 			System.out.println(file.getCanonicalPath());
 			in = new BufferedReader(new FileReader(file));
 			String line, id = "", username = "", password = "", firstName = "", lastName = "", gender = "", role = "", dateOfBirth="", collectedPoints = "";
@@ -67,7 +67,7 @@ public class CustomerDAO {
 					dateOfBirth = st.nextToken().trim();
 					collectedPoints = st.nextToken().trim();
 				}
-				customers.put(Integer.parseInt(id), new Customer(Integer.parseInt(id), username, password, firstName, lastName, Gender.male, Role.valueOf(role), formatter.parse(dateOfBirth), Integer.parseInt(collectedPoints)));
+				users.put(Integer.parseInt(id), new Customer(Integer.parseInt(id), username, password, firstName, lastName, Gender.valueOf(gender) , Role.valueOf(role), formatter.parse(dateOfBirth), Integer.parseInt(collectedPoints)));
 			}
 		} catch (Exception e) {
 			System.out.println("greska");
@@ -83,11 +83,11 @@ public class CustomerDAO {
 	}
 	
 	public Collection<Customer> getAll(){
-		return customers.values();
+		return users.values();
 	}
 	
 	public Customer getById(Integer id){
-		return customers.get(id);
+		return users.get(id);
 	}
 	
 	public String saveCustomer(Customer c){
@@ -103,7 +103,7 @@ public class CustomerDAO {
 			return "This username already exists, please choose a different one";
 		}
 		Integer maxId = 0;
-		for (Integer id : customers.keySet()) {
+		for (Integer id : users.keySet()) {
 			if (id > maxId) {
 				maxId = id;
 			}
@@ -111,12 +111,12 @@ public class CustomerDAO {
 		maxId++;
 		c.setId(maxId);
 		c.setCollectedPoints(0);
-		customers.put(c.getId(), c);
+		users.put(c.getId(), c);
 		SaveToFile();
 		return "ok";
 	}
 	public Boolean isUsernameUnique(String username) {
-		for(User u : customers.values()) {
+		for(User u : users.values()) {
 			if(u.getUsername().equals(username)) {
 				return false;
 			}
@@ -130,7 +130,7 @@ public class CustomerDAO {
 		if(c.getFirstName().isEmpty() || c.getLastName().isEmpty()) {
 			return "First name and last name can't be empty";
 		}
-		Customer oldCustomer = customers.get(c.getId());
+		Customer oldCustomer = users.get(c.getId());
 		oldCustomer.setUsername(c.getUsername());
 		oldCustomer.setPassword(c.getPassword());
 		oldCustomer.setFirstName(c.getFirstName());
@@ -152,7 +152,7 @@ public class CustomerDAO {
 		}
 	}
 	public User find(String username, String password) {
-		for(Customer c : customers.values()){
+		for(Customer c : users.values()){
 			if (c.getUsername().equals(username)) {
 				if(c.getPassword().equals(password)) {
 					return c;
@@ -165,10 +165,10 @@ public class CustomerDAO {
 		BufferedWriter bw = null;
 		SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy");
 		try {
-			File fout = new File(path + "/customers.txt");
+			File fout = new File(path + "/users.txt");
 			FileOutputStream fos = new FileOutputStream(fout);
 			bw = new BufferedWriter(new OutputStreamWriter(fos));
-			for(Customer c : customers.values()) {
+			for(Customer c : users.values()) {
 				String date = formatter.format(c.getDateOfBirth());
 				String lineToWrite = 
 				c.getId()+";"+c.getUsername()+";"+c.getPassword()+";"+c.getFirstName()+";"+c.getLastName()+";"+c.getGender()+";"+c.getRole()+";"+date+";"+c.getCollectedPoints();

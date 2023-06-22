@@ -16,22 +16,22 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import dao.CustomerDAO;
+import dao.UserDAO;
 import models.Customer;
 import models.User;
 
-@Path("/customers")
-public class CustomerService {
+@Path("/users")
+public class UserService {
 	@Context
 	ServletContext context;
-	public CustomerService() {
+	public UserService() {
 		
 	}
 	@PostConstruct
 	public void init() {
-		if(context.getAttribute("customerDAO") == null) {
+		if(context.getAttribute("userDAO") == null) {
 			String contextPath = context.getRealPath("");
-			context.setAttribute("customerDAO", new CustomerDAO(contextPath));
+			context.setAttribute("userDAO", new UserDAO(contextPath));
 		}
 	}
 	
@@ -39,14 +39,14 @@ public class CustomerService {
 	@Path("/")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Collection<Customer> getAll(){
-		CustomerDAO dao = (CustomerDAO) context.getAttribute("customerDAO");
+		UserDAO dao = (UserDAO) context.getAttribute("userDAO");
 		return dao.getAll();
 	}
 	@GET
 	@Path("/{id}")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Customer getById(@PathParam("id") Integer id){
-		CustomerDAO dao = (CustomerDAO) context.getAttribute("customerDAO");
+		UserDAO dao = (UserDAO) context.getAttribute("userDAO");
 		return dao.getById(id);
 	}
 	
@@ -54,7 +54,7 @@ public class CustomerService {
 	@Path("/")
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Response save(Customer c, @Context HttpServletRequest request){
-		CustomerDAO dao = (CustomerDAO) context.getAttribute("customerDAO");
+		UserDAO dao = (UserDAO) context.getAttribute("userDAO");
 		String message = dao.saveCustomer(c);
 		if(!message.equals("ok")) {
 			return Response.status(400).entity(message).build();
@@ -66,7 +66,7 @@ public class CustomerService {
 	@Path("/edit")
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Response edit(Customer c){
-		CustomerDAO dao = (CustomerDAO) context.getAttribute("customerDAO");
+		UserDAO dao = (UserDAO) context.getAttribute("userDAO");
 		String message = dao.editCustomer(c);
 		if(!message.equals("ok")) {
 			return Response.status(400).entity(message).build();
@@ -77,7 +77,7 @@ public class CustomerService {
 	@PUT
 	@Path("/changepassword/{id}/{oldPassword}/{newPassword}")
 	public boolean changePassword(@PathParam("id") Integer id, @PathParam("oldPassword") String oldPassword, @PathParam("newPassword") String newPassword){
-		CustomerDAO dao = (CustomerDAO) context.getAttribute("customerDAO");
+		UserDAO dao = (UserDAO) context.getAttribute("userDAO");
 		return dao.changePassword(id, oldPassword, newPassword);
 	}
 }
