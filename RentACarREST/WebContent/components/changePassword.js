@@ -62,7 +62,7 @@ Vue.component("changePassword",{
 			let conf = confirm("Are you sure? Click ok to confirm.")
 			if(conf){
 			//let success
-			axios.put("rest/customers/changepassword/"+this.id+"/"+this.oldPassword+"/"+this.newPassword)
+			axios.put("rest/users/changepassword/"+this.id+"/"+this.oldPassword+"/"+this.newPassword)
 			.then(response => this.success = response.data)
 			setTimeout(() => {
 	        this.checkIfSucceded()

@@ -70,7 +70,7 @@ Vue.component("editProfile",{
 			}
 			let conf = confirm("Are you sure? Click ok to confirm.")
 			if(conf){
-			axios.put("rest/customers/edit", this.customer).then(response => ( router.push(`/user/`)))
+			axios.put("rest/users/edit", this.customer).then(response => ( router.push(`/user/`)))
 			}
 		},
 		loadData: function(){

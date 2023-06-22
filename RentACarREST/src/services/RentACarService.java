@@ -14,7 +14,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
-import dao.CustomerDAO;
+import dao.UserDAO;
 import dao.RentACarDAO;
 import dto.RentACarDTO;
 import models.Customer;
