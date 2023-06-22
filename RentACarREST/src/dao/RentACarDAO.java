@@ -6,28 +6,27 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.OutputStreamWriter;
-import java.text.SimpleDateFormat;
 import java.time.LocalTime;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
 import java.util.StringTokenizer;
 
 import dto.RentACarDTO;
-import models.Customer;
-import models.Gender;
 import models.Location;
+import models.Manager;
 import models.RentACar;
-import models.Role;
 import models.Status;
 
 public class RentACarDAO {
 	private ArrayList<RentACar> rentACars = new ArrayList<>();
 	private LocationDAO locDAO;
+	private ManagerDAO managerDAO;
 	private String path;
+	private RentACar newRent;
 	public RentACarDAO(String contextPath) {
+		System.out.println("doso?");
 		path = contextPath;
 		locDAO = new LocationDAO(contextPath);
+		managerDAO = new ManagerDAO(contextPath);
 		loadRentACars(contextPath);
 		linkWithLocations();
 	}
@@ -120,7 +119,7 @@ public class RentACarDAO {
 	public ArrayList<RentACar> getAll(){
 		return rentACars;
 	}
-	public void save(RentACarDTO rentACarDTO) {
+	public void createRentACar(RentACarDTO rentACarDTO) {
 		int locId = locDAO.getNextId() + 1;
 		Location location = new Location(locId, rentACarDTO.getLatitude(), rentACarDTO.getLongitude(), rentACarDTO.getAddress());
 		locDAO.add(location);
@@ -134,10 +133,21 @@ public class RentACarDAO {
 		endMinute = array[1];
 		Status status = getWorkStatus(startHour, startMinute, endHour, endMinute);
 		int id = getNextId()+1;
-		RentACar rent = new RentACar(id, locId, rentACarDTO.getName(), startHour, startMinute, endHour, endMinute,
+		newRent = new RentACar(id, locId, rentACarDTO.getName(), startHour, startMinute, endHour, endMinute,
 				status, "asdf", 0.0);
-		rent.setLocation(location);
-		rentACars.add(rent);
+		newRent.setLocation(location);
+	}
+	public void saveWithNewManager(Manager manager) {
+		manager.setRentACarId(newRent.getId());
+		manager.setRentACar(newRent);
+		managerDAO.addNewManager(manager);
+		rentACars.add(newRent);
+		SaveToFile();
+	}
+	public void save(RentACarDTO rentACarDTO, int managerId) {
+		createRentACar(rentACarDTO);
+		rentACars.add(newRent);
+		managerDAO.updateManager(managerId, newRent.getId());
 		SaveToFile();
 	}
 	private int[] getTime(String time) {

@@ -1,0 +1,4 @@
+1;menadzer;sifra;imenko;prezimic;male;manager;01-01-1988;2
+2;Bartomeu;ftn;neki;spanac;male;manager;30-04-2003;1
+3;Perez;ftn;isto;spanac;male;manager;30-04-2003;3
+4;slobodan;ftn;ovajje;slobodan;male;manager;30-04-2003;-1
