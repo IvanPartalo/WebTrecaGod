@@ -1,5 +1,6 @@
 package services;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 import javax.annotation.PostConstruct;
@@ -16,8 +17,10 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import dao.ManagerDAO;
 import dao.UserDAO;
 import models.Customer;
+import models.Manager;
 import models.User;
 
 @Path("/users")
@@ -55,7 +58,7 @@ public class UserService {
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Response save(User c, @Context HttpServletRequest request){
 		UserDAO dao = (UserDAO) context.getAttribute("userDAO");
-		String message = dao.saveUser(c);
+		String message = dao.saveCustomer(c);
 		if(!message.equals("ok")) {
 			return Response.status(400).entity(message).build();
 		}else {
@@ -79,5 +82,13 @@ public class UserService {
 	public boolean changePassword(@PathParam("id") Integer id, @PathParam("oldPassword") String oldPassword, @PathParam("newPassword") String newPassword){
 		UserDAO dao = (UserDAO) context.getAttribute("userDAO");
 		return dao.changePassword(id, oldPassword, newPassword);
+	}
+	
+	@GET
+	@Path("/freeManagers")
+	@Produces(MediaType.APPLICATION_JSON)
+	public ArrayList<Manager> getFreeManagers(){
+		UserDAO dao = (UserDAO) context.getAttribute("userDAO");
+		return dao.getFreeManagers();
 	}
 }

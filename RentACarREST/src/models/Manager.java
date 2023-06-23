@@ -13,6 +13,10 @@ public class Manager extends User{
 		super(id, username, password, firstName, lastName, gender, role, dateOfBirth);
 		this.rentACarId = rentACarId;
 	}
+	public Manager(User u, int rentACarId) {
+		super(u.getId(), u.getUsername(), u.getPassword(), u.getFirstName(), u.getLastName(), u.getGender(), u.getRole(), u.getDateOfBirth());
+		this.rentACarId = rentACarId;
+	}
 	public int getRentACarId() {
 		return rentACarId;
 	}

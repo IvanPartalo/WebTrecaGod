@@ -63,7 +63,7 @@ Vue.component("rentACarCreate",{
 	</div>
 	`,
 	mounted(){
-		axios.get('rest/managers/').
+		axios.get('rest/users/freeManagers').
 		then(response => (this.managers = response.data))
 		setTimeout(() => {
         	this.setButtonText()

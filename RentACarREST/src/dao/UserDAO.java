@@ -25,6 +25,7 @@ import java.util.StringTokenizer;
 import models.Customer;
 import models.CustomerType;
 import models.Gender;
+import models.Manager;
 import models.Renting;
 import models.Role;
 import models.ShoppingCart;
@@ -42,6 +43,7 @@ public class UserDAO {
 		path = contextPath;
 		loadUsers(path);
 		buildCustomers(path);
+		buildManagers(contextPath);
 	}
 	
 	public void loadUsers(String contextPath) {
@@ -69,11 +71,7 @@ public class UserDAO {
 					dateOfBirth = st.nextToken().trim();
 				}
 				User newUser = new User(Integer.parseInt(id), username, password, firstName, lastName, Gender.valueOf(gender) , Role.valueOf(role), formatter.parse(dateOfBirth));
-				if(newUser.getRole() == Role.customer) {
-					users.put(Integer.parseInt(id), new Customer(newUser, 200));
-				}else {
-					users.put(Integer.parseInt(id), newUser);
-				}
+				users.put(Integer.parseInt(id), newUser);
 			}
 		} catch (Exception e) {
 			System.out.println("greska");
@@ -122,6 +120,41 @@ public class UserDAO {
 			}
 		}
 	}
+	public void buildManagers(String contextPath) {
+		BufferedReader in = null;
+		try {
+			File file = new File(contextPath + "/managers.txt");
+			System.out.println(file.getCanonicalPath());
+			in = new BufferedReader(new FileReader(file));
+			String line,  userId = "", objectId = "";
+			StringTokenizer st;
+			while ((line = in.readLine()) != null) {
+				line = line.trim();
+				if (line.equals("") || line.indexOf('#') == 0)
+					continue;
+				st = new StringTokenizer(line, ";");
+				while (st.hasMoreTokens()) {
+					userId = st.nextToken().trim();
+					objectId = st.nextToken().trim();
+				}
+				User newUser = users.get(Integer.parseInt(userId));
+				if(newUser.getRole() == Role.manager) {
+					users.remove(Integer.parseInt(userId));
+					users.put(Integer.parseInt(userId), new Manager(newUser, Integer.parseInt(objectId)));
+				}
+			}
+		} catch (Exception e) {
+			System.out.println("greska");
+			e.printStackTrace();
+		} finally {
+			if ( in != null ) {
+				try {
+					in.close();
+				}
+				catch (Exception e) { }
+			}
+		}
+	}
 	public Collection<User> getAll(){
 		return users.values();
 	}
@@ -129,8 +162,22 @@ public class UserDAO {
 	public User getById(Integer id){
 		return users.get(id);
 	}
-	
-	public String saveUser(User c){
+	public String saveManager(Manager m, int idR){
+		Integer maxId = 0;
+		for (Integer id : users.keySet()) {
+			if (id > maxId) {
+				maxId = id;
+			}
+		}
+		maxId++;
+		m.setId(maxId);
+		m.setRentACarId(idR);
+		users.put(m.getId(), m);
+		SaveUsersToFile();
+		SaveManagersToFile();
+		return "ok";
+	}
+	public String saveCustomer(User c){
 		if(c.getUsername() == null || c.getFirstName() == null || c.getPassword() == null
 				|| c.getFirstName() == null || c.getLastName() == null || c.getGender() == null || c.getDateOfBirth() == null) {
 			return "Can not register this user, not all fields have been filled correctly";
@@ -160,6 +207,11 @@ public class UserDAO {
 		SaveUsersToFile();
 		SaveCustomersToFile();
 		return "ok";
+	}
+	private void SaveAll() {
+		SaveUsersToFile();
+		SaveCustomersToFile();
+		SaveManagersToFile();
 	}
 	public Boolean isUsernameUnique(String username) {
 		for(User u : users.values()) {
@@ -208,6 +260,30 @@ public class UserDAO {
 		}
 		return null;
 	}
+	public ArrayList<Manager> getFreeManagers(){
+		ArrayList<Manager> freeManagers = new ArrayList<Manager>();
+		for(User u : users.values()) {
+			if(u.getRole() == Role.manager) {
+				Manager m = (Manager)u;
+				if(m.getRentACarId() == -1) {
+					freeManagers.add(m);
+				}
+			}
+		}
+		return freeManagers;
+	}
+	public void updateManager(int managerId, int rentACarId) {
+		for(User u : users.values()) {
+			if(u.getRole() == Role.manager) {
+				Manager m = (Manager)u;
+				if(m.getId() == managerId) {
+					m.setRentACarId(rentACarId);
+					break;
+				}
+			}
+		}
+		SaveAll();
+	}
 	private void SaveUsersToFile() {
 		BufferedWriter bw = null;
 		SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy");
@@ -242,11 +318,36 @@ public class UserDAO {
 			FileOutputStream fos = new FileOutputStream(fout);
 			bw = new BufferedWriter(new OutputStreamWriter(fos));
 			for(User c : users.values()) {
-				System.out.println(c.getUsername());
 				if(c.getRole() == Role.customer) {
 					Customer p = (Customer)c;
-					System.out.println(p.getCollectedPoints());
 					String lineToWrite = c.getId()+";" + p.getCollectedPoints() + ";";
+					bw.write(lineToWrite);
+					bw.newLine();
+				}
+			}
+			bw.close();
+		}catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			if(bw!=null) {
+				try {
+					bw.close();
+				} catch (Exception e2) {
+					// TODO: handle exception
+				}
+			}
+		}
+	}
+	private void SaveManagersToFile() {
+		BufferedWriter bw = null;
+		try {
+			File fout = new File(path + "/managers.txt");
+			FileOutputStream fos = new FileOutputStream(fout);
+			bw = new BufferedWriter(new OutputStreamWriter(fos));
+			for(User c : users.values()) {
+				if(c.getRole() == Role.manager) {
+					Manager m = (Manager)c;
+					String lineToWrite = c.getId()+";" + m.getRentACarId() + ";";
 					bw.write(lineToWrite);
 					bw.newLine();
 				}

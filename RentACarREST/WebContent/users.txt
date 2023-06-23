@@ -4,3 +4,10 @@
 4;admin;admin;Matijas;Administric;male;administrator;14-06-2023;
 5;lepotan;ftn;Lepi;IzaOblaka;male;customer;11-11-1999;
 6;aki;ftn;a;a;male;customer;30-05-2023;
+7;menadzer;sifra;imenko;prezimic;male;manager;01-01-1988;
+8;Bartomeu;ftn;neki;spanac;male;manager;30-04-2003;
+9;Perez;ftn;isto;spanac;male;manager;30-04-2003;
+10;slobodan;ftn;ovajje;slobodan;male;manager;30-04-2003;
+11;pape;ftn;Pavel;Pavic;male;manager;28-05-2023;
+12;ivo;ftn;Ivano;Balic;male;manager;01-05-2023;
+13;pero;ftn;Petar;Pan;male;customer;29-05-2023;
