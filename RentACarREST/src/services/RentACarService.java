@@ -49,7 +49,9 @@ public class RentACarService {
 		System.out.println(rentACarDTO.getBeginWorkTime());
 		System.out.println(rentACarDTO.getEndWorkTime());
 		RentACarDAO dao = (RentACarDAO) ctx.getAttribute("rentACarDAO");
-		dao.save(rentACarDTO, id);
+		int rentacarId = dao.save(rentACarDTO, id);
+		UserDAO uDao = (UserDAO) ctx.getAttribute("userDAO");
+		uDao.updateManager(id, rentacarId);
 	}
 	@POST
 	@Path("/")
@@ -63,6 +65,8 @@ public class RentACarService {
 	@Produces(MediaType.APPLICATION_JSON)
 	public void saveManager(Manager manager){
 		RentACarDAO dao = (RentACarDAO) ctx.getAttribute("rentACarDAO");
-		dao.saveWithNewManager(manager);
+		int rentacarId = dao.getNewId();
+		UserDAO uDao = (UserDAO) ctx.getAttribute("userDAO");
+		uDao.saveManager(manager, rentacarId);
 	}
 }

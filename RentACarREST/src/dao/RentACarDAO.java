@@ -134,8 +134,10 @@ public class RentACarDAO {
 		Status status = getWorkStatus(startHour, startMinute, endHour, endMinute);
 		int id = getNextId()+1;
 		newRent = new RentACar(id, locId, rentACarDTO.getName(), startHour, startMinute, endHour, endMinute,
-				status, "asdf", 0.0);
+				status, "https://www.carlislecbf.com/getattachment/Products/Brakes/Service-Brakes/DISC-SERVICE-BRAKES/SCL13-SERIES-SERVICE-BRAKE/not-available_2.jpg?lang=en-US&width=296&height=296&ext=.jpg", 0.0);
 		newRent.setLocation(location);
+		rentACars.add(newRent);
+		SaveToFile();
 	}
 	public void saveWithNewManager(Manager manager) {
 		manager.setRentACarId(newRent.getId());
@@ -144,11 +146,14 @@ public class RentACarDAO {
 		rentACars.add(newRent);
 		SaveToFile();
 	}
-	public void save(RentACarDTO rentACarDTO, int managerId) {
+	public int getNewId() {
+		return newRent.getId();
+	}
+	public int save(RentACarDTO rentACarDTO, int managerId) {
 		createRentACar(rentACarDTO);
 		rentACars.add(newRent);
-		managerDAO.updateManager(managerId, newRent.getId());
 		SaveToFile();
+		return newRent.getId();
 	}
 	private int[] getTime(String time) {
 		String splittedTime[] = time.split(":");
