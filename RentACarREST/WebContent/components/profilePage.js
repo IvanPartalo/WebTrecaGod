@@ -2,6 +2,7 @@ Vue.component("profilePage",{
 	data:function(){
 		return{
 			notAdmin: false,
+			isCustomer: false,
 			id: null,
 			user: {id: null, username: null, password: null, firstName: null, 
 			lastName: null, gender: null, role: null, dateOfBirth: null}
@@ -34,12 +35,16 @@ Vue.component("profilePage",{
 	        <button v-on:click="createRentACar"> Create new rent a car </button>
 	    </div>
 	    </div>
+	    <div v-if="isCustomer" >
+	    	<rentACarTemplate></rentACarTemplate>
+	    </div>
 	</div>
 	`,
 	mounted: function() {
     	axios.get("rest/currentUser")
-			.then(response =>	
-				this.user = response.data)
+			.then( response =>
+				this.user = response.data
+				)
 		setTimeout(() => {
         	this.setAppearance()
       	}, 200)
@@ -84,6 +89,9 @@ Vue.component("profilePage",{
 			if(this.user.role != "administrator"){
 				this.notAdmin = true
 			}	
+			if(this.user.role == "customer"){
+				this.isCustomer = true
+			}
 		}
 	}
 })

@@ -2,6 +2,8 @@ package models;
 
 import java.util.Date;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class User {
 	private Integer id;
 	private String username;

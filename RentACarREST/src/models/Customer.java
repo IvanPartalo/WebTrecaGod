@@ -20,9 +20,9 @@ public class Customer extends User {
 		this.customerType = customerType;
 		this.rentings = rentings;
 	}
-	public Customer(Integer id, String username, String password, String firstName, String lastName, Gender gender, Role role, Date dateOfBirth, Integer collectedPoints) {
-		super(id, username, password, firstName, lastName, gender, role, dateOfBirth);
-		this.collectedPoints = collectedPoints;
+	public Customer(User u, Integer points) {
+		super(u.getId(), u.getUsername(), u.getPassword(), u.getFirstName(), u.getLastName(), u.getGender(), u.getRole(), u.getDateOfBirth());
+		this.collectedPoints = points;
 	}
 	public Integer getCollectedPoints() {
 		return collectedPoints;
