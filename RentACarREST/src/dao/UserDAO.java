@@ -2,6 +2,7 @@ package dao;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.Console;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileReader;
@@ -30,7 +31,7 @@ import models.ShoppingCart;
 import models.User;
 
 public class UserDAO {
-	private HashMap<Integer, Customer> users = new HashMap<>();
+	private HashMap<Integer, User> users = new HashMap<>();
 	private String path = null;
 	
 	public UserDAO() {
@@ -39,17 +40,18 @@ public class UserDAO {
 	public UserDAO(String contextPath) {
 		Calendar cal = Calendar.getInstance();
 		path = contextPath;
-		loadCustomers(path);
+		loadUsers(path);
+		buildCustomers(path);
 	}
 	
-	public void loadCustomers(String contextPath) {
+	public void loadUsers(String contextPath) {
 		BufferedReader in = null;
 		SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy");
 		try {
 			File file = new File(contextPath + "/users.txt");
 			System.out.println(file.getCanonicalPath());
 			in = new BufferedReader(new FileReader(file));
-			String line, id = "", username = "", password = "", firstName = "", lastName = "", gender = "", role = "", dateOfBirth="", collectedPoints = "";
+			String line, id = "", username = "", password = "", firstName = "", lastName = "", gender = "", role = "", dateOfBirth="";
 			StringTokenizer st;
 			while ((line = in.readLine()) != null) {
 				line = line.trim();
@@ -65,9 +67,13 @@ public class UserDAO {
 					gender = st.nextToken().trim();
 					role = st.nextToken().trim();
 					dateOfBirth = st.nextToken().trim();
-					collectedPoints = st.nextToken().trim();
 				}
-				users.put(Integer.parseInt(id), new Customer(Integer.parseInt(id), username, password, firstName, lastName, Gender.valueOf(gender) , Role.valueOf(role), formatter.parse(dateOfBirth), Integer.parseInt(collectedPoints)));
+				User newUser = new User(Integer.parseInt(id), username, password, firstName, lastName, Gender.valueOf(gender) , Role.valueOf(role), formatter.parse(dateOfBirth));
+				if(newUser.getRole() == Role.customer) {
+					users.put(Integer.parseInt(id), new Customer(newUser, 200));
+				}else {
+					users.put(Integer.parseInt(id), newUser);
+				}
 			}
 		} catch (Exception e) {
 			System.out.println("greska");
@@ -81,16 +87,50 @@ public class UserDAO {
 			}
 		}
 	}
-	
-	public Collection<Customer> getAll(){
+	public void buildCustomers(String contextPath) {
+		BufferedReader in = null;
+		try {
+			File file = new File(contextPath + "/customers.txt");
+			System.out.println(file.getCanonicalPath());
+			in = new BufferedReader(new FileReader(file));
+			String line,  userId = "", collectedPoints = "";
+			StringTokenizer st;
+			while ((line = in.readLine()) != null) {
+				line = line.trim();
+				if (line.equals("") || line.indexOf('#') == 0)
+					continue;
+				st = new StringTokenizer(line, ";");
+				while (st.hasMoreTokens()) {
+					userId = st.nextToken().trim();
+					collectedPoints = st.nextToken().trim();
+				}
+				User newUser = users.get(Integer.parseInt(userId));
+				if(newUser.getRole() == Role.customer) {
+					users.remove(Integer.parseInt(userId));
+					users.put(Integer.parseInt(userId), new Customer(newUser, Integer.parseInt(collectedPoints)));
+				}
+			}
+		} catch (Exception e) {
+			System.out.println("greska");
+			e.printStackTrace();
+		} finally {
+			if ( in != null ) {
+				try {
+					in.close();
+				}
+				catch (Exception e) { }
+			}
+		}
+	}
+	public Collection<User> getAll(){
 		return users.values();
 	}
 	
-	public Customer getById(Integer id){
+	public User getById(Integer id){
 		return users.get(id);
 	}
 	
-	public String saveCustomer(Customer c){
+	public String saveUser(User c){
 		if(c.getUsername() == null || c.getFirstName() == null || c.getPassword() == null
 				|| c.getFirstName() == null || c.getLastName() == null || c.getGender() == null || c.getDateOfBirth() == null) {
 			return "Can not register this user, not all fields have been filled correctly";
@@ -110,9 +150,15 @@ public class UserDAO {
 		}
 		maxId++;
 		c.setId(maxId);
-		c.setCollectedPoints(0);
-		users.put(c.getId(), c);
-		SaveToFile();
+		if(c.getRole() == Role.customer) {
+			//new user starts with 50 points
+			Customer p = new Customer(c, 50);
+			users.put(c.getId(), p);
+		}else {
+			users.put(c.getId(), c);
+		}
+		SaveUsersToFile();
+		SaveCustomersToFile();
 		return "ok";
 	}
 	public Boolean isUsernameUnique(String username) {
@@ -123,28 +169,29 @@ public class UserDAO {
 		}
 		return true;
 	}
-	public String editCustomer(Customer c){
+	public String editCustomer(User c){
 		if(c.getFirstName().isBlank() || c.getLastName().isBlank()) {
 			return "First name and last name can't contain only white spaces";
 		}
 		if(c.getFirstName().isEmpty() || c.getLastName().isEmpty()) {
 			return "First name and last name can't be empty";
 		}
-		Customer oldCustomer = users.get(c.getId());
+		User oldCustomer = users.get(c.getId());
 		oldCustomer.setUsername(c.getUsername());
 		oldCustomer.setPassword(c.getPassword());
 		oldCustomer.setFirstName(c.getFirstName());
 		oldCustomer.setLastName(c.getLastName());
 		oldCustomer.setGender(c.getGender());
 		oldCustomer.setDateOfBirth(c.getDateOfBirth());
-		SaveToFile();
+		SaveUsersToFile();
+		SaveCustomersToFile();
 		return "ok";
 	}
 	public boolean changePassword(Integer id, String oldPassword, String newPassword) {
-		Customer c = getById(id);
+		User c = getById(id);
 		if(c.getPassword().equals(oldPassword)) {
 			c.setPassword(newPassword);
-			SaveToFile();
+			SaveUsersToFile();
 			return true;
 		}
 		else {
@@ -152,7 +199,7 @@ public class UserDAO {
 		}
 	}
 	public User find(String username, String password) {
-		for(Customer c : users.values()){
+		for(User c : users.values()){
 			if (c.getUsername().equals(username)) {
 				if(c.getPassword().equals(password)) {
 					return c;
@@ -161,19 +208,48 @@ public class UserDAO {
 		}
 		return null;
 	}
-	private void SaveToFile() {
+	private void SaveUsersToFile() {
 		BufferedWriter bw = null;
 		SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy");
 		try {
 			File fout = new File(path + "/users.txt");
 			FileOutputStream fos = new FileOutputStream(fout);
 			bw = new BufferedWriter(new OutputStreamWriter(fos));
-			for(Customer c : users.values()) {
+			for(User c : users.values()) {
 				String date = formatter.format(c.getDateOfBirth());
 				String lineToWrite = 
-				c.getId()+";"+c.getUsername()+";"+c.getPassword()+";"+c.getFirstName()+";"+c.getLastName()+";"+c.getGender()+";"+c.getRole()+";"+date+";"+c.getCollectedPoints();
+				c.getId()+";"+c.getUsername()+";"+c.getPassword()+";"+c.getFirstName()+";"+c.getLastName()+";"+c.getGender()+";"+c.getRole()+";"+date+";";
 				bw.write(lineToWrite);
 				bw.newLine();
+			}
+			bw.close();
+		}catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			if(bw!=null) {
+				try {
+					bw.close();
+				} catch (Exception e2) {
+					// TODO: handle exception
+				}
+			}
+		}
+	}	
+	private void SaveCustomersToFile() {
+		BufferedWriter bw = null;
+		try {
+			File fout = new File(path + "/customers.txt");
+			FileOutputStream fos = new FileOutputStream(fout);
+			bw = new BufferedWriter(new OutputStreamWriter(fos));
+			for(User c : users.values()) {
+				System.out.println(c.getUsername());
+				if(c.getRole() == Role.customer) {
+					Customer p = (Customer)c;
+					System.out.println(p.getCollectedPoints());
+					String lineToWrite = c.getId()+";" + p.getCollectedPoints() + ";";
+					bw.write(lineToWrite);
+					bw.newLine();
+				}
 			}
 			bw.close();
 		}catch (Exception e) {

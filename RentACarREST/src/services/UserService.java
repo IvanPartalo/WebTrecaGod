@@ -38,14 +38,14 @@ public class UserService {
 	@GET
 	@Path("/")
 	@Produces(MediaType.APPLICATION_JSON)
-	public Collection<Customer> getAll(){
+	public Collection<User> getAll(){
 		UserDAO dao = (UserDAO) context.getAttribute("userDAO");
 		return dao.getAll();
 	}
 	@GET
 	@Path("/{id}")
 	@Produces(MediaType.APPLICATION_JSON)
-	public Customer getById(@PathParam("id") Integer id){
+	public User getById(@PathParam("id") Integer id){
 		UserDAO dao = (UserDAO) context.getAttribute("userDAO");
 		return dao.getById(id);
 	}
@@ -53,9 +53,9 @@ public class UserService {
 	@POST
 	@Path("/")
 	@Consumes(MediaType.APPLICATION_JSON)
-	public Response save(Customer c, @Context HttpServletRequest request){
+	public Response save(User c, @Context HttpServletRequest request){
 		UserDAO dao = (UserDAO) context.getAttribute("userDAO");
-		String message = dao.saveCustomer(c);
+		String message = dao.saveUser(c);
 		if(!message.equals("ok")) {
 			return Response.status(400).entity(message).build();
 		}else {
@@ -65,7 +65,7 @@ public class UserService {
 	@PUT
 	@Path("/edit")
 	@Consumes(MediaType.APPLICATION_JSON)
-	public Response edit(Customer c){
+	public Response edit(User c){
 		UserDAO dao = (UserDAO) context.getAttribute("userDAO");
 		String message = dao.editCustomer(c);
 		if(!message.equals("ok")) {

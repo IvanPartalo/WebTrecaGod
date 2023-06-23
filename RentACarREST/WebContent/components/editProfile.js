@@ -2,8 +2,7 @@ Vue.component("editProfile",{
 	data:function(){
 		return{
 			id: null,
-			customer: {id: null,firstName: null, 
-			lastName: null, gender: null, role: null, dateOfBirth: null},
+			customer: {id: null,firstName: null, lastName: null, gender: null, role: null, dateOfBirth: null},
 			date: null,
 			errorMessage: ''
 		}
