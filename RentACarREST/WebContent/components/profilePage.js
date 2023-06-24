@@ -6,7 +6,8 @@ Vue.component("profilePage",{
 			isCustomer: false,
 			id: null,
 			user: {id: null, username: null, password: null, firstName: null, 
-			lastName: null, gender: null, role: null, dateOfBirth: null}
+			lastName: null, gender: null, role: null, dateOfBirth: null, collectedPoints:null, 
+			customerType:{name:null, discount:null, requiredPoints:null}}
 		}
 	},
 	template: `
@@ -17,29 +18,42 @@ Vue.component("profilePage",{
 			<a href="" v-on:click="changePassword" style="margin-left:15px">Change password</a>
 			<a href="" v-on:click="logOut" style="float:right; margin-right:30px">Log out</a>
 		</div>
-	    <div style="border:1px solid black; padding-left: 5px;">
-			<h1 style="color:red;">Profile page</h1>
-	        <h2>{{user.firstName}} {{user.lastName}}</h2>
-	    <div style="padding-left: 5px; font-size:20px">
-	        <label>Username:</label>
-	        <label>{{user.username}}</label>
-	    </div>
-	    <div style="padding-left: 5px;">
-	        <label>Gender:</label>
-	        <label>{{user.gender}}</label><br>
-	        <label>Date of birth:</label>
-	        <label>{{user.dateOfBirth}}</label><br>
-	        <label>Role:</label>
-	        <label>{{user.role}}</label><br>
-	    </div>
-	    <div v-bind:class="{hiddenClass: notManager}" style="font-size:15px">
-	        <button v-on:click="createVehicle"> Create new vehicle </button>
-	    </div>
-	    <div v-bind:class="{hiddenClass: notAdmin}" style="margin-top: 20px; font-size:15px">
-	        <button v-on:click="createRentACar"> Create new rent a car </button>
-	    </div>
-	    </div>
-	    <div v-if="isCustomer" >
+		<div class="row">
+			<div class="column">
+			    <div style="border:1px solid black; padding-left: 5px;border-radius: 30px; margin:1%;text-align: center;background-color:#8083c9">
+					<h1 style="color:red;">Personal info</h1>
+			        <h2>{{user.firstName}} {{user.lastName}}</h2>
+				    <div style="padding-left: 5px; font-size:20px">
+				        <label>Username:</label>
+				        <b><label>{{user.username}}</label></b>
+				    </div>
+				    <div style="padding-left: 5px; font-size:20px">
+				        <label>Gender:</label>
+				        <b><label>{{user.gender}}</label><br></b>
+				        <label>Date of birth:</label>
+				        <b><label>{{user.dateOfBirth}}</label><br></b>
+				        <label>Role:</label>
+				        <b><label>{{user.role}}</label><br></b>
+				    </div>
+				     <div v-if="isCustomer" style="padding-left: 5px; font-size:20px">
+				    	<label>Collected points:</label>
+				    	<b><label>{{user.collectedPoints}}</label><br></b>
+				    	<label>Customer type:</label>
+				    	<b><label>{{user.customerType.name}}</label><br></b>
+				    </div>
+				    <div v-bind:class="{hiddenClass: notManager}" style="font-size:15px">
+				        <button v-on:click="createVehicle"> Create new vehicle </button>
+				    </div>
+				    <div v-bind:class="{hiddenClass: notAdmin}" style="margin-top: 20px; font-size:15px">
+				        <button v-on:click="createRentACar"> Create new rent a car </button>
+				    </div>
+			    </div>
+			</div>
+			<div class="column">
+				//ovde planiram liste iznajmljivanja ili ako ne stane onda negde drugde
+			</div>
+		</div>
+	    <div v-if="isCustomer">
 	    	<vehiclesTemplate></vehiclesTemplate>
 	    </div>
 	</div>

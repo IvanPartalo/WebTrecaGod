@@ -47,6 +47,7 @@ public class RentACarService {
 			ctx.setAttribute("userDAO", new UserDAO(contextPath));
 		}
 		linkManagers();
+		linkCars();
 	}
 	public void linkManagers() {
 		UserDAO udao = (UserDAO) ctx.getAttribute("userDAO");
@@ -54,6 +55,14 @@ public class RentACarService {
 		for(Manager m : udao.getManagers()) {
 			RentACar rent = rdao.getById(m.getRentACarId());
 			m.setRentACar(rent);
+		}
+	}
+	public void linkCars() {
+		VehicleDAO vdao = (VehicleDAO) ctx.getAttribute("vehicleDAO");
+		RentACarDAO rdao = (RentACarDAO) ctx.getAttribute("rentACarDAO");
+		for(Vehicle v : vdao.getAll()) {
+			RentACar rent = rdao.getById(v.getRentACarId());
+			v.setRentACar(rent);
 		}
 	}
 	@GET

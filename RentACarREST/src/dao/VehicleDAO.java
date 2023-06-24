@@ -124,5 +124,8 @@ public class VehicleDAO {
 		}
 		return availables;
 	}
+	public ArrayList<Vehicle> getAll() {
+		return vehicles;
+	}
 	
 }

@@ -7,20 +7,20 @@ Vue.component("vehiclesTemplate",{
 	template: `
 	<div>
 		<h1 style="text-align: center">Vehicles</h1>
-		<h3 style="margin-left:15%">Search cars for specific dates:</h3>
-		<div style="margin-left:15%; margin-bottom:20px">
+		<h3 style="margin-left:12%">Search cars for specific dates:</h3>
+		<div style="margin-left:12%; margin-bottom:15px">
 			<label>Start date: </label>
 			<input type="date" style="margin-right:20px">
 			<label>End date: </label>
 			<input type="date" style="margin-right:20px">
 			<button>Search!</button>
 		</div>
-	    <div v-for="v in vehicles" style="border:1px solid black; font-size:22px; padding: 10px; width: 70%; margin: auto">
+	    <div v-for="v in vehicles" style="border:1px solid black; font-size:21px; padding: 10px; width: 70%; margin: 0% 12% 1% 12%; background-color: #FBD603">
 	    	<div>
 				<div class="row">
 					<div class="column">
 						<div class="image">
-							<img v-bind:src="v.photo" style="width:150px; height:110px" />
+							<img v-bind:src="v.photo" style="width:140px; height:100px" />
 						</div>
 						<div>
 							<label>Model:</label>
@@ -47,7 +47,7 @@ Vue.component("vehiclesTemplate",{
 						<label>Desription:</label>
 						<b><label>{{v.description}}</label></b><br><br>
 						<div align="right">
-							<button>Rent this car!</button>
+							<button>Add to cart!</button>
 						</div>
 					</div>
 				</div>

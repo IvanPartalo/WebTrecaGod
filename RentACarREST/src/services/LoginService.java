@@ -12,7 +12,10 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import dao.CustomerTypeDAO;
 import dao.UserDAO;
+import models.Customer;
+import models.Role;
 import models.User;
 
 @Path("")
@@ -30,8 +33,22 @@ public class LoginService {
 	    	String contextPath = ctx.getRealPath("");
 			ctx.setAttribute("userDAO", new UserDAO(contextPath));
 		}
+		if(ctx.getAttribute("customerTypeDAO") == null) {
+			String contextPath = ctx.getRealPath("");
+			ctx.setAttribute("customerTypeDAO", new CustomerTypeDAO(contextPath));
+		}
+		linkCustomerTypes();
 	}
-	
+	private void linkCustomerTypes() {
+		UserDAO udao = (UserDAO) ctx.getAttribute("userDAO");
+		CustomerTypeDAO cTdao = (CustomerTypeDAO) ctx.getAttribute("customerTypeDAO");
+		for(User u : udao.getAll()) {
+			if(u.getRole() == Role.customer) {
+				Customer c = (Customer)u;
+				c.setCustomerType(cTdao.getByPoints(c.getCollectedPoints()));
+			}
+		}
+	}
 	@POST
 	@Path("/login")
 	@Consumes(MediaType.APPLICATION_JSON)
