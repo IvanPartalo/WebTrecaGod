@@ -40,7 +40,7 @@ Vue.component("profilePage",{
 	    </div>
 	    </div>
 	    <div v-if="isCustomer" >
-	    	<rentACarTemplate></rentACarTemplate>
+	    	<vehiclesTemplate></vehiclesTemplate>
 	    </div>
 	</div>
 	`,

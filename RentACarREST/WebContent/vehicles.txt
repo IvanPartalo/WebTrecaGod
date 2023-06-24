@@ -1,2 +1,2 @@
-0;lambordzini;aventador;sportski;najs kar;asd;diesel;500000;2;20;2;5;true
-1;brend;model;chamac;sd;asd;benzine;200;0;50;5;8;true
+0;lambordzini;aventador;sportski;najs kar;https://english.cdn.zeenews.com/sites/default/files/2023/04/06/1179460-maruti-suzuki-fronx.jpg;diesel;500000;2;20;2;5;true
+1;brend;model;chamac;sd;https://english.cdn.zeenews.com/sites/default/files/2023/04/06/1179460-maruti-suzuki-fronx.jpg;benzine;200;0;50;5;8;true
