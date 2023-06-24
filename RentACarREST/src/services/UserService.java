@@ -17,10 +17,12 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import dao.CustomerTypeDAO;
 import dao.ManagerDAO;
 import dao.UserDAO;
 import models.Customer;
 import models.Manager;
+import models.Role;
 import models.User;
 
 @Path("/users")
@@ -36,8 +38,11 @@ public class UserService {
 			String contextPath = context.getRealPath("");
 			context.setAttribute("userDAO", new UserDAO(contextPath));
 		}
+		if(context.getAttribute("customerTypeDAO") == null) {
+			String contextPath = context.getRealPath("");
+			context.setAttribute("customerTypeDAO", new CustomerTypeDAO(contextPath));
+		}
 	}
-	
 	@GET
 	@Path("/")
 	@Produces(MediaType.APPLICATION_JSON)

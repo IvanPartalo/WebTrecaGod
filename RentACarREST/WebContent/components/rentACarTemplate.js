@@ -17,7 +17,7 @@ Vue.component("rentACarTemplate",{
 		<label>Location: </label><input type="text" v-model="locationSearch" style="margin-right:20px">
 		<label>Minimum grade: </label><input type="text" v-model="minGrade" style="margin-right:20px">
 		</div>
-	    <div v-for="r in rentACarList" style="border:1px solid black; font-size:20px; overflow: hidden; padding: 15px; width: 70%; margin: auto">
+	    <div v-for="r in rentACarList" style="border:1px solid black; font-size:20px; overflow: hidden; padding: 15px; width: 70%; margin: 0% 12% 1% 12%;background-color: #FBD603">
 	    	<div style="float: left">
 				<div class="container">
 					<div class="image">

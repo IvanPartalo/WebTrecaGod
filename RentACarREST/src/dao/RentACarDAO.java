@@ -81,7 +81,6 @@ public class RentACarDAO {
 				rentACars.add(r);
 			}
 		}
-		System.out.println(rentACars);
 	}
 	private Status getWorkStatus(int startHour, int startMinute, int endHour, int endMinute) {
 		LocalTime time = LocalTime.now();
