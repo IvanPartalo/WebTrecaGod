@@ -115,5 +115,14 @@ public class VehicleDAO {
 		}
 		return ++maxId;
 	}
+	public ArrayList<Vehicle> getAvailable() {
+		ArrayList<Vehicle> availables = new ArrayList<>();
+		for(Vehicle v : vehicles) {
+			if(v.getAvailable() == true) {
+				availables.add(v);
+			}
+		}
+		return availables;
+	}
 	
 }

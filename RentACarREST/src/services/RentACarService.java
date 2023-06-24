@@ -63,6 +63,13 @@ public class RentACarService {
 		RentACarDAO dao = (RentACarDAO) ctx.getAttribute("rentACarDAO");
 		return dao.getAll();
 	}
+	@GET
+	@Path("/vehicles")
+	@Produces(MediaType.APPLICATION_JSON)
+	public ArrayList<Vehicle> getAvailableVehicles(){
+		VehicleDAO dao = (VehicleDAO) ctx.getAttribute("vehicleDAO");
+		return dao.getAvailable();
+	}
 	@POST
 	@Path("/{id}")
 	@Produces(MediaType.APPLICATION_JSON)
