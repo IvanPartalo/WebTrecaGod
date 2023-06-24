@@ -19,14 +19,13 @@ import models.Status;
 public class RentACarDAO {
 	private ArrayList<RentACar> rentACars = new ArrayList<>();
 	private LocationDAO locDAO;
-	private ManagerDAO managerDAO;
+	//private ManagerDAO managerDAO;
 	private String path;
 	private RentACar newRent;
 	public RentACarDAO(String contextPath) {
-		System.out.println("doso?");
 		path = contextPath;
 		locDAO = new LocationDAO(contextPath);
-		managerDAO = new ManagerDAO(contextPath);
+		//managerDAO = new ManagerDAO(contextPath);
 		loadRentACars(contextPath);
 		linkWithLocations();
 	}
@@ -60,7 +59,7 @@ public class RentACarDAO {
 			}
 			sort(tmpRentACars);
 		} catch (Exception e) {
-			System.out.println("greska");
+			System.out.println("greska rent");
 			e.printStackTrace();
 		} finally {
 			if ( in != null ) {
@@ -139,12 +138,20 @@ public class RentACarDAO {
 		rentACars.add(newRent);
 		SaveToFile();
 	}
-	public void saveWithNewManager(Manager manager) {
+	/*public void saveWithNewManager(Manager manager) {
 		manager.setRentACarId(newRent.getId());
 		manager.setRentACar(newRent);
 		managerDAO.addNewManager(manager);
 		rentACars.add(newRent);
 		SaveToFile();
+	}*/
+	public RentACar getById(int id) {
+		for(RentACar r : rentACars) {
+			if(r.getId() == id) {
+				return r;
+			}
+		}
+		return null;
 	}
 	public int getNewId() {
 		return newRent.getId();

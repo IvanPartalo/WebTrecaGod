@@ -2,6 +2,7 @@ Vue.component("profilePage",{
 	data:function(){
 		return{
 			notAdmin: false,
+			notManager: false,
 			isCustomer: false,
 			id: null,
 			user: {id: null, username: null, password: null, firstName: null, 
@@ -30,6 +31,9 @@ Vue.component("profilePage",{
 	        <label>{{user.dateOfBirth}}</label><br>
 	        <label>Role:</label>
 	        <label>{{user.role}}</label><br>
+	    </div>
+	    <div v-bind:class="{hiddenClass: notManager}" style="font-size:15px">
+	        <button v-on:click="createVehicle"> Create new vehicle </button>
 	    </div>
 	    <div v-bind:class="{hiddenClass: notAdmin}" style="margin-top: 20px; font-size:15px">
 	        <button v-on:click="createRentACar"> Create new rent a car </button>
@@ -71,6 +75,9 @@ Vue.component("profilePage",{
 			event.preventDefault()
 			router.push(`/rentacarcreate/`)
 		},
+		createVehicle: function(){
+			router.push(`/vehiclecreate/`)
+		},
 		setAppearance: function(){
 			let date = new Date(this.user.dateOfBirth)
 			let day = date.getDate()
@@ -88,6 +95,9 @@ Vue.component("profilePage",{
 			console.log(this.user.dateOfBirth)
 			if(this.user.role != "administrator"){
 				this.notAdmin = true
+			}
+			if(this.user.role != "manager"){
+				this.notManager = true
 			}	
 			if(this.user.role == "customer"){
 				this.isCustomer = true

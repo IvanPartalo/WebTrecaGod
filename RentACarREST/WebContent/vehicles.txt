@@ -1,0 +1,2 @@
+0;lambordzini;aventador;sportski;najs kar;asd;diesel;500000;2;20;2;5;true
+1;brend;model;chamac;sd;asd;benzine;200;0;50;5;8;true

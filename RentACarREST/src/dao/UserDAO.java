@@ -365,4 +365,13 @@ public class UserDAO {
 			}
 		}
 	}
+	public ArrayList<Manager> getManagers(){
+		ArrayList<Manager> managers = new ArrayList<Manager>();
+		for(User u : users.values()) {
+			if(u.getRole() == Role.manager) {
+				managers.add((Manager)u);
+			}
+		}
+		return managers;
+	}
 }

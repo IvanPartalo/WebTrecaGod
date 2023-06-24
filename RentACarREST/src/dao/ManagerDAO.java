@@ -51,7 +51,7 @@ public class ManagerDAO {
 						Role.valueOf(role), formatter.parse(dateOfBirth), Integer.parseInt(rentACarId)));
 			}
 		} catch (Exception e) {
-			System.out.println("greska");
+			System.out.println("greska man");
 			e.printStackTrace();
 		} finally {
 			if ( in != null ) {
@@ -90,6 +90,9 @@ public class ManagerDAO {
 				}
 			}
 		}
+	}
+	public ArrayList<Manager> getAll(){
+		return managers;
 	}
 	public void addNewManager(Manager manager) {
 		managers.add(manager);
