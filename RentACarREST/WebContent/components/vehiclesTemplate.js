@@ -47,7 +47,7 @@ Vue.component("vehiclesTemplate",{
 						<label>Desription:</label>
 						<b><label>{{v.description}}</label></b><br><br>
 						<div align="right">
-							<button>Add to cart!</button>
+							<button v-on:click="addToCart(v.id)">Add to cart!</button>
 						</div>
 					</div>
 				</div>
@@ -62,5 +62,8 @@ Vue.component("vehiclesTemplate",{
     	.then(response => this.vehicles = response.data)
     },
 	methods:{
+		addToCart : function(id){
+			axios.post('rest/users/addToCart/'+ id).then(response => router.push(`/cart`));
+		}
 	}
 })

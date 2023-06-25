@@ -16,6 +16,7 @@ import dao.CustomerTypeDAO;
 import dao.UserDAO;
 import models.Customer;
 import models.Role;
+import models.ShoppingCart;
 import models.User;
 
 @Path("")
@@ -60,6 +61,10 @@ public class LoginService {
 			return Response.status(400).entity("Wrong username or password").build();
 		}
 		request.getSession().setAttribute("currentUser", loggedUser);
+		if(loggedUser.getRole() == Role.customer) {
+			Customer c = (Customer)loggedUser;
+			c.setShoppingCart(new ShoppingCart());
+		}
 		return Response.status(200).build();
 	}
 	
