@@ -9,6 +9,7 @@ public class ShoppingCart {
 	private double price;
 	public ShoppingCart() {
 		vehicles = new ArrayList<>();
+		price = 0;
 	}
 	public ShoppingCart(Integer id, ArrayList<Vehicle> vehicles, User user, double price) {
 		super();
@@ -43,6 +44,15 @@ public class ShoppingCart {
 		this.price = price;
 	}
 	public void addVehicle(Vehicle v) {
-		vehicles.add(v);
+		this.vehicles.add(v);
+	}
+	public void removeVehicle(Vehicle v) {
+		this.vehicles.remove(v);
+	}
+	public void addPrice(int p) {
+		this.price += p;
+	}
+	public void removePrice(int p) {
+		this.price -= p;
 	}
 }
