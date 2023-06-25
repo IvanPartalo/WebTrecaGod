@@ -1,21 +1,16 @@
-Vue.component("vehiclesTemplate",{
+Vue.component("cart",{
 	data:function(){
 		return{
-			vehicles: null
+			cart : {vehicles : null, user : null, price : null}
 		}
 	},
 	template: `
 	<div>
-		<h1 style="text-align: center">Vehicles</h1>
-		<h3 style="margin-left:12%">Search cars for specific dates:</h3>
-		<div style="margin-left:12%; margin-bottom:15px">
-			<label>Start date: </label>
-			<input type="date" style="margin-right:20px">
-			<label>End date: </label>
-			<input type="date" style="margin-right:20px">
-			<button>Search!</button>
+		<div>
+			<label>Total price:</label>
+			<b><label>{{this.cart.price}}</label></b><br>
 		</div>
-	    <div v-for="v in vehicles" style="border:1px solid black; font-size:21px; padding: 10px; width: 70%; margin: 0% 12% 1% 12%; background-color: #FBD603">
+		<div v-for="(v,index) in this.cart.vehicles" style="border:1px solid black; font-size:21px; padding: 10px; width: 70%; margin: 0% 12% 1% 12%; background-color: #FBD603">
 	    	<div>
 				<div class="row">
 					<div class="column">
@@ -47,23 +42,25 @@ Vue.component("vehiclesTemplate",{
 						<label>Desription:</label>
 						<b><label>{{v.description}}</label></b><br><br>
 						<div align="right">
-							<button v-on:click="addToCart(v.id)">Add to cart!</button>
+							<button v-on:click="removeFromCart(v.id, v.price, index)">Remove from cart!</button>
 						</div>
 					</div>
 				</div>
 			</div>
 	    </div>
-	 </div>
+	</div>
 	`,
 	computed:{
+		
 	},
 	mounted: function() {
-    	axios.get('rest/rentacar/vehicles')
-    	.then(response => this.vehicles = response.data)
+		axios.get('rest/users/cart')
+    	.then(response => this.cart = response.data)
     },
 	methods:{
-		addToCart : function(id){
-			axios.post('rest/users/addToCart/'+ id).then(response => router.push(`/cart`));
+		removeFromCart : function(id, p, index){
+			axios.post('rest/users/removeFromCart/'+ id).then(response => (this.cart.vehicles.splice(index, 1), 
+			this.cart.price-=p))
 		}
 	}
 })

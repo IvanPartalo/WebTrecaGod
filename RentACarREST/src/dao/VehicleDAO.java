@@ -127,5 +127,12 @@ public class VehicleDAO {
 	public ArrayList<Vehicle> getAll() {
 		return vehicles;
 	}
-	
+	public Vehicle getById(int id) {
+		for(Vehicle v : vehicles) {
+			if(v.getId() == id) {
+				return v;
+			}
+		}
+		return null;
+	}
 }
