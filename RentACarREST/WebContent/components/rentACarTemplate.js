@@ -2,20 +2,73 @@ Vue.component("rentACarTemplate",{
 	data:function(){
 		return{
 			rentACars: null,
+			rentACarsCopy: null,
 			nameSearch: '',
 			locationSearch: '',
-			minGrade: 0
+			vehicleType: '',
+			minGrade: 0,
+			sorting: 'None',
+			sortingType: 'ascending',
+			ascending: 1,
+			workFilter: false,
+			fuelType: 'all',
+			filterApplied: false
 		}
 	},
 	template: `
 	<div>
+		<dialog id="dijalog" ref="dijalog" style="padding: 20px; margin-left:auto; margin-top:200px; margin-right:20px; position:absolute">
+			<h4>Filters</h4>
+			<input type="checkbox" value="working" v-model="workFilter">
+			<label>Show working only</label>
+			<br>
+			<input type="checkbox" value="manual">
+			<label>Show manual only</label>
+			<br>
+			<input type="checkbox" value="automatic">
+			<label>Show automatic only</label>
+			<br><br>
+			<label>Fuel type</label>
+			<select v-model="fuelType" style="margin-left:10px">
+				<option>all</option>
+				<option>diesel</option>
+				<option>benzine</option>
+				<option>electric</option>
+				<option>hybrid</option>
+			</select>
+			<br><br>
+			<button v-on:click="closeDialog">Apply</button>
+		</dialog>
 		<h1 style="text-align: center">Rent a car shops</h1>
 		
 		<h3 style="margin-left:20px">Search for specific shop</h3>
-		<div style="margin-left:40px; margin-bottom:20px">
+		<div style="margin-left: 40px">
+		<div style="float:left">
 		<label>Name: </label><input type="text" v-model="nameSearch" style="margin-right:20px">
+		<label>Vehicle type: </label><input type="text" v-model="vehicleType" style="margin-right:20px">
 		<label>Location: </label><input type="text" v-model="locationSearch" style="margin-right:20px">
 		<label>Minimum grade: </label><input type="text" v-model="minGrade" style="margin-right:20px">
+		<label style="margin-left:20px">Sort</label>
+		<select v-model="sorting" style="margin-left:10px">
+			<option>None</option>
+			<option>Grade</option>
+			<option>Name</option>
+			<option>Location</option>
+		</select>
+		</div>
+		<div style="float:left; margin-left: 10px">
+		<div>
+		<input type="radio" id="asc" name="sort_type" value="ascending" v-model="sortingType">	
+		<label for="asc">ascending</label>
+		</div>
+		<div>
+		<input type="radio" id="desc" name="sort_type" value="descending" v-model="sortingType">
+		<label for="desc">descending</label>
+		</div>
+		</div>
+		<div style="float:left">
+		<button v-on:click="showDialog" style="margin-left:20px">Filters</button>
+		</div>
 		</div>
 	    <div v-for="r in rentACarList" style="border:1px solid black; font-size:20px; overflow: hidden; padding: 15px; width: 70%; margin: 0% 12% 1% 12%;background-color: #FBD603">
 	    	<div style="float: left">
@@ -45,11 +98,96 @@ Vue.component("rentACarTemplate",{
 	`,
 	computed:{
 		rentACarList(){
-			if(this.nameSearch.length > 0 || this.locationSearch.length > 0 || this.minGrade.length > 0){
-				let filteredList = this.rentACars
+			let filteredList = this.rentACars
+			
+			if(this.sortingType == 'ascending'){
+				this.ascending = 1
+			}
+			else{
+				this.ascending = -1
+			}
+			if (this.sorting == "None"){
+				filteredList = this.rentACarsCopy
+			}
+			if(this.nameSearch.length > 0 || this.locationSearch.length > 0 || this.minGrade.length > 0 || this.vehicleType.length > 0 || this.sorting != 'None' || this.filterApplied){
+				if(this.workFilter && this.filterApplied){
+					filteredList = filteredList.filter((rentACar) => rentACar.status == "working")
+				}
+				if (this.fuelType != "all" && this.filterApplied){
+					let add = true
+					let newList = []
+					filteredList.forEach((rentACar) => {
+						add = false
+						rentACar.vehicles.forEach((vehicle) => {
+							console.log(vehicle.fuelType)
+							if(vehicle.fuelType == this.fuelType){
+								add = true		
+							}							
+						});
+						if(add){
+							newList.push(rentACar)
+						}
+					});
+					filteredList = newList
+				}
+				if (this.sorting == "Grade"){
+				filteredList.sort((a, b) => {
+				  const gradeA = a.grade;
+				  const gradeB = b.grade;
+				  if (gradeA > gradeB) {
+				    return -1*this.ascending;
+				  }
+				  if (gradeA < gradeB) {
+				    return 1*this.ascending;
+				  }
+				  return 0;
+				});
+				}
+				if (this.sorting == "Name"){
+					filteredList.sort((a, b) => {
+					  const A = a.name;
+					  const B = b.name;
+					  if (A < B) {
+					    return -1*this.ascending;
+					  }
+					  if (A > B) {
+					    return 1*this.ascending;
+					  }
+					  return 0;
+					});
+				}
+				if (this.sorting == "Location"){
+					filteredList.sort((a, b) => {
+					  const A = a.location.address;
+					  const B = b.location.address;
+					  if (A < B) {
+					    return -1*this.ascending;
+					  }
+					  if (A > B) {
+					    return 1*this.ascending;
+					  }
+					  return 0;
+					});
+				}
 				if (this.nameSearch.length > 0){
 					filteredList = filteredList.filter((rentACar) => rentACar.name.toLowerCase().includes(
 					this.nameSearch.toLowerCase()))
+				}
+				if (this.vehicleType.length > 0){
+					let add = true
+					let newList = []
+					filteredList.forEach((rentACar) => {
+						add = false
+						rentACar.vehicles.forEach((vehicle) => {
+							if(vehicle.type.toLowerCase().includes(this.vehicleType)){
+								add = true		
+							}							
+						});
+						if(add){
+							newList.push(rentACar)
+						}
+					});
+					filteredList = newList
 				}
 				if (this.locationSearch.length > 0){
 					filteredList = filteredList.filter((rentACar) => rentACar.location.address.toLowerCase().includes(
@@ -58,18 +196,30 @@ Vue.component("rentACarTemplate",{
 				if (this.minGrade.length > 0){
 					filteredList = filteredList.filter((rentACar) => rentACar.grade >= this.minGrade)
 				}
+				
 				return filteredList
 			}
-			return this.rentACars
+			return this.rentACarsCopy
 		}
 	},
 	mounted: function() {
     	axios.get('rest/rentacar/')
     	.then(response => this.rentACars = response.data)
+    	setTimeout(() => {
+        	this.makeCopy()
+      	}, 100)
     },
 	methods:{
-		asd: function(){
-			console.log(this.rentACars)
+		makeCopy: function(){
+			this.rentACarsCopy = this.rentACars.slice()
+		},
+		showDialog: function(){
+			this.filterApplied = false
+			this.$refs.dijalog.showModal()
+		},
+		closeDialog: function(){
+			this.filterApplied = true
+			this.$refs.dijalog.close()
 		}
 	}
 })

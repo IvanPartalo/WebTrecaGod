@@ -1,5 +1,11 @@
 package models;
 
+import java.util.ArrayList;
+
+import javax.persistence.Entity;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+@Entity
 public class RentACar {
 	private Integer id;
 	private int locationId;
@@ -12,8 +18,10 @@ public class RentACar {
 	private String logoImg;
 	private double Grade;
 	private Location location;
+	@JsonIgnoreProperties("rentACar")
+	private ArrayList<Vehicle> vehicles;
 	public RentACar() {
-
+		vehicles = new ArrayList<Vehicle>();
 	}
 	
 	public RentACar(Integer id, int locationId, String name, int startHour, int startMinute, int endHour, int endMinute, Status status,
@@ -28,6 +36,7 @@ public class RentACar {
 		this.status = status;
 		this.logoImg = logoImg;
 		Grade = grade;
+		vehicles = new ArrayList<Vehicle>();
 	}
 
 	public Integer getId() {
@@ -98,6 +107,14 @@ public class RentACar {
 	}
 	public void setLocation(Location location) {
 		this.location = location;
+	}
+
+	public ArrayList<Vehicle> getVehicles() {
+		return vehicles;
+	}
+
+	public void setVehicles(ArrayList<Vehicle> vehicles) {
+		this.vehicles = vehicles;
 	}
 	
 }
