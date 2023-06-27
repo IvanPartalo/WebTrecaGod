@@ -26,7 +26,6 @@ import models.Customer;
 import models.CustomerType;
 import models.Gender;
 import models.Manager;
-import models.Renting;
 import models.Role;
 import models.ShoppingCart;
 import models.User;

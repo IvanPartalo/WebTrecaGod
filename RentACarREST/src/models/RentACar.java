@@ -1,5 +1,7 @@
 package models;
 
+import java.util.ArrayList;
+
 public class RentACar {
 	private Integer id;
 	private int locationId;
@@ -12,8 +14,9 @@ public class RentACar {
 	private String logoImg;
 	private double Grade;
 	private Location location;
+	private ArrayList<Purchase> rentings;
 	public RentACar() {
-
+		rentings = new ArrayList<>();
 	}
 	
 	public RentACar(Integer id, int locationId, String name, int startHour, int startMinute, int endHour, int endMinute, Status status,
@@ -28,6 +31,7 @@ public class RentACar {
 		this.status = status;
 		this.logoImg = logoImg;
 		Grade = grade;
+		rentings = new ArrayList<>();
 	}
 
 	public Integer getId() {
@@ -98,6 +102,14 @@ public class RentACar {
 	}
 	public void setLocation(Location location) {
 		this.location = location;
+	}
+
+	public ArrayList<Purchase> getRentings() {
+		return rentings;
+	}
+
+	public void setRentings(ArrayList<Purchase> rentings) {
+		this.rentings = rentings;
 	}
 	
 }

@@ -6,9 +6,14 @@ Vue.component("cart",{
 	},
 	template: `
 	<div>
-		<div>
-			<label>Total price:</label>
-			<b><label>{{this.cart.price}}</label></b><br>
+		<div class="row">
+			<div class="column">
+				<label>Total price:</label>
+				<b><label>{{this.cart.price}}</label></b><br>
+			</div>
+			<div class="column">
+				<button v-on:click="rent()">Rent!</button>
+			</div>
 		</div>
 		<div v-for="(v,index) in this.cart.vehicles" style="border:1px solid black; font-size:21px; padding: 10px; width: 70%; margin: 0% 12% 1% 12%; background-color: #FBD603">
 	    	<div>
@@ -59,8 +64,11 @@ Vue.component("cart",{
     },
 	methods:{
 		removeFromCart : function(id, p, index){
-			axios.post('rest/users/removeFromCart/'+ id).then(response => (this.cart.vehicles.splice(index, 1), 
+			axios.delete('rest/users/removeFromCart/'+ id).then(response => (this.cart.vehicles.splice(index, 1), 
 			this.cart.price-=p))
+		},
+		rent : function(){
+			axios.post('rest/users/rent').then(response => ( router.push(`/user/`)))
 		}
 	}
 })

@@ -2,13 +2,20 @@ package models;
 
 import java.util.ArrayList;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 public class ShoppingCart {
 	private Integer id;
+	@JsonIgnoreProperties("rentACar")
 	private ArrayList<Vehicle> vehicles;
+	@JsonIgnoreProperties({"customer", "rentACar"})
+	private ArrayList<Purchase> prepairedPurchases;
+	@JsonIgnoreProperties({"rentings", "shoppingCart"})
 	private User user;
 	private double price;
 	public ShoppingCart() {
 		vehicles = new ArrayList<>();
+		prepairedPurchases = new ArrayList<>();
 		price = 0;
 	}
 	public ShoppingCart(Integer id, ArrayList<Vehicle> vehicles, User user, double price) {
@@ -17,6 +24,7 @@ public class ShoppingCart {
 		this.vehicles = vehicles;
 		this.user = user;
 		this.price = price;
+		this.prepairedPurchases = new ArrayList<>();
 	}
 
 	public Integer getId() {
@@ -55,4 +63,11 @@ public class ShoppingCart {
 	public void removePrice(int p) {
 		this.price -= p;
 	}
+	public ArrayList<Purchase> getPrepairedPurchases() {
+		return prepairedPurchases;
+	}
+	public void setPrepairedPurchases(ArrayList<Purchase> prepairedPurchases) {
+		this.prepairedPurchases = prepairedPurchases;
+	}
+	
 }
