@@ -19,14 +19,12 @@ public class RentACar {
 	private double Grade;
 	private Location location;
 	private ArrayList<Purchase> rentings;
-	public RentACar() {
-		rentings = new ArrayList<>();
 	@JsonIgnoreProperties("rentACar")
 	private ArrayList<Vehicle> vehicles;
 	public RentACar() {
+		rentings = new ArrayList<>();
 		vehicles = new ArrayList<Vehicle>();
 	}
-	
 	public RentACar(Integer id, int locationId, String name, int startHour, int startMinute, int endHour, int endMinute, Status status,
 			String logoImg, double grade) {
 		this.id = id;
