@@ -1,11 +1,17 @@
 package models;
 
+import javax.persistence.Entity;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+@Entity
 public class Vehicle {
 	private int id;
 	private String brand;
 	private String model;
 	private int price;
 	private String type;
+	@JsonIgnoreProperties("vehicles")
 	private RentACar rentACar;
 	private int RentACarId;
 	private int consumption; //potrosnja

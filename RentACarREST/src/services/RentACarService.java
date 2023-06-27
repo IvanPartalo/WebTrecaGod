@@ -92,9 +92,13 @@ public class RentACarService {
 	public void linkCars() {
 		VehicleDAO vdao = (VehicleDAO) ctx.getAttribute("vehicleDAO");
 		RentACarDAO rdao = (RentACarDAO) ctx.getAttribute("rentACarDAO");
+		for(RentACar r : rdao.getAll()) {
+			r.getVehicles().clear();
+		}
 		for(Vehicle v : vdao.getAll()) {
 			RentACar rent = rdao.getById(v.getRentACarId());
 			v.setRentACar(rent);
+			rent.getVehicles().add(v);
 		}
 	}
 	@GET
@@ -102,6 +106,10 @@ public class RentACarService {
 	@Produces(MediaType.APPLICATION_JSON)
 	public ArrayList<RentACar> getAll(){
 		RentACarDAO dao = (RentACarDAO) ctx.getAttribute("rentACarDAO");
+		for(RentACar r: dao.getAll()) {
+			System.out.println("rent: "+r.getId());
+			System.out.println(r.getVehicles());
+		}
 		return dao.getAll();
 	}
 	@GET
@@ -115,8 +123,6 @@ public class RentACarService {
 	@Path("/{id}")
 	@Produces(MediaType.APPLICATION_JSON)
 	public void save(@PathParam("id") int id, RentACarDTO rentACarDTO){
-		System.out.println(rentACarDTO.getBeginWorkTime());
-		System.out.println(rentACarDTO.getEndWorkTime());
 		RentACarDAO dao = (RentACarDAO) ctx.getAttribute("rentACarDAO");
 		int rentacarId = dao.save(rentACarDTO, id);
 		UserDAO uDao = (UserDAO) ctx.getAttribute("userDAO");
