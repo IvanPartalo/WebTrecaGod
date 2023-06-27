@@ -12,3 +12,4 @@
 12;ivo;ftn;Ivano;Balic;male;manager;01-05-2023;
 13;pero;ftn;Petar;Pan;male;customer;29-05-2023;
 14;fm;123;fudbal;menadzer;male;manager;12-03-2004;
+15;sinan;ftn;Sinan;Sa;male;customer;07-06-2023;

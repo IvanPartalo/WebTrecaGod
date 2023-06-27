@@ -13,8 +13,10 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import dao.CustomerTypeDAO;
+import dao.PurchaseDAO;
 import dao.UserDAO;
 import models.Customer;
+import models.Purchase;
 import models.Role;
 import models.ShoppingCart;
 import models.User;
@@ -38,7 +40,12 @@ public class LoginService {
 			String contextPath = ctx.getRealPath("");
 			ctx.setAttribute("customerTypeDAO", new CustomerTypeDAO(contextPath));
 		}
+		if(ctx.getAttribute("purchaseDAO") == null) {
+			String contextPath = ctx.getRealPath("");
+			ctx.setAttribute("purchaseDAO", new PurchaseDAO(contextPath));
+		}
 		linkCustomerTypes();
+		linkPurchasesCustomer();
 	}
 	private void linkCustomerTypes() {
 		UserDAO udao = (UserDAO) ctx.getAttribute("userDAO");
@@ -47,6 +54,20 @@ public class LoginService {
 			if(u.getRole() == Role.customer) {
 				Customer c = (Customer)u;
 				c.setCustomerType(cTdao.getByPoints(c.getCollectedPoints()));
+			}
+		}
+	}
+	private void linkPurchasesCustomer() {
+		UserDAO udao = (UserDAO) ctx.getAttribute("userDAO");
+		PurchaseDAO pdao = (PurchaseDAO) ctx.getAttribute("purchaseDAO");
+		for(User u : udao.getAll()) {
+			if(u.getRole() == Role.customer) {
+				Customer c = (Customer)u;
+				c.getRentings().clear();
+				for(Purchase p : pdao.getByCustomerId(c.getId())){
+					c.getRentings().add(p);
+					p.setCustomer(c);
+				}
 			}
 		}
 	}
@@ -64,6 +85,7 @@ public class LoginService {
 		if(loggedUser.getRole() == Role.customer) {
 			Customer c = (Customer)loggedUser;
 			c.setShoppingCart(new ShoppingCart());
+			c.getShoppingCart().setUser(loggedUser);
 		}
 		return Response.status(200).build();
 	}

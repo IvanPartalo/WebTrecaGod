@@ -1,5 +1,9 @@
 package services;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.Period;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -7,6 +11,7 @@ import javax.annotation.PostConstruct;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
@@ -18,11 +23,13 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import dao.CustomerTypeDAO;
-import dao.ManagerDAO;
+import dao.PurchaseDAO;
 import dao.UserDAO;
 import dao.VehicleDAO;
 import models.Customer;
 import models.Manager;
+import models.Purchase;
+import models.PurchaseStatus;
 import models.Role;
 import models.ShoppingCart;
 import models.User;
@@ -44,6 +51,10 @@ public class UserService {
 		if(context.getAttribute("customerTypeDAO") == null) {
 			String contextPath = context.getRealPath("");
 			context.setAttribute("customerTypeDAO", new CustomerTypeDAO(contextPath));
+		}
+		if(context.getAttribute("purchaseDAO") == null) {
+			String contextPath = context.getRealPath("");
+			context.setAttribute("purchaseDAO", new PurchaseDAO(contextPath));
 		}
 	}
 	@GET
@@ -70,7 +81,8 @@ public class UserService {
 	}
 	@POST
 	@Path("/addToCart/{id}")
-	public Response addToCart(@PathParam("id") Integer id, @Context HttpServletRequest request){
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Response addToCart(Purchase purchase, @PathParam("id") Integer id, @Context HttpServletRequest request){
 		User u = (User) request.getSession().getAttribute("currentUser");
 		VehicleDAO vDAO = (VehicleDAO) context.getAttribute("vehicleDAO");
 		Vehicle v = vDAO.getById(id);
@@ -78,14 +90,50 @@ public class UserService {
 			Customer c = (Customer)u;
 			c.getShoppingCart().addVehicle(v);
 			c.getShoppingCart().addPrice(v.getPrice());
-		}
-		if(v == null) {
-			return Response.status(400).entity("error").build();
-		}else {
+			for(Purchase p : c.getShoppingCart().getPrepairedPurchases()) {
+				if(p.getStartDateTime().equals(purchase.getStartDateTime()) && p.getEndDateTime().equals(purchase.getEndDateTime()) ||
+						v.getRentACarId() == p.getRentACarId()) {
+					p.getVehicleIds().add(v.getId());
+					p.getVehicles().add(v);
+					p.addPrice(v.getPrice());
+					return Response.status(200).build();
+				}
+			}
+			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
+			LocalDateTime dateTime = LocalDateTime.parse(purchase.getStartDateTime(), formatter);
+			purchase.setStart(dateTime);
+			dateTime = LocalDateTime.parse(purchase.getEndDateTime(), formatter);
+			purchase.setEnd(dateTime);
+			Duration d = Duration.between(purchase.getStart(), purchase.getEnd());
+			purchase.setDuration((int) (d.getSeconds()/3600));
+			purchase.setPrice(v.getPrice());
+			purchase.setStatus(PurchaseStatus.pending);
+			purchase.setCustomerId(c.getId());
+			purchase.setCustomer(c);
+			purchase.setRentACarId(v.getRentACarId());
+			purchase.setRentACar(v.getRentACar());
+			purchase.getVehicleIds().add(v.getId());
+			purchase.getVehicles().add(v);
+			c.getShoppingCart().getPrepairedPurchases().add(purchase);
 			return Response.status(200).build();
 		}
+		return Response.status(400).entity("error").build();
 	}
 	@POST
+	@Path("/rent")
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Response rent(@Context HttpServletRequest request){
+		PurchaseDAO pdao = (PurchaseDAO) context.getAttribute("purchaseDAO");
+		User u = (User) request.getSession().getAttribute("currentUser");
+		Customer c = (Customer)u;
+		for(Purchase p : c.getShoppingCart().getPrepairedPurchases()) {
+			pdao.save(p);
+		}
+		c.setShoppingCart(new ShoppingCart());
+		c.getShoppingCart().setUser(c);
+		return Response.status(200).build();
+	}
+	@DELETE
 	@Path("/removeFromCart/{id}")
 	public Response removeFromCart(@PathParam("id") Integer id, @Context HttpServletRequest request){
 		User u = (User) request.getSession().getAttribute("currentUser");
@@ -95,6 +143,15 @@ public class UserService {
 			Customer c = (Customer)u;
 			c.getShoppingCart().removeVehicle(v);
 			c.getShoppingCart().removePrice(v.getPrice());
+			ArrayList<Purchase> forRemoving = new ArrayList<>();
+			for(Purchase p : c.getShoppingCart().getPrepairedPurchases()){
+				if(p.getVehicles().contains(v)) {
+					forRemoving.add(p);
+				}
+			}
+			for(Purchase p : forRemoving){
+				c.getShoppingCart().getPrepairedPurchases().remove(p);
+			}
 		}
 		if(v == null) {
 			return Response.status(400).entity("error").build();

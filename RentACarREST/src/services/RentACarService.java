@@ -18,11 +18,15 @@ import javax.ws.rs.core.MediaType;
 import dao.UserDAO;
 import dao.VehicleDAO;
 import dao.ManagerDAO;
+import dao.PurchaseDAO;
 import dao.RentACarDAO;
 import dto.RentACarDTO;
 import models.Customer;
 import models.Manager;
+import models.Purchase;
 import models.RentACar;
+import models.Role;
+import models.User;
 import models.Vehicle;
 
 @Path("/rentacar")
@@ -46,8 +50,36 @@ public class RentACarService {
 			String contextPath = ctx.getRealPath("");
 			ctx.setAttribute("userDAO", new UserDAO(contextPath));
 		}
+		if(ctx.getAttribute("purchaseDAO") == null) {
+			String contextPath = ctx.getRealPath("");
+			ctx.setAttribute("purchaseDAO", new PurchaseDAO(contextPath));
+		}
 		linkManagers();
 		linkCars();
+		linkPurchasesRentACar();
+		linkPurchasesVehicles();
+	}
+	private void linkPurchasesVehicles() {
+		VehicleDAO vdao = (VehicleDAO) ctx.getAttribute("vehicleDAO");
+		PurchaseDAO pdao = (PurchaseDAO) ctx.getAttribute("purchaseDAO");
+		for(Purchase p : pdao.getAll()) {
+			p.getVehicles().clear();
+			for(Integer vId : p.getVehicleIds()){
+				Vehicle v = vdao.getById(vId);
+				p.getVehicles().add(v);
+			}
+		}
+	}
+	private void linkPurchasesRentACar() {
+		RentACarDAO rdao = (RentACarDAO) ctx.getAttribute("rentACarDAO");
+		PurchaseDAO pdao = (PurchaseDAO) ctx.getAttribute("purchaseDAO");
+		for(RentACar rentACar : rdao.getAll()) {
+			rentACar.getRentings().clear();
+			for(Purchase p : pdao.getByRentingsId(rentACar.getId())){
+				rentACar.getRentings().add(p);
+				p.setRentACar(rentACar);
+			}
+		}
 	}
 	public void linkManagers() {
 		UserDAO udao = (UserDAO) ctx.getAttribute("userDAO");

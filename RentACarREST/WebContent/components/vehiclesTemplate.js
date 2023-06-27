@@ -1,7 +1,8 @@
 Vue.component("vehiclesTemplate",{
 	data:function(){
 		return{
-			vehicles: null
+			vehicles : null,
+			purchase : {startDateTime:null, endDateTime:null}
 		}
 	},
 	template: `
@@ -10,9 +11,9 @@ Vue.component("vehiclesTemplate",{
 		<h3 style="margin-left:12%">Search cars for specific dates:</h3>
 		<div style="margin-left:12%; margin-bottom:15px">
 			<label>Start date: </label>
-			<input type="date" style="margin-right:20px">
+			<input type="datetime-local"  v-model="purchase.startDateTime" style="margin-right:20px">
 			<label>End date: </label>
-			<input type="date" style="margin-right:20px">
+			<input type="datetime-local" v-model="purchase.endDateTime" style="margin-right:20px">
 			<button>Search!</button>
 		</div>
 	    <div v-for="v in vehicles" style="border:1px solid black; font-size:21px; padding: 10px; width: 70%; margin: 0% 12% 1% 12%; background-color: #FBD603">
@@ -63,7 +64,7 @@ Vue.component("vehiclesTemplate",{
     },
 	methods:{
 		addToCart : function(id){
-			axios.post('rest/users/addToCart/'+ id).then(response => router.push(`/cart`));
+			axios.post('rest/users/addToCart/'+ id, this.purchase).then(response => router.push(`/cart`));
 		}
 	}
 })

@@ -25,21 +25,21 @@ Vue.component("profilePage",{
 			        <h2>{{user.firstName}} {{user.lastName}}</h2>
 				    <div style="padding-left: 5px; font-size:20px">
 				        <label>Username:</label>
-				        <b><label>{{user.username}}</label></b>
+				        <b><label>{{user.username}}</label><br><br></b>
 				    </div>
 				    <div style="padding-left: 5px; font-size:20px">
 				        <label>Gender:</label>
-				        <b><label>{{user.gender}}</label><br></b>
+				        <b><label>{{user.gender}}</label><br><br></b>
 				        <label>Date of birth:</label>
-				        <b><label>{{user.dateOfBirth}}</label><br></b>
+				        <b><label>{{user.dateOfBirth}}</label><br><br></b>
 				        <label>Role:</label>
-				        <b><label>{{user.role}}</label><br></b>
+				        <b><label>{{user.role}}</label><br><br></b>
 				    </div>
 				     <div v-if="isCustomer" style="padding-left: 5px; font-size:20px">
 				    	<label>Collected points:</label>
-				    	<b><label>{{user.collectedPoints}}</label><br></b>
+				    	<b><label>{{user.collectedPoints}}</label><br><br></b>
 				    	<label>Customer type:</label>
-				    	<b><label>{{user.customerType.name}}</label><br></b>
+				    	<b><label>{{user.customerType.name}}</label><br><br></b>
 				    </div>
 				    <div v-bind:class="{hiddenClass: notManager}" style="font-size:15px">
 				        <button v-on:click="createVehicle"> Create new vehicle </button>

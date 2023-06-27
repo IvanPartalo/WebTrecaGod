@@ -18,6 +18,9 @@ public class RentACar {
 	private String logoImg;
 	private double Grade;
 	private Location location;
+	private ArrayList<Purchase> rentings;
+	public RentACar() {
+		rentings = new ArrayList<>();
 	@JsonIgnoreProperties("rentACar")
 	private ArrayList<Vehicle> vehicles;
 	public RentACar() {
@@ -36,6 +39,7 @@ public class RentACar {
 		this.status = status;
 		this.logoImg = logoImg;
 		Grade = grade;
+		rentings = new ArrayList<>();
 		vehicles = new ArrayList<Vehicle>();
 	}
 
@@ -108,11 +112,15 @@ public class RentACar {
 	public void setLocation(Location location) {
 		this.location = location;
 	}
-
+	public ArrayList<Purchase> getRentings() {
+		return rentings;
+	}
+	public void setRentings(ArrayList<Purchase> rentings) {
+		this.rentings = rentings;
+	}
 	public ArrayList<Vehicle> getVehicles() {
 		return vehicles;
 	}
-
 	public void setVehicles(ArrayList<Vehicle> vehicles) {
 		this.vehicles = vehicles;
 	}
