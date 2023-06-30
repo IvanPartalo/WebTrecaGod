@@ -5,7 +5,8 @@ public class Location {
 	private double latitude; //g. sirina
 	private double longitude; //g. duzina
 	private String address;
-	
+	private String streetNumber;
+	private String placeZipCode;
 	public Location() {
 	}
 
@@ -46,6 +47,22 @@ public class Location {
 
 	public void setAddress(String address) {
 		this.address = address;
+	}
+
+	public String getStreetNumber() {
+		return streetNumber;
+	}
+
+	public void setStreetNumber(String streetNumber) {
+		this.streetNumber = streetNumber;
+	}
+
+	public String getPlaceZipCode() {
+		return placeZipCode;
+	}
+
+	public void setPlaceZipCode(String placeZipCode) {
+		this.placeZipCode = placeZipCode;
 	}
 	
 }

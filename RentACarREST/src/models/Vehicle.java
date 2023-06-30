@@ -11,6 +11,7 @@ public class Vehicle {
 	private String model;
 	private int price;
 	private String type;
+	private Gearshift gearshiftType;
 	@JsonIgnoreProperties("vehicles")
 	private RentACar rentACar;
 	private int RentACarId;
@@ -25,7 +26,7 @@ public class Vehicle {
 		
 	}
 
-	public Vehicle(int id, String brand, String model, int price, String type, RentACar rentACar, int rentACarId,
+	public Vehicle(int id, String brand, String model, int price, String type, Gearshift gearshiftType, RentACar rentACar, int rentACarId,
 			int consumption, int doors, int maxPeople, String description, String photo, boolean available,
 			FuelType fuelType) {
 		super();
@@ -43,6 +44,7 @@ public class Vehicle {
 		this.photo = photo;
 		this.available = available;
 		this.fuelType = fuelType;
+		this.gearshiftType = gearshiftType;
 	}
 	
 	public FuelType getFuelType() {
@@ -155,6 +157,14 @@ public class Vehicle {
 
 	public void setAvailable(boolean available) {
 		this.available = available;
+	}
+
+	public Gearshift getGearshiftType() {
+		return gearshiftType;
+	}
+
+	public void setGearshiftType(Gearshift gearshiftType) {
+		this.gearshiftType = gearshiftType;
 	}
 	
 }

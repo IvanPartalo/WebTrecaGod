@@ -38,7 +38,10 @@ public class LocationDAO {
 					longitude = (st.nextToken().trim());
 					latitude = (st.nextToken().trim());
 				}
-				locations.add(new Location(Integer.parseInt(id), Double.parseDouble(latitude), Double.parseDouble(longitude), address));
+				Location location = new Location(Integer.parseInt(id), Double.parseDouble(latitude), Double.parseDouble(longitude), address); 
+				formatLocation(location);
+				locations.add(location);
+				
 			}
 		} catch (Exception e) {
 			System.out.println("greska");
@@ -52,6 +55,11 @@ public class LocationDAO {
 			}
 		}
 		
+	}
+	public void formatLocation(Location location) {
+		String[] splitAddress = location.getAddress().split("@", 2);
+		location.setStreetNumber(splitAddress[0]);
+		location.setPlaceZipCode(splitAddress[1]);
 	}
 	public int getNextId() {
 		int maxId = -1;

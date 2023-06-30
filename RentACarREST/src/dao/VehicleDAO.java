@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.StringTokenizer;
 
 import models.FuelType;
+import models.Gearshift;
 import models.Vehicle;
 
 
@@ -26,7 +27,7 @@ public class VehicleDAO {
 		try {
 			File file = new File(contextPath + "/vehicles.txt");
 			in = new BufferedReader(new FileReader(file));
-			String line, id = "", fuelType="", brand = "", model = "", type = "", description = "", photo = "", boolString = "";
+			String line, id = "", fuelType="", brand = "", model = "", type = "", gearType="", description = "", photo = "", boolString = "";
 			int price=0, rentACarId=0, doors=0, consumption=0, maxPeople=0;
 			boolean available = true;
 			StringTokenizer st;
@@ -40,6 +41,7 @@ public class VehicleDAO {
 					brand = st.nextToken().trim();
 					model = st.nextToken().trim();
 					type = st.nextToken().trim();
+					gearType = st.nextToken().trim();
 					description = st.nextToken().trim();
 					photo = st.nextToken().trim();
 					fuelType = st.nextToken().trim();
@@ -56,7 +58,7 @@ public class VehicleDAO {
 				else {
 					available = false;
 				}
-				 vehicles.add(new Vehicle(Integer.parseInt(id), brand, model, price, type, null, 
+				 vehicles.add(new Vehicle(Integer.parseInt(id), brand, model, price, type, Gearshift.valueOf(gearType), null, 
 						rentACarId, consumption, doors, maxPeople, description, photo, available, FuelType.valueOf(fuelType)));
 				}
 		} catch (Exception e) {
@@ -80,7 +82,7 @@ public class VehicleDAO {
 			bw = new BufferedWriter(new OutputStreamWriter(fos));
 			for(Vehicle v : vehicles) {
 				String lineToWrite = 
-				v.getId()+";"+v.getBrand()+";"+v.getModel()+";"+v.getType()+";"+v.getDescription()+";"+v.getPhoto()+";"+
+				v.getId()+";"+v.getBrand()+";"+v.getModel()+";"+v.getType()+";"+v.getGearshiftType()+";"+v.getDescription()+";"+v.getPhoto()+";"+
 				v.getFuelType()+";"+v.getPrice()+";"+v.getDoors()+";"+v.getConsumption()+";"+v.getMaxPeople()
 				+";"+v.getRentACarId()+";"+v.getAvailable();
 				bw.write(lineToWrite);

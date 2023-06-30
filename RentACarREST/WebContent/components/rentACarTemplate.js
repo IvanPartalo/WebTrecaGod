@@ -12,7 +12,9 @@ Vue.component("rentACarTemplate",{
 			ascending: 1,
 			workFilter: false,
 			fuelType: 'all',
-			filterApplied: false
+			filterApplied: false,
+			manual: false,
+			automatic: false
 		}
 	},
 	template: `
@@ -22,10 +24,10 @@ Vue.component("rentACarTemplate",{
 			<input type="checkbox" value="working" v-model="workFilter">
 			<label>Show working only</label>
 			<br>
-			<input type="checkbox" value="manual">
+			<input type="checkbox" value="manual" v-model="manual">
 			<label>Show manual only</label>
 			<br>
-			<input type="checkbox" value="automatic">
+			<input type="checkbox" value="automatic" v-model="automatic">
 			<label>Show automatic only</label>
 			<br><br>
 			<label>Fuel type</label>
@@ -47,7 +49,7 @@ Vue.component("rentACarTemplate",{
 		<label>Name: </label><input type="text" v-model="nameSearch" style="margin-right:20px">
 		<label>Vehicle type: </label><input type="text" v-model="vehicleType" style="margin-right:20px">
 		<label>Location: </label><input type="text" v-model="locationSearch" style="margin-right:20px">
-		<label>Minimum grade: </label><input type="text" v-model="minGrade" style="margin-right:20px">
+		<label>Minimum grade: </label><input type="number" v-model="minGrade" style="margin-right:20px">
 		<label style="margin-left:20px">Sort</label>
 		<select v-model="sorting" style="margin-left:10px">
 			<option>None</option>
@@ -84,7 +86,7 @@ Vue.component("rentACarTemplate",{
 					Location:
 				</div>
 				<div style="float: left; margin-left:10px">
-			        <p>{{r.location.address}} <br> {{r.location.longitude}}, {{r.location.latitude}}</p>
+			        <p>{{r.location.streetNumber}} <br>{{r.location.placeZipCode}}<br> {{r.location.longitude}}, {{r.location.latitude}}</p>
 		        </div>
 		    	<p><br><br><br>Working time: {{r.startHour}}:{{r.startMinute}} - {{r.endHour}}:{{r.endMinute}} {{r.status}}</p>
 		    	<p>Rating: {{r.grade}}/10</p>
@@ -92,6 +94,7 @@ Vue.component("rentACarTemplate",{
 	    	
 	    	<div style="overflow: hidden; padding: 40px;">
 				<p>Vehicles in offer:</p>
+				<button v-on:click="showRentACar(r.id)">Show</button>
 	    	</div>
 	    </div>
 	 </div>
@@ -110,63 +113,40 @@ Vue.component("rentACarTemplate",{
 				filteredList = this.rentACarsCopy
 			}
 			if(this.nameSearch.length > 0 || this.locationSearch.length > 0 || this.minGrade.length > 0 || this.vehicleType.length > 0 || this.sorting != 'None' || this.filterApplied){
-				if(this.workFilter && this.filterApplied){
-					filteredList = filteredList.filter((rentACar) => rentACar.status == "working")
-				}
-				if (this.fuelType != "all" && this.filterApplied){
-					let add = true
-					let newList = []
-					filteredList.forEach((rentACar) => {
-						add = false
-						rentACar.vehicles.forEach((vehicle) => {
-							console.log(vehicle.fuelType)
-							if(vehicle.fuelType == this.fuelType){
-								add = true		
-							}							
-						});
-						if(add){
-							newList.push(rentACar)
-						}
-					});
-					filteredList = newList
+				if(this.filterApplied)
+				{
+					if(this.workFilter){
+						filteredList = filteredList.filter((rentACar) => rentACar.status == "working")
+					}
+					if (this.fuelType != "all"){
+						filteredList = this.getByFuelType(filteredList)
+					}
+					if (this.manual){
+						filteredList = this.getByGearType(filteredList, 'manual')
+					}
+					if (this.automatic){
+						filteredList = this.getByGearType(filteredList, 'automatic')
+					}
 				}
 				if (this.sorting == "Grade"){
 				filteredList.sort((a, b) => {
 				  const gradeA = a.grade;
 				  const gradeB = b.grade;
-				  if (gradeA > gradeB) {
-				    return -1*this.ascending;
-				  }
-				  if (gradeA < gradeB) {
-				    return 1*this.ascending;
-				  }
-				  return 0;
+				  return this.moveElements(gradeA, gradeB)
 				});
 				}
 				if (this.sorting == "Name"){
 					filteredList.sort((a, b) => {
 					  const A = a.name;
 					  const B = b.name;
-					  if (A < B) {
-					    return -1*this.ascending;
-					  }
-					  if (A > B) {
-					    return 1*this.ascending;
-					  }
-					  return 0;
+					  return this.moveElements(A, B)  
 					});
 				}
 				if (this.sorting == "Location"){
 					filteredList.sort((a, b) => {
 					  const A = a.location.address;
 					  const B = b.location.address;
-					  if (A < B) {
-					    return -1*this.ascending;
-					  }
-					  if (A > B) {
-					    return 1*this.ascending;
-					  }
-					  return 0;
+					  return this.moveElements(A, B)
 					});
 				}
 				if (this.nameSearch.length > 0){
@@ -174,20 +154,7 @@ Vue.component("rentACarTemplate",{
 					this.nameSearch.toLowerCase()))
 				}
 				if (this.vehicleType.length > 0){
-					let add = true
-					let newList = []
-					filteredList.forEach((rentACar) => {
-						add = false
-						rentACar.vehicles.forEach((vehicle) => {
-							if(vehicle.type.toLowerCase().includes(this.vehicleType)){
-								add = true		
-							}							
-						});
-						if(add){
-							newList.push(rentACar)
-						}
-					});
-					filteredList = newList
+					filteredList = this.getByVehicleType(filteredList)
 				}
 				if (this.locationSearch.length > 0){
 					filteredList = filteredList.filter((rentACar) => rentACar.location.address.toLowerCase().includes(
@@ -220,6 +187,66 @@ Vue.component("rentACarTemplate",{
 		closeDialog: function(){
 			this.filterApplied = true
 			this.$refs.dijalog.close()
+		},
+		showRentACar: function(id){
+			router.push(`/singleRentACar/${id}`)
+		},
+		getByGearType: function(rentList, type){
+			let add = true
+			let newList = []
+			rentList.forEach((rentACar) => {
+				add = false
+				rentACar.vehicles.forEach((vehicle) => {
+					if(vehicle.gearshiftType == type){
+						add = true		
+					}							
+				});
+				if(add){
+					newList.push(rentACar)
+				}
+			});
+			return newList
+		},
+		getByFuelType: function(rentList){
+			let add = true
+			let newList = []
+			rentList.forEach((rentACar) => {
+				add = false
+				rentACar.vehicles.forEach((vehicle) => {
+					if(vehicle.fuelType == this.fuelType){
+						add = true		
+					}							
+				});
+				if(add){
+					newList.push(rentACar)
+				}
+			});
+			return newList
+		},
+		getByVehicleType: function(rentList){
+			let add = true
+			let newList = []
+			rentList.forEach((rentACar) => {
+				add = false
+				rentACar.vehicles.forEach((vehicle) => {
+					if(vehicle.type.toLowerCase().includes(this.vehicleType)){
+						add = true		
+					}							
+				});
+				if(add){
+					newList.push(rentACar)
+				}
+			});
+			return newList
+		},
+		moveElements: function(a, b){
+			if (a > b) {
+			    return -1*this.ascending;
+			}
+			if (a < b) {
+				return 1*this.ascending;
+			}
+			return 0;
 		}
 	}
 })

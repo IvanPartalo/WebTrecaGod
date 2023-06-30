@@ -1,13 +1,17 @@
 Vue.component("rentACarCreate",{
 	data:function(){
 		return{
-			rentACarDTO: {name:"", address:"", longitude:"", latitude:"", beginWorkTime:null, endWorkTime:null},
+			rentACarDTO: {name:"", address:"", longitude:"", latitude:"", beginWorkTime:'08:00', endWorkTime:'16:00'},
+			streetAndNumber: '',
+			place: '',
+			zipCode: '',
 			errorMessage: "",
 			managers: null,
 			selectedManager: null,
 			id:-1,
 			buttonText: "Create!",
-			additionalInfo: "ds"
+			additionalInfo: "",
+			errorMessage: ''
 		}
 	},
 	template: `
@@ -21,16 +25,24 @@ Vue.component("rentACarCreate",{
 						<input type="text" v-model="rentACarDTO.name" style="float:right; font-size:17px"><br>
 					</div>
 					<div style="margin:10px">
-						<label>Address*</label>
-						<input type="text" v-model="rentACarDTO.address" style="float:right; font-size:17px"><br>
+						<label>Street and number*</label>
+						<input type="text" v-model="streetAndNumber" style="float:right; font-size:17px"><br>
+					</div>
+					<div style="margin:10px">
+						<label>Place*</label>
+						<input type="text" v-model="place" style="float:right; font-size:17px"><br>
+					</div>
+					<div style="margin:10px">
+						<label>Zip code*</label>
+						<input type="number" v-model="zipCode" style="float:right; font-size:17px"><br>
 					</div>
 					<div style="margin:10px">
 						<label>longitude*</label>
-						<input v-model="rentACarDTO.longitude" type="text" style="float:right; font-size:17px"><br>
+						<input v-model="rentACarDTO.longitude" type="number" style="float:right; font-size:17px"><br>
 					</div>
 					<div style="margin:10px">
 						<label>latitude*</label>
-						<input type="text" v-model="rentACarDTO.latitude" style="float:right; font-size:17px"><br>
+						<input type="number" v-model="rentACarDTO.latitude" style="float:right; font-size:17px"><br>
 					</div>
 					<div style="margin:10px">
 						<label>Begin work time*</label>
@@ -51,13 +63,12 @@ Vue.component("rentACarCreate",{
 					</div>
 					
 				</div>
+				<p v-if="errorMessage.length" style="color:red; width:200px; margin:auto">{{errorMessage}}</p>
 				<p>{{additionalInfo}}</p>
 				<div style="width:80px;">
 					<input type="submit" v-bind:value="buttonText" v-on:click="create" style="background-color:powderblue; font-size:20px;">
 				</div>
 				<br>
-				
-				<p v-if="errorMessage.length" style="color:red; width:200px; margin:auto">{{errorMessage}}</p>
 			</form>
 		</div>
 	</div>
@@ -76,10 +87,44 @@ Vue.component("rentACarCreate",{
 				this.buttonText = "Create and add new manager"
 				this.additionalInfo = "There is no free managers, you will need to add new one."
 			}
-			
 		},
 		create: function(){
 			event.preventDefault()
+			this.rentACarDTO.address = this.streetAndNumber+'|'+this.place+'|'+this.zipCode
+			
+			if(this.rentACarDTO.name.trim().length == 0){
+				this.errorMessage = "Enter name!"
+				return;
+			}
+			else if(this.streetAndNumber.trim().length == 0){
+				this.errorMessage = "Enter street and number!"
+				return;
+			}
+			else if(this.place.trim().length == 0){
+				this.errorMessage = "Enter place!"
+				return;
+			}
+			else if(this.zipCode.trim().length == 0){
+				this.errorMessage = "Enter zip code!"
+				return;
+			}
+			else if(this.rentACarDTO.longitude.trim().length == 0){
+				this.errorMessage = "Enter longitude!"
+				return;
+			}
+			else if(this.rentACarDTO.latitude.trim().length == 0){
+				this.errorMessage = "Enter latitude!"
+				return;
+			}
+			else if(this.rentACarDTO.beginWorkTime == null){
+				this.errorMessage = "Enter begin work time!"
+				return;
+			}
+			else if(this.rentACarDTO.endWorkTime == null){
+				this.errorMessage = "Enter end work time!"
+				return;
+			}
+			
 			if(this.managers.length != 0)
 			{
 				this.id = this.selectedManager.id
