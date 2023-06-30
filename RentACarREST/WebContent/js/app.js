@@ -10,6 +10,7 @@ const RentACarMenu = {template: '<rentACarMenu></rentACarMenu>'}
 const ManagerCreate = {template: '<createManager></createManager>'}
 const VehicleCreate = {template: '<createVehicle></createVehicle>'}
 const Cart = {template: '<cart></cart>'}
+const SingleRentACar = {template: '<singleRentACarTemplate></singleRentACarTemplate>'}
 
 const router = new VueRouter({
 	mode: 'hash',
@@ -25,7 +26,8 @@ const router = new VueRouter({
 		{path: '/rentacarmenu/', component: RentACarMenu},
 		{path: '/managercreate/', component: ManagerCreate},
 		{path: '/vehiclecreate/', component: VehicleCreate},
-		{path: '/cart/', component: Cart}
+		{path: '/cart/', component: Cart},
+		{path: '/singleRentACar/:id', component: SingleRentACar}
 	]
 })
 

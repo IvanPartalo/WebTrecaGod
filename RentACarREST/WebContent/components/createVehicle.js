@@ -2,7 +2,7 @@ Vue.component("createVehicle",{
 	data:function(){
 		return{
 			vehicle: {brand:"", model:"", price:"", type:"", consumption:"",
-			 doors:"", maxPeople:"", description:"", fuelType: "diesel"},
+			 doors:"", maxPeople:"", description:"", fuelType: "diesel", gearshiftType: "manual"},
 			errorMessage: ""
 		}
 	},
@@ -47,6 +47,13 @@ Vue.component("createVehicle",{
 							<option>benzine</option>
 							<option>hybrid</option>
 							<option>electric</option>
+						</select>
+					</div>
+					<div style="margin:10px">
+						<label>Gearshift type*</label>
+						<select v-model="vehicle.gearshiftType">
+							<option>manual</option>
+							<option>automatic</option>
 						</select>
 					</div>
 					<div style="margin:10px">

@@ -106,11 +106,14 @@ public class RentACarService {
 	@Produces(MediaType.APPLICATION_JSON)
 	public ArrayList<RentACar> getAll(){
 		RentACarDAO dao = (RentACarDAO) ctx.getAttribute("rentACarDAO");
-		for(RentACar r: dao.getAll()) {
-			System.out.println("rent: "+r.getId());
-			System.out.println(r.getVehicles());
-		}
 		return dao.getAll();
+	}
+	@GET
+	@Path("/{id}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public RentACar getById(@PathParam("id") int id){
+		RentACarDAO dao = (RentACarDAO) ctx.getAttribute("rentACarDAO");
+		return dao.getById(id);
 	}
 	@GET
 	@Path("/vehicles")
