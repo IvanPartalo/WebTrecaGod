@@ -32,6 +32,7 @@ import models.Purchase;
 import models.PurchaseStatus;
 import models.Role;
 import models.ShoppingCart;
+import models.SubPurchase;
 import models.User;
 import models.Vehicle;
 
@@ -91,11 +92,15 @@ public class UserService {
 			c.getShoppingCart().addVehicle(v);
 			c.getShoppingCart().addPrice(v.getPrice());
 			for(Purchase p : c.getShoppingCart().getPrepairedPurchases()) {
-				if(p.getStartDateTime().equals(purchase.getStartDateTime()) && p.getEndDateTime().equals(purchase.getEndDateTime()) ||
-						v.getRentACarId() == p.getRentACarId()) {
+				if(p.getStartDateTime().equals(purchase.getStartDateTime()) && p.getEndDateTime().equals(purchase.getEndDateTime())) {
 					p.getVehicleIds().add(v.getId());
 					p.getVehicles().add(v);
 					p.addPrice(v.getPrice());
+					if(!p.getRentACars().contains(v.getRentACar())) {
+						p.getRentACars().add(v.getRentACar());
+						p.getSubPurchases().add(new SubPurchase(p.getId(), v.getRentACarId(), p.getDuration(),
+							p.getStartDateTime(), p.getStatus()));
+					}
 					return Response.status(200).build();
 				}
 			}
@@ -110,10 +115,11 @@ public class UserService {
 			purchase.setStatus(PurchaseStatus.pending);
 			purchase.setCustomerId(c.getId());
 			purchase.setCustomer(c);
-			purchase.setRentACarId(v.getRentACarId());
-			purchase.setRentACar(v.getRentACar());
+			purchase.getRentACars().add(v.getRentACar());
 			purchase.getVehicleIds().add(v.getId());
 			purchase.getVehicles().add(v);
+			purchase.getSubPurchases().add(new SubPurchase(purchase.getId(), v.getRentACarId(), purchase.getDuration(),
+					purchase.getStartDateTime(), purchase.getStatus()));
 			c.getShoppingCart().getPrepairedPurchases().add(purchase);
 			return Response.status(200).build();
 		}

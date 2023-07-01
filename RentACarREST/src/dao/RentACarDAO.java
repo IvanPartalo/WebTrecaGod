@@ -117,6 +117,14 @@ public class RentACarDAO {
 	public ArrayList<RentACar> getAll(){
 		return rentACars;
 	}
+	public RentACar getById(Integer id){
+		for(RentACar rent : rentACars) {
+			if(rent.getId() == id) {
+				return rent;
+			}
+		}
+		return null;
+	}
 	public void createRentACar(RentACarDTO rentACarDTO) {
 		int locId = locDAO.getNextId() + 1;
 		Location location = new Location(locId, rentACarDTO.getLatitude(), rentACarDTO.getLongitude(), rentACarDTO.getAddress());
@@ -144,14 +152,6 @@ public class RentACarDAO {
 		rentACars.add(newRent);
 		SaveToFile();
 	}*/
-	public RentACar getById(int id) {
-		for(RentACar r : rentACars) {
-			if(r.getId() == id) {
-				return r;
-			}
-		}
-		return null;
-	}
 	public int getNewId() {
 		return newRent.getId();
 	}

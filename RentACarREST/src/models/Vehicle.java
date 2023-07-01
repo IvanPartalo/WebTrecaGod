@@ -12,7 +12,7 @@ public class Vehicle {
 	private int price;
 	private String type;
 	private Gearshift gearshiftType;
-	@JsonIgnoreProperties("vehicles")
+	@JsonIgnoreProperties({"vehicles", "rentings"})
 	private RentACar rentACar;
 	private int RentACarId;
 	private int consumption; //potrosnja
