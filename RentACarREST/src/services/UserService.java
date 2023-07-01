@@ -139,9 +139,10 @@ public class UserService {
 		c.getShoppingCart().setUser(c);
 		return Response.status(200).build();
 	}
-	@DELETE
+	@POST
 	@Path("/removeFromCart/{id}")
-	public Response removeFromCart(@PathParam("id") Integer id, @Context HttpServletRequest request){
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Response removeFromCart(Purchase purchase, @PathParam("id") Integer id, @Context HttpServletRequest request){
 		User u = (User) request.getSession().getAttribute("currentUser");
 		VehicleDAO vDAO = (VehicleDAO) context.getAttribute("vehicleDAO");
 		Vehicle v = vDAO.getById(id);
@@ -149,14 +150,19 @@ public class UserService {
 			Customer c = (Customer)u;
 			c.getShoppingCart().removeVehicle(v);
 			c.getShoppingCart().removePrice(v.getPrice());
-			ArrayList<Purchase> forRemoving = new ArrayList<>();
+			Purchase forDeleting = null;
 			for(Purchase p : c.getShoppingCart().getPrepairedPurchases()){
-				if(p.getVehicles().contains(v)) {
-					forRemoving.add(p);
+				if(p.getVehicles().contains(v) && p.getStartDateTime().equals(purchase.getStartDateTime()) && p.getEndDateTime().equals(purchase.getEndDateTime())) {
+					p.getVehicles().remove(v);
+					p.removeVehicleId(v.getId());
+					if(p.getVehicles().isEmpty()) {
+						forDeleting = p;
+					}
+					break;
 				}
 			}
-			for(Purchase p : forRemoving){
-				c.getShoppingCart().getPrepairedPurchases().remove(p);
+			if(forDeleting != null) {
+				c.getShoppingCart().getPrepairedPurchases().remove(forDeleting);
 			}
 		}
 		if(v == null) {

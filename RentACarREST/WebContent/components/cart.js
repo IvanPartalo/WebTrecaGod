@@ -1,7 +1,8 @@
 Vue.component("cart",{
 	data:function(){
 		return{
-			cart : {vehicles : null, user : null, price : null, prepairedPurchases:null}
+			cart : {vehicles : null, user : null, price : null, prepairedPurchases:null},
+			purchase:{startDateTime:"", endDateTime:"" }
 		}
 	},
 	template: `
@@ -80,7 +81,9 @@ Vue.component("cart",{
 			//this.cart.vehicles.splice(0,this.cart.vehicles.length)
 			//axios.get('rest/rentacar/vehicles')
     		//.then(response => this.cart.vehicles = response.data)
-			axios.delete('rest/users/removeFromCart/'+ id).then(response => this.remove(p, index, ip))
+    		this.purchase.startDateTime = this.cart.prepairedPurchases[ip].startDateTime
+    		this.purchase.endDateTime = this.cart.prepairedPurchases[ip].endDateTime
+			axios.post('rest/users/removeFromCart/'+ id, this.purchase).then(response => this.remove(p, index, ip))
 		},
 		remove(p, index, ip){
 			this.cart.prepairedPurchases[ip].vehicles.splice(index, 1), this.cart.price-=p
