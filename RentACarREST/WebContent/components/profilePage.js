@@ -16,6 +16,7 @@ Vue.component("profilePage",{
 			<a href="" v-on:click="rentACar" style="margin-left:15px">Rent a car shops</a>
 			<a href="" v-on:click="edit" style="margin-left:15px">Edit profile</a>
 			<a href="" v-on:click="changePassword" style="margin-left:15px">Change password</a>
+			<a href="" v-on:click="goToCart" style="margin-left:15px">Cart</a>
 			<a href="" v-on:click="logOut" style="float:right; margin-right:30px">Log out</a>
 		</div>
 		<div class="row">
@@ -84,6 +85,10 @@ Vue.component("profilePage",{
 		rentACar: function(){
 			event.preventDefault()
 			router.push(`/rentacar/`)
+		},
+		goToCart: function(){
+			event.preventDefault()
+			router.push(`/cart`)
 		},
 		createRentACar: function(){
 			event.preventDefault()

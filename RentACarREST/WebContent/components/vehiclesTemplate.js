@@ -11,10 +11,10 @@ Vue.component("vehiclesTemplate",{
 		<h3 style="margin-left:12%">Search cars for specific dates:</h3>
 		<div style="margin-left:12%; margin-bottom:15px">
 			<label>Start date: </label>
-			<input type="datetime-local"  v-model="purchase.startDateTime" style="margin-right:20px">
+			<input id="startingDT" type="datetime-local" v-model="purchase.startDateTime" style="margin-right:20px">
 			<label>End date: </label>
-			<input type="datetime-local" v-model="purchase.endDateTime" style="margin-right:20px">
-			<button>Search!</button>
+			<input id="endingDT" type="datetime-local" v-model="purchase.endDateTime" style="margin-right:20px">
+			<button v-on:click="searchCars()">Search!</button>
 		</div>
 	    <div v-for="v in vehicles" style="border:1px solid black; font-size:21px; padding: 10px; width: 70%; margin: 0% 12% 1% 12%; background-color: #FBD603">
 	    	<div>
@@ -59,12 +59,31 @@ Vue.component("vehiclesTemplate",{
 	computed:{
 	},
 	mounted: function() {
-    	axios.get('rest/rentacar/vehicles')
-    	.then(response => this.vehicles = response.data)
+		setTimeout(() => {
+        	this.setAppearance()
+      	}, 200)
     },
 	methods:{
+		setAppearance(){
+			//sa stackoverflow-a preuzeta funkcija koja pravi string za datetime-local
+			document.getElementById("startingDT").min = new Date().toISOString().slice(0,new Date().toISOString().lastIndexOf(":"))
+			document.getElementById("endingDT").min = document.getElementById("startingDT").min
+			console.log(document.getElementById("startingDT").min);
+		},
 		addToCart : function(id){
-			axios.post('rest/users/addToCart/'+ id, this.purchase).then(response => router.push(`/cart`));
+			axios.post('rest/users/addToCart/'+ id, this.purchase).then(response => axios.post('rest/rentacar/vehicles', this.purchase).then(response => this.vehicles = response.data))
+		},
+		searchCars : function(){
+			if(this.purchase.startDateTime == null || this.purchase.endDateTime == null){
+				alert("Select the dates for search!")
+				return
+			}
+			if(this.purchase.startDateTime >= this.purchase.endDateTime){
+				alert("Starting datetime has to be before end datetime!")
+				return
+			}
+			axios.post('rest/rentacar/vehicles', this.purchase)
+    		.then(response => this.vehicles = response.data)
 		}
 	}
 })
