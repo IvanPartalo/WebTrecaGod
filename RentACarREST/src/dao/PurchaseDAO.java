@@ -225,6 +225,11 @@ public class PurchaseDAO {
 		SavePurchasedVehiclesToFile();
 		SaveSubPurchasesToFile();
 	}
+	public void updatePurchases() {
+		SavePurchasesToFile();
+		SavePurchasedVehiclesToFile();
+		SaveSubPurchasesToFile();
+	}
 	public String generateNextId() {
 		boolean isUnique = true;
 		boolean isFistTry = true;

@@ -30,6 +30,7 @@ import models.Customer;
 import models.Manager;
 import models.Purchase;
 import models.PurchaseStatus;
+import models.RentACar;
 import models.Role;
 import models.ShoppingCart;
 import models.SubPurchase;
@@ -150,19 +151,41 @@ public class UserService {
 			Customer c = (Customer)u;
 			c.getShoppingCart().removeVehicle(v);
 			c.getShoppingCart().removePrice(v.getPrice());
-			Purchase forDeleting = null;
+			Purchase PforDeleting = null;
 			for(Purchase p : c.getShoppingCart().getPrepairedPurchases()){
 				if(p.getVehicles().contains(v) && p.getStartDateTime().equals(purchase.getStartDateTime()) && p.getEndDateTime().equals(purchase.getEndDateTime())) {
 					p.getVehicles().remove(v);
 					p.removeVehicleId(v.getId());
+					p.removePrice(v.getPrice());
+					p.getRentACars().clear();
+					for(Vehicle vehicle : p.getVehicles()) {
+						p.getRentACars().add(vehicle.getRentACar());
+					}
+					
+					SubPurchase SPforDeleting = null;
+					for(SubPurchase s : p.getSubPurchases()) {
+						boolean exists = false;
+						for(RentACar r : p.getRentACars()) {
+							if(s.getRentACarId() == r.getId()) {
+								exists = true;
+							}
+						}
+						if(!exists) {
+							SPforDeleting = s;
+							break;
+						}
+					}
+					if(SPforDeleting != null) {
+						p.getSubPurchases().remove(SPforDeleting);
+					}
 					if(p.getVehicles().isEmpty()) {
-						forDeleting = p;
+						PforDeleting = p;
 					}
 					break;
 				}
 			}
-			if(forDeleting != null) {
-				c.getShoppingCart().getPrepairedPurchases().remove(forDeleting);
+			if(PforDeleting != null) {
+				c.getShoppingCart().getPrepairedPurchases().remove(PforDeleting);
 			}
 		}
 		if(v == null) {
@@ -208,5 +231,29 @@ public class UserService {
 	public ArrayList<Manager> getFreeManagers(){
 		UserDAO dao = (UserDAO) context.getAttribute("userDAO");
 		return dao.getFreeManagers();
+	}
+	@GET
+	@Path("/customersRentings")
+	@Produces(MediaType.APPLICATION_JSON)
+	public ArrayList<Purchase> getCustomersRentings(@Context HttpServletRequest request){
+		User u = (User) request.getSession().getAttribute("currentUser");
+		Customer c = (Customer)u;
+		return c.getRentings();
+	}
+	@PUT
+	@Path("/cancel/{id}")
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Response cancelPurchase(@PathParam("id") String purchaseId, @Context HttpServletRequest request){
+		User u = (User) request.getSession().getAttribute("currentUser");
+		PurchaseDAO pdao = (PurchaseDAO) context.getAttribute("purchaseDAO");
+		Customer c = (Customer)u;
+		for(Purchase p : c.getRentings()) {
+			if(p.getId().equals(purchaseId)) {
+				p.setStatus(PurchaseStatus.canceled);
+				pdao.updatePurchases();
+				return Response.status(200).build();
+			}
+		}
+		return Response.status(400).entity("error").build();
 	}
 }

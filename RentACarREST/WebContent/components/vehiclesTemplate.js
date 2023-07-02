@@ -7,7 +7,7 @@ Vue.component("vehiclesTemplate",{
 	},
 	template: `
 	<div>
-		<h1 style="text-align: center">Vehicles</h1>
+		<h2 style="text-align: center">Vehicles</h2>
 		<h3 style="margin-left:12%">Search cars for specific dates:</h3>
 		<div style="margin-left:12%; margin-bottom:15px">
 			<label>Start date: </label>
@@ -16,7 +16,7 @@ Vue.component("vehiclesTemplate",{
 			<input id="endingDT" type="datetime-local" v-model="purchase.endDateTime" style="margin-right:20px">
 			<button v-on:click="searchCars()">Search!</button>
 		</div>
-	    <div v-for="v in vehicles" style="border:1px solid black; font-size:21px; padding: 10px; width: 70%; margin: 0% 12% 1% 12%; background-color: #FBD603">
+	    <div v-for="v in vehicles" style="border:1px solid black; font-size:18px; padding: 10px; width: 84%; margin: 0% 12% 1% 12%; background-color: #FBD603">
 	    	<div>
 				<div class="row">
 					<div class="column">
@@ -37,6 +37,8 @@ Vue.component("vehiclesTemplate",{
 						<b><label>{{v.type}}</label></b><br>
 						<label>Fuel type:</label>
 						<b><label>{{v.fuelType}}</label></b><br>
+						<label>Gearshift type:</label>
+						<b><label>{{v.gearshiftType}}</label></b><br>
 					</div>
 					<div class="column">
 						<label>Consumption:</label>
