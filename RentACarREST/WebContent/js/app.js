@@ -11,6 +11,7 @@ const ManagerCreate = {template: '<createManager></createManager>'}
 const VehicleCreate = {template: '<createVehicle></createVehicle>'}
 const Cart = {template: '<cart></cart>'}
 const SingleRentACar = {template: '<singleRentACarTemplate></singleRentACarTemplate>'}
+const CustomersRentings = {template: '<customersRentings></customersRentings>'}
 
 const router = new VueRouter({
 	mode: 'hash',

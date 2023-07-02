@@ -7,24 +7,25 @@ Vue.component("cart",{
 	},
 	template: `
 	<div>
-		<div class="row" style="font-size:21px">
+		<div class="row" style="font-size:22px">
 			<div class="column">
 				<label>Total price:</label>
-				<b><label>{{this.cart.price}}</label></b><br>
+				<b><label>{{this.cart.price}} euros</label></b><br>
 			</div>
 			<div class="column">
-				<button v-on:click="rent()">Rent!</button>
+				<button style="font-size:20px" v-on:click="rent()">Rent!</button>
+				<button style="font-size:18px" v-on:click="goBack()">Go back!</button>
 			</div>
 		</div>
 		
 	    <div v-for="(p, ip) in this.cart.prepairedPurchases">
 	    	<div>
 		    	<label>Start date: </label>
-		    	<label>{{p.start.dayOfMonth}}-{{p.start.month}}-{{p.start.year}}</label>
-		    	<div style="margin-left:20%;">
-			    	<label>Duration: </label>
-			    	<label>{{p.duration}} hours</label>
-		    	</div>
+		    	<b><label>{{p.start.dayOfMonth}}-{{p.start.month}}-{{p.start.year}}</label></b>
+			    <label style="margin-left:20px">Duration: </label>
+			    <b><label>{{p.duration}} hours</label></b>
+			    <label style="margin-left:20px">Price for this time: </label>
+			    <b><label>{{p.price}} euros</label></b>
 	    	</div>
 		    <div v-for="(v,index) in p.vehicles" style="border:1px solid black; font-size:21px; padding: 10px; width: 70%; margin: 0% 12% 1% 12%; background-color: #FBD603">
 		    	<div>
@@ -86,13 +87,22 @@ Vue.component("cart",{
 			axios.post('rest/users/removeFromCart/'+ id, this.purchase).then(response => this.remove(p, index, ip))
 		},
 		remove(p, index, ip){
-			this.cart.prepairedPurchases[ip].vehicles.splice(index, 1), this.cart.price-=p
+			this.cart.prepairedPurchases[ip].vehicles.splice(index, 1)
+			this.cart.price-=p
+			this.cart.prepairedPurchases[ip].price-=p
 			if(this.cart.prepairedPurchases[ip].vehicles.length == 0){
 				this.cart.prepairedPurchases.splice(ip,1)
 			}
 		},
 		rent : function(){
+			if(this.cart.vehicles == null || this.cart.vehicles.length == 0){
+				alert("The cart is empty!")
+				return
+			}
 			axios.post('rest/users/rent').then(response => ( router.push(`/user/`)))
+		},
+		goBack : function(){
+			router.push(`/user/`)
 		}
 	}
 })
