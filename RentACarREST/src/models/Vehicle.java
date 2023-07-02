@@ -22,8 +22,9 @@ public class Vehicle {
 	private String photo;
 	private boolean available;
 	private FuelType fuelType;
+	private boolean fromCurrentRentACar;
 	public Vehicle() {
-		
+		this.fromCurrentRentACar = false;
 	}
 
 	public Vehicle(int id, String brand, String model, int price, String type, Gearshift gearshiftType, RentACar rentACar, int rentACarId,
@@ -45,6 +46,7 @@ public class Vehicle {
 		this.available = available;
 		this.fuelType = fuelType;
 		this.gearshiftType = gearshiftType;
+		this.fromCurrentRentACar = false;
 	}
 	
 	public FuelType getFuelType() {
@@ -165,6 +167,14 @@ public class Vehicle {
 
 	public void setGearshiftType(Gearshift gearshiftType) {
 		this.gearshiftType = gearshiftType;
+	}
+
+	public boolean isFromCurrentRentACar() {
+		return fromCurrentRentACar;
+	}
+
+	public void setFromCurrentRentACar(boolean isFromCurrentRentACar) {
+		this.fromCurrentRentACar = isFromCurrentRentACar;
 	}
 	
 }
