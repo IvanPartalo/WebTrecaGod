@@ -15,6 +15,7 @@ public class SubPurchase {
 	private LocalDateTime start;
 	private int duration; //in hours
 	private PurchaseStatus status;
+	private boolean fromCurrentRentACar;
 	public SubPurchase(String purchaseId, Integer rentACarId, RentACar rentACar, LocalDateTime start, int duration, String startDateTime,
 			PurchaseStatus status) {
 		super();
@@ -25,6 +26,7 @@ public class SubPurchase {
 		this.duration = duration;
 		this.startDateTime = startDateTime;
 		this.status = status;
+		this.fromCurrentRentACar = false;
 	}
 	public SubPurchase(String purchaseId, Integer rentACarId, int duration, String startDateTime, PurchaseStatus status) {
 		super();
@@ -33,6 +35,7 @@ public class SubPurchase {
 		this.duration = duration;
 		this.startDateTime = startDateTime;
 		this.status = status;
+		this.fromCurrentRentACar = false;
 	}
 	public String getPurchaseId() {
 		return purchaseId;
@@ -76,4 +79,11 @@ public class SubPurchase {
 	public void setRentACarId(Integer rentACarId) {
 		this.rentACarId = rentACarId;
 	}
+	public boolean isFromCurrentRentACar() {
+		return fromCurrentRentACar;
+	}
+	public void setFromCurrentRentACar(boolean fromCurrentRentACar) {
+		this.fromCurrentRentACar = fromCurrentRentACar;
+	}
+	
 }

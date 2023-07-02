@@ -49,13 +49,16 @@ Vue.component("profilePage",{
 				        <button v-on:click="createRentACar"> Create new rent a car </button>
 				    </div>
 			    </div>
-			    <div v-if="isCustomer">
+			    <div v-if="user.role == 'customer'">
 			    	<vehiclesTemplate></vehiclesTemplate>
 			    </div>
 			</div>
 			<div class="column">
-				 <div v-if="isCustomer">
+				 <div v-if="user.role == 'customer'">
 			    	<customersRentings></customersRentings>
+			    </div>
+			    <div v-if="user.role == 'manager'">
+			    	<managersRentings></managersRentings>
 			    </div>
 			</div>
 		</div>

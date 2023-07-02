@@ -1,7 +1,8 @@
-Vue.component("customersRentings",{
+Vue.component("managersRentings",{
 	data:function(){
 		return{
-			rentings : null
+			rentings:null,
+			manager:null
 		}
 	},
 	template: `
@@ -24,8 +25,11 @@ Vue.component("customersRentings",{
 				    	<div>
 							<div class="row">
 								<div class="column">
+									<div style="background-color: #ADFF2F" v-if="v.fromCurrentRentACar == true">
+										<label>YOUR CAR</label>
+									</div>
 									<div class="image">
-										<img v-bind:src="v.photo" style="width:110px; height:75px" />
+										<br><img v-bind:src="v.photo" style="width:110px; height:75px" />
 									</div>
 									<div>
 										<label>Model:</label>
@@ -36,7 +40,7 @@ Vue.component("customersRentings",{
 									<label>Brand:</label>
 									<b><label>{{v.brand}}</label></b><br>
 									<label>Price:</label>
-									<b><label>{{v.price}}</label></b><br>
+									<b><label >{{v.price}}</label></b><br>
 									<label>Type:</label>
 									<b><label>{{v.type}}</label></b><br>
 									<label>Fuel type:</label>
@@ -59,7 +63,32 @@ Vue.component("customersRentings",{
 				    </div>
 			    </div>
 			    <div class="columnSpecial2" align="center">
-			    	<button v-if="r.status == 'pending'" style="font-size:19px" v-on:click="cancel(r, index)">Cancel!</button>
+			    	<div v-for="sp in r.subPurchases">
+			    		<div v-if="sp.fromCurrentRentACar == true">
+			    			<div v-if="sp.status != 'accepted'">
+			    				<div v-if="r.status == 'pending'">
+					    		<br><br><button style="font-size:19px" v-on:click="accept(r, index)">Accept!</button><br><br><br><br><br>
+						    	<button style="font-size:19px" v-on:click="cancel(r, index)">Decline!</button><br><br>
+						    	<label>Leave a comment</label><br>
+						    	<input type="text">
+					    	</div>
+		    			</div>
+		    			<div v-else>
+		    				<div v-if="r.status == 'pending'">
+				    			<br><br><label style="font-size:20px">You already accepted your part of this renting!</label>
+				    		</div>
+				    	</div>
+				    	</div>
+			    	</div>
+			    	<div v-if="r.status == 'accepted'">
+			    		<br><br><button style="font-size:19px" v-on:click="cancel(r, index)">Set as taken!</button><br><br><br><br><br>
+			    	</div>
+			    	<div v-if="r.status == 'taken'">
+			    		<br><br><button style="font-size:19px" v-on:click="cancel(r, index)">Set as returned!</button><br><br><br><br><br>
+			    	</div>
+			    	<div v-if="r.status == 'taken'">
+			    		<br><br><button style="font-size:19px" v-on:click="cancel(r, index)">Set as returned!</button><br><br><br><br><br>
+			    	</div>
 			    </div>
 		    </div>
 		</div>
@@ -68,16 +97,19 @@ Vue.component("customersRentings",{
 	computed:{
 	},
 	mounted: function() {
-		axios.get("rest/users/customersRentings")
+			axios.get("rest/currentUser")
+			.then( response =>
+				this.manager = response.data
+				),
+        	axios.get("rest/users/managersRentings")
 			.then( response =>
 				this.rentings = response.data
 				)
     },
 	methods:{
-		cancel : function(r, index){
-			axios.put('rest/users/cancel/' + r.id).then(response => 
-			//this.rentings[index].status = "aa",
-			axios.get("rest/users/customersRentings")
+		accept : function(r, index){
+			axios.put('rest/users/accept/' + r.id + "/" + this.manager.rentACarId).then(response => 
+			axios.get("rest/users/managersRentings")
 			.then( response =>
 				this.rentings = response.data
 				)

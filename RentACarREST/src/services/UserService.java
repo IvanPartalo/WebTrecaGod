@@ -240,6 +240,37 @@ public class UserService {
 		Customer c = (Customer)u;
 		return c.getRentings();
 	}
+	@GET
+	@Path("/managersRentings")
+	@Produces(MediaType.APPLICATION_JSON)
+	public ArrayList<Purchase> getManagersRentings(@Context HttpServletRequest request){
+		User u = (User) request.getSession().getAttribute("currentUser");
+		Manager m = (Manager)u;
+		PurchaseDAO pdao = (PurchaseDAO) context.getAttribute("purchaseDAO");
+		ArrayList<Purchase> result = new ArrayList<Purchase>();
+		for(Purchase p : pdao.getAll()) {
+			if(p.getRentACars().contains(m.getRentACar())) {
+				for(Vehicle v : p.getVehicles()) {
+					if(v.getRentACarId() == m.getRentACarId()) {
+						v.setFromCurrentRentACar(true);
+					}
+					else {
+						v.setFromCurrentRentACar(false);
+					}
+				}
+				for(SubPurchase sp : p.getSubPurchases()) {
+					if(sp.getRentACarId() == m.getRentACarId()) {
+						sp.setFromCurrentRentACar(true);
+					}
+					else {
+						sp.setFromCurrentRentACar(false);
+					}
+				}
+				result.add(p);
+			}
+		}
+		return result;
+	}
 	@PUT
 	@Path("/cancel/{id}")
 	@Consumes(MediaType.APPLICATION_JSON)
@@ -250,6 +281,34 @@ public class UserService {
 		for(Purchase p : c.getRentings()) {
 			if(p.getId().equals(purchaseId)) {
 				p.setStatus(PurchaseStatus.canceled);
+				pdao.updatePurchases();
+				return Response.status(200).build();
+			}
+		}
+		return Response.status(400).entity("error").build();
+	}
+	@PUT
+	@Path("/accept/{id}/{rentACarId}")
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Response acceptPurchase(@PathParam("id") String purchaseId, @PathParam("rentACarId") Integer rentACarId){
+		PurchaseDAO pdao = (PurchaseDAO) context.getAttribute("purchaseDAO");
+		for(Purchase p : pdao.getAll()) {
+			if(p.getId().equals(purchaseId)) {
+				for(SubPurchase sp : p.getSubPurchases()) {
+					if(sp.getRentACarId() == rentACarId) {
+						sp.setStatus(PurchaseStatus.accepted);
+					}
+				}
+				boolean isAccepted = true;
+				for(SubPurchase sp : p.getSubPurchases()) {
+					if(sp.getStatus() != PurchaseStatus.accepted) {
+						isAccepted = false;
+						break;
+					}
+				}
+				if(isAccepted) {
+					p.setStatus(PurchaseStatus.accepted);
+				}
 				pdao.updatePurchases();
 				return Response.status(200).build();
 			}
