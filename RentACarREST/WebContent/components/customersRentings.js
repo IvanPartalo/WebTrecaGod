@@ -60,6 +60,10 @@ Vue.component("customersRentings",{
 			    </div>
 			    <div class="columnSpecial2" align="center">
 			    	<button v-if="r.status == 'pending'" style="font-size:19px" v-on:click="cancel(r, index)">Cancel!</button>
+			    	<div v-if="r.status == 'declined'">
+			    		<br><label>Reason for declining:</label><br>
+			    		<br><label style="font-size:19px">{{r.decliningReason}}</label><br><br><br>
+			    	</div>
 			    </div>
 		    </div>
 		</div>

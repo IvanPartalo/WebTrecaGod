@@ -315,4 +315,89 @@ public class UserService {
 		}
 		return Response.status(400).entity("error").build();
 	}
+	@PUT
+	@Path("/decline/{id}/{decliningReason}")
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Response declinePurchase(@PathParam("id") String purchaseId, @PathParam("decliningReason") String decliningReason){
+		PurchaseDAO pdao = (PurchaseDAO) context.getAttribute("purchaseDAO");
+		for(Purchase p : pdao.getAll()) {
+			if(p.getId().equals(purchaseId)) {
+				p.setDecliningReason(decliningReason);
+				p.setStatus(PurchaseStatus.declined);
+				pdao.updatePurchases();
+				return Response.status(200).build();
+			}
+		}
+		return Response.status(400).entity("error").build();
+	}
+	@PUT
+	@Path("/take/{id}/{rentACarId}")
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Response takeVehicles(@PathParam("id") String purchaseId, @PathParam("rentACarId") Integer rentACarId){
+		PurchaseDAO pdao = (PurchaseDAO) context.getAttribute("purchaseDAO");
+		VehicleDAO vDAO = (VehicleDAO) context.getAttribute("vehicleDAO");
+		for(Purchase p : pdao.getAll()) {
+			if(p.getId().equals(purchaseId)) {
+				for(Vehicle v : p.getVehicles()) {
+					if(v.getRentACarId() == rentACarId) {
+						v.setAvailable(false);
+						vDAO.updateVehicles();
+					}
+				}
+				for(SubPurchase sp : p.getSubPurchases()) {
+					if(sp.getRentACarId() == rentACarId) {
+						sp.setStatus(PurchaseStatus.taken);
+					}
+				}
+				boolean isTaken = true;
+				for(SubPurchase sp : p.getSubPurchases()) {
+					if(sp.getStatus() != PurchaseStatus.taken) {
+						isTaken = false;
+						break;
+					}
+				}
+				if(isTaken) {
+					p.setStatus(PurchaseStatus.taken);
+				}
+				pdao.updatePurchases();
+				return Response.status(200).build();
+			}
+		}
+		return Response.status(400).entity("error").build();
+	}
+	@PUT
+	@Path("/return/{id}/{rentACarId}")
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Response returnVehicles(@PathParam("id") String purchaseId, @PathParam("rentACarId") Integer rentACarId){
+		PurchaseDAO pdao = (PurchaseDAO) context.getAttribute("purchaseDAO");
+		VehicleDAO vDAO = (VehicleDAO) context.getAttribute("vehicleDAO");
+		for(Purchase p : pdao.getAll()) {
+			if(p.getId().equals(purchaseId)) {
+				for(Vehicle v : p.getVehicles()) {
+					if(v.getRentACarId() == rentACarId) {
+						v.setAvailable(true);
+						vDAO.updateVehicles();
+					}
+				}
+				for(SubPurchase sp : p.getSubPurchases()) {
+					if(sp.getRentACarId() == rentACarId) {
+						sp.setStatus(PurchaseStatus.returned);
+					}
+				}
+				boolean isReturned = true;
+				for(SubPurchase sp : p.getSubPurchases()) {
+					if(sp.getStatus() != PurchaseStatus.returned) {
+						isReturned = false;
+						break;
+					}
+				}
+				if(isReturned) {
+					p.setStatus(PurchaseStatus.returned);
+				}
+				pdao.updatePurchases();
+				return Response.status(200).build();
+			}
+		}
+		return Response.status(400).entity("error").build();
+	}
 }

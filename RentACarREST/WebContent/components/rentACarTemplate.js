@@ -171,10 +171,9 @@ Vue.component("rentACarTemplate",{
 	},
 	mounted: function() {
     	axios.get('rest/rentacar/')
-    	.then(response => this.rentACars = response.data)
-    	setTimeout(() => {
-        	this.makeCopy()
-      	}, 100)
+    	.then(response => {
+			this.rentACars = response.data
+			this.rentACarsCopy = this.rentACars.slice()})
     },
 	methods:{
 		makeCopy: function(){

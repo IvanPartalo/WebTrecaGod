@@ -106,7 +106,7 @@ public class PurchaseDAO {
 		try {
 			File file = new File(contextPath + "/purchases.txt");
 			in = new BufferedReader(new FileReader(file));
-			String line, id = "", price = "", duration = "", startDateTime = "", endDateTime = "", status = "", customerId = "";
+			String line, id = "", price = "", duration = "", startDateTime = "", endDateTime = "", status = "", customerId = "", decliningReason = "";
 			StringTokenizer st;
 			while ((line = in.readLine()) != null) {
 				line = line.trim();
@@ -121,13 +121,20 @@ public class PurchaseDAO {
 					endDateTime = st.nextToken().trim();
 					status = st.nextToken().trim();
 					customerId = st.nextToken().trim();
+					decliningReason = st.nextToken().trim();
 				}
 				DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
 				LocalDateTime start = LocalDateTime.parse(startDateTime, formatter);
 				LocalDateTime end = LocalDateTime.parse(endDateTime, formatter);
-				 purchases.add(new Purchase(id, Integer.parseInt(price), start, end, Integer.parseInt(duration), 
-						 startDateTime, endDateTime, PurchaseStatus.valueOf(status), Integer.parseInt(customerId)));
+				if(decliningReason.equals("nothing")) {
+					 purchases.add(new Purchase(id, Integer.parseInt(price), start, end, Integer.parseInt(duration), 
+							 startDateTime, endDateTime, PurchaseStatus.valueOf(status), Integer.parseInt(customerId), ""));
+				}else {
+					purchases.add(new Purchase(id, Integer.parseInt(price), start, end, Integer.parseInt(duration), 
+							startDateTime, endDateTime, PurchaseStatus.valueOf(status), Integer.parseInt(customerId), decliningReason));
+					
 				}
+			}
 		} catch (Exception e) {
 			System.out.println("Error loading");
 			e.printStackTrace();
@@ -147,9 +154,14 @@ public class PurchaseDAO {
 			FileOutputStream fos = new FileOutputStream(fout);
 			bw = new BufferedWriter(new OutputStreamWriter(fos));
 			for(Purchase p : purchases) {
-				String lineToWrite = 
-				p.getId()+";" + p.getPrice()+ ";" + p.getDuration()+ ";" + p.getStartDateTime()+ ";" 
-				+ p.getEndDateTime()+ ";" + p.getStatus()+ ";" + p.getCustomerId()+ ";";
+				String lineToWrite = "";
+				if(p.getDecliningReason().isEmpty()) {
+					lineToWrite = p.getId()+";" + p.getPrice()+ ";" + p.getDuration()+ ";" + p.getStartDateTime()+ ";" 
+							+ p.getEndDateTime()+ ";" + p.getStatus()+ ";" + p.getCustomerId()+ ";" + "nothing" + ";";
+				}else {
+					lineToWrite = p.getId()+";" + p.getPrice()+ ";" + p.getDuration()+ ";" + p.getStartDateTime()+ ";" 
+							+ p.getEndDateTime()+ ";" + p.getStatus()+ ";" + p.getCustomerId()+ ";" + p.getDecliningReason()+ ";";
+				}
 				bw.write(lineToWrite);
 				bw.newLine();
 			}
@@ -220,10 +232,12 @@ public class PurchaseDAO {
 	}
 	public void save(Purchase p) {
 		p.setId(generateNextId());
+		p.setDecliningReason("nothing");
 		purchases.add(p);
 		SavePurchasesToFile();
 		SavePurchasedVehiclesToFile();
 		SaveSubPurchasesToFile();
+		p.setDecliningReason("");
 	}
 	public void updatePurchases() {
 		SavePurchasesToFile();

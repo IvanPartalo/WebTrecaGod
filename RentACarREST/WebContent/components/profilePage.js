@@ -64,13 +64,10 @@ Vue.component("profilePage",{
 			    </div>
 			</div>
 		</div>
-	    <div v-if="isCustomer">
-	    	<vehiclesTemplate></vehiclesTemplate>
-	    </div>
 	    <div v-if="isManager">
 	<div style="margin:10px">
-		<img v-bind:src="rentACar.logoImg" style="width:100px; height:100px" />
 		<h1 style="font-size:40px">{{rentACar.name}}</h1>
+		<img v-bind:src="rentACar.logoImg" style="width:100px; height:100px" />
 	</div>
 		<div style="float:left; margin:10px; font-size:20px">
 			
@@ -225,9 +222,11 @@ Vue.component("profilePage",{
 				this.isCustomer = true
 			}
 			if(this.user.role == "manager"){
-				this.isManager = true
 				axios.get('rest/rentacar/manager/'+this.user.id)
     			.then(response => this.rentACar = response.data)
+				setTimeout(() => {
+				this.isManager = true
+      			}, 100)
 			}
 		}
 	}
