@@ -13,6 +13,8 @@ import java.util.StringTokenizer;
 
 import models.Purchase;
 import models.PurchaseStatus;
+import models.RentACar;
+import models.SubPurchase;
 import models.Vehicle;
 
 
@@ -23,6 +25,46 @@ public class PurchaseDAO {
 		path = contextPath;
 		loadPurchases(contextPath);
 		loadPurchasedVehicles(contextPath);
+		loadSubPurchases(contextPath);
+	}
+	public void loadSubPurchases(String contextPath) {
+		BufferedReader in = null;
+		try {
+			File file = new File(contextPath + "/subPurchases.txt");
+			in = new BufferedReader(new FileReader(file));
+			String line, purchaseId = "", rentACarId = "", startDateTime = "", duration = "", status = "";
+			StringTokenizer st;
+			while ((line = in.readLine()) != null) {
+				line = line.trim();
+				if (line.equals("") || line.indexOf('#') == 0)
+					continue;
+				st = new StringTokenizer(line, ";");
+				while (st.hasMoreTokens()) {
+					purchaseId = st.nextToken().trim();
+					rentACarId = st.nextToken().trim();
+					startDateTime = st.nextToken().trim();
+					duration = st.nextToken().trim();
+					status = st.nextToken().trim();
+				}
+				for(Purchase p : purchases) {
+					if(p.getId().equals(purchaseId)) {
+						p.getSubPurchases().add(new SubPurchase(purchaseId, Integer.parseInt(rentACarId), Integer.parseInt(duration),
+								startDateTime, PurchaseStatus.valueOf(status)));
+						break;
+					}
+				}
+				}
+		} catch (Exception e) {
+			System.out.println("Error loading");
+			e.printStackTrace();
+		} finally {
+			if ( in != null ) {
+				try {
+					in.close();
+				}
+				catch (Exception e) { }
+			}
+		}
 	}
 	public void loadPurchasedVehicles(String contextPath) {
 		BufferedReader in = null;
@@ -64,7 +106,7 @@ public class PurchaseDAO {
 		try {
 			File file = new File(contextPath + "/purchases.txt");
 			in = new BufferedReader(new FileReader(file));
-			String line, id = "", rentACarId="", price = "", duration = "", startDateTime = "", endDateTime = "", status = "", customerId = "";
+			String line, id = "", price = "", duration = "", startDateTime = "", endDateTime = "", status = "", customerId = "";
 			StringTokenizer st;
 			while ((line = in.readLine()) != null) {
 				line = line.trim();
@@ -73,7 +115,6 @@ public class PurchaseDAO {
 				st = new StringTokenizer(line, ";");
 				while (st.hasMoreTokens()) {
 					id = st.nextToken().trim();
-					rentACarId = st.nextToken().trim();
 					price = st.nextToken().trim();
 					duration = st.nextToken().trim();
 					startDateTime = st.nextToken().trim();
@@ -84,8 +125,8 @@ public class PurchaseDAO {
 				DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
 				LocalDateTime start = LocalDateTime.parse(startDateTime, formatter);
 				LocalDateTime end = LocalDateTime.parse(endDateTime, formatter);
-				 purchases.add(new Purchase(id, Integer.parseInt(rentACarId), Integer.parseInt(price), start, end,
-						 Integer.parseInt(duration), startDateTime, endDateTime, PurchaseStatus.valueOf(status), Integer.parseInt(customerId)));
+				 purchases.add(new Purchase(id, Integer.parseInt(price), start, end, Integer.parseInt(duration), 
+						 startDateTime, endDateTime, PurchaseStatus.valueOf(status), Integer.parseInt(customerId)));
 				}
 		} catch (Exception e) {
 			System.out.println("Error loading");
@@ -107,7 +148,7 @@ public class PurchaseDAO {
 			bw = new BufferedWriter(new OutputStreamWriter(fos));
 			for(Purchase p : purchases) {
 				String lineToWrite = 
-				p.getId()+";" + p.getRentACarId() + ";" + p.getPrice()+ ";" + p.getDuration()+ ";" + p.getStartDateTime()+ ";" 
+				p.getId()+";" + p.getPrice()+ ";" + p.getDuration()+ ";" + p.getStartDateTime()+ ";" 
 				+ p.getEndDateTime()+ ";" + p.getStatus()+ ";" + p.getCustomerId()+ ";";
 				bw.write(lineToWrite);
 				bw.newLine();
@@ -151,11 +192,43 @@ public class PurchaseDAO {
 			}
 		}
 	}
+	private void SaveSubPurchasesToFile() {
+		BufferedWriter bw = null;
+		try {
+			File fout = new File(path + "/subPurchases.txt");
+			FileOutputStream fos = new FileOutputStream(fout);
+			bw = new BufferedWriter(new OutputStreamWriter(fos));
+			for(Purchase p : purchases) {
+				for(SubPurchase s : p.getSubPurchases()) {
+					String lineToWrite = p.getId()+";" + s.getRentACarId() + ";" + s.getStartDateTime() + ";" + s.getDuration() + ";" + s.getStatus();
+					bw.write(lineToWrite);
+					bw.newLine();
+				}
+			}
+			bw.close();
+		}catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			if(bw!=null) {
+				try {
+					bw.close();
+				} catch (Exception e2) {
+					// TODO: handle exception
+				}
+			}
+		}		
+	}
 	public void save(Purchase p) {
 		p.setId(generateNextId());
 		purchases.add(p);
 		SavePurchasesToFile();
 		SavePurchasedVehiclesToFile();
+		SaveSubPurchasesToFile();
+	}
+	public void updatePurchases() {
+		SavePurchasesToFile();
+		SavePurchasedVehiclesToFile();
+		SaveSubPurchasesToFile();
 	}
 	public String generateNextId() {
 		boolean isUnique = true;
@@ -190,10 +263,10 @@ public class PurchaseDAO {
 	public ArrayList<Purchase> getAll(){
 		return purchases;
 	}
-	public ArrayList<Purchase> getByRentingsId(Integer id) {
+	public ArrayList<Purchase> getByRentingsId(RentACar car) {
 		ArrayList<Purchase> result = new ArrayList<>();
 		for(Purchase p : purchases) {
-			if(p.getRentACarId() == id) {
+			if(p.getRentACars().contains(car)) {
 				result.add(p);
 			}
 		}

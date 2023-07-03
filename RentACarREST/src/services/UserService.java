@@ -30,8 +30,10 @@ import models.Customer;
 import models.Manager;
 import models.Purchase;
 import models.PurchaseStatus;
+import models.RentACar;
 import models.Role;
 import models.ShoppingCart;
+import models.SubPurchase;
 import models.User;
 import models.Vehicle;
 
@@ -91,11 +93,15 @@ public class UserService {
 			c.getShoppingCart().addVehicle(v);
 			c.getShoppingCart().addPrice(v.getPrice());
 			for(Purchase p : c.getShoppingCart().getPrepairedPurchases()) {
-				if(p.getStartDateTime().equals(purchase.getStartDateTime()) && p.getEndDateTime().equals(purchase.getEndDateTime()) ||
-						v.getRentACarId() == p.getRentACarId()) {
+				if(p.getStartDateTime().equals(purchase.getStartDateTime()) && p.getEndDateTime().equals(purchase.getEndDateTime())) {
 					p.getVehicleIds().add(v.getId());
 					p.getVehicles().add(v);
 					p.addPrice(v.getPrice());
+					if(!p.getRentACars().contains(v.getRentACar())) {
+						p.getRentACars().add(v.getRentACar());
+						p.getSubPurchases().add(new SubPurchase(p.getId(), v.getRentACarId(), p.getDuration(),
+							p.getStartDateTime(), p.getStatus()));
+					}
 					return Response.status(200).build();
 				}
 			}
@@ -110,10 +116,11 @@ public class UserService {
 			purchase.setStatus(PurchaseStatus.pending);
 			purchase.setCustomerId(c.getId());
 			purchase.setCustomer(c);
-			purchase.setRentACarId(v.getRentACarId());
-			purchase.setRentACar(v.getRentACar());
+			purchase.getRentACars().add(v.getRentACar());
 			purchase.getVehicleIds().add(v.getId());
 			purchase.getVehicles().add(v);
+			purchase.getSubPurchases().add(new SubPurchase(purchase.getId(), v.getRentACarId(), purchase.getDuration(),
+					purchase.getStartDateTime(), purchase.getStatus()));
 			c.getShoppingCart().getPrepairedPurchases().add(purchase);
 			return Response.status(200).build();
 		}
@@ -133,9 +140,10 @@ public class UserService {
 		c.getShoppingCart().setUser(c);
 		return Response.status(200).build();
 	}
-	@DELETE
+	@POST
 	@Path("/removeFromCart/{id}")
-	public Response removeFromCart(@PathParam("id") Integer id, @Context HttpServletRequest request){
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Response removeFromCart(Purchase purchase, @PathParam("id") Integer id, @Context HttpServletRequest request){
 		User u = (User) request.getSession().getAttribute("currentUser");
 		VehicleDAO vDAO = (VehicleDAO) context.getAttribute("vehicleDAO");
 		Vehicle v = vDAO.getById(id);
@@ -143,14 +151,41 @@ public class UserService {
 			Customer c = (Customer)u;
 			c.getShoppingCart().removeVehicle(v);
 			c.getShoppingCart().removePrice(v.getPrice());
-			ArrayList<Purchase> forRemoving = new ArrayList<>();
+			Purchase PforDeleting = null;
 			for(Purchase p : c.getShoppingCart().getPrepairedPurchases()){
-				if(p.getVehicles().contains(v)) {
-					forRemoving.add(p);
+				if(p.getVehicles().contains(v) && p.getStartDateTime().equals(purchase.getStartDateTime()) && p.getEndDateTime().equals(purchase.getEndDateTime())) {
+					p.getVehicles().remove(v);
+					p.removeVehicleId(v.getId());
+					p.removePrice(v.getPrice());
+					p.getRentACars().clear();
+					for(Vehicle vehicle : p.getVehicles()) {
+						p.getRentACars().add(vehicle.getRentACar());
+					}
+					
+					SubPurchase SPforDeleting = null;
+					for(SubPurchase s : p.getSubPurchases()) {
+						boolean exists = false;
+						for(RentACar r : p.getRentACars()) {
+							if(s.getRentACarId() == r.getId()) {
+								exists = true;
+							}
+						}
+						if(!exists) {
+							SPforDeleting = s;
+							break;
+						}
+					}
+					if(SPforDeleting != null) {
+						p.getSubPurchases().remove(SPforDeleting);
+					}
+					if(p.getVehicles().isEmpty()) {
+						PforDeleting = p;
+					}
+					break;
 				}
 			}
-			for(Purchase p : forRemoving){
-				c.getShoppingCart().getPrepairedPurchases().remove(p);
+			if(PforDeleting != null) {
+				c.getShoppingCart().getPrepairedPurchases().remove(PforDeleting);
 			}
 		}
 		if(v == null) {
@@ -196,5 +231,88 @@ public class UserService {
 	public ArrayList<Manager> getFreeManagers(){
 		UserDAO dao = (UserDAO) context.getAttribute("userDAO");
 		return dao.getFreeManagers();
+	}
+	@GET
+	@Path("/customersRentings")
+	@Produces(MediaType.APPLICATION_JSON)
+	public ArrayList<Purchase> getCustomersRentings(@Context HttpServletRequest request){
+		User u = (User) request.getSession().getAttribute("currentUser");
+		Customer c = (Customer)u;
+		return c.getRentings();
+	}
+	@GET
+	@Path("/managersRentings")
+	@Produces(MediaType.APPLICATION_JSON)
+	public ArrayList<Purchase> getManagersRentings(@Context HttpServletRequest request){
+		User u = (User) request.getSession().getAttribute("currentUser");
+		Manager m = (Manager)u;
+		PurchaseDAO pdao = (PurchaseDAO) context.getAttribute("purchaseDAO");
+		ArrayList<Purchase> result = new ArrayList<Purchase>();
+		for(Purchase p : pdao.getAll()) {
+			if(p.getRentACars().contains(m.getRentACar())) {
+				for(Vehicle v : p.getVehicles()) {
+					if(v.getRentACarId() == m.getRentACarId()) {
+						v.setFromCurrentRentACar(true);
+					}
+					else {
+						v.setFromCurrentRentACar(false);
+					}
+				}
+				for(SubPurchase sp : p.getSubPurchases()) {
+					if(sp.getRentACarId() == m.getRentACarId()) {
+						sp.setFromCurrentRentACar(true);
+					}
+					else {
+						sp.setFromCurrentRentACar(false);
+					}
+				}
+				result.add(p);
+			}
+		}
+		return result;
+	}
+	@PUT
+	@Path("/cancel/{id}")
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Response cancelPurchase(@PathParam("id") String purchaseId, @Context HttpServletRequest request){
+		User u = (User) request.getSession().getAttribute("currentUser");
+		PurchaseDAO pdao = (PurchaseDAO) context.getAttribute("purchaseDAO");
+		Customer c = (Customer)u;
+		for(Purchase p : c.getRentings()) {
+			if(p.getId().equals(purchaseId)) {
+				p.setStatus(PurchaseStatus.canceled);
+				pdao.updatePurchases();
+				return Response.status(200).build();
+			}
+		}
+		return Response.status(400).entity("error").build();
+	}
+	@PUT
+	@Path("/accept/{id}/{rentACarId}")
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Response acceptPurchase(@PathParam("id") String purchaseId, @PathParam("rentACarId") Integer rentACarId){
+		PurchaseDAO pdao = (PurchaseDAO) context.getAttribute("purchaseDAO");
+		for(Purchase p : pdao.getAll()) {
+			if(p.getId().equals(purchaseId)) {
+				for(SubPurchase sp : p.getSubPurchases()) {
+					if(sp.getRentACarId() == rentACarId) {
+						sp.setStatus(PurchaseStatus.accepted);
+					}
+				}
+				boolean isAccepted = true;
+				for(SubPurchase sp : p.getSubPurchases()) {
+					if(sp.getStatus() != PurchaseStatus.accepted) {
+						isAccepted = false;
+						break;
+					}
+				}
+				if(isAccepted) {
+					p.setStatus(PurchaseStatus.accepted);
+				}
+				pdao.updatePurchases();
+				return Response.status(200).build();
+			}
+		}
+		return Response.status(400).entity("error").build();
 	}
 }

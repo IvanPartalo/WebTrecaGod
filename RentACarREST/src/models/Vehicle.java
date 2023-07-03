@@ -12,7 +12,7 @@ public class Vehicle {
 	private int price;
 	private String type;
 	private Gearshift gearshiftType;
-	@JsonIgnoreProperties("vehicles")
+	@JsonIgnoreProperties({"vehicles", "rentings"})
 	private RentACar rentACar;
 	private int RentACarId;
 	private int consumption; //potrosnja
@@ -23,8 +23,10 @@ public class Vehicle {
 	private boolean available;
 	private FuelType fuelType;
 	private int isDeleted;
+	private boolean fromCurrentRentACar;
+
 	public Vehicle() {
-		
+		this.fromCurrentRentACar = false;
 	}
 
 	public Vehicle(int id, String brand, String model, int price, String type, Gearshift gearshiftType, RentACar rentACar, int rentACarId,
@@ -47,6 +49,7 @@ public class Vehicle {
 		this.fuelType = fuelType;
 		this.gearshiftType = gearshiftType;
 		isDeleted = 0;
+		this.fromCurrentRentACar = false;
 	}
 	
 	public FuelType getFuelType() {
@@ -175,6 +178,14 @@ public class Vehicle {
 
 	public void setIsDeleted(int isDeleted) {
 		this.isDeleted = isDeleted;
+	}
+
+	public boolean isFromCurrentRentACar() {
+		return fromCurrentRentACar;
+	}
+
+	public void setFromCurrentRentACar(boolean isFromCurrentRentACar) {
+		this.fromCurrentRentACar = isFromCurrentRentACar;
 	}
 	
 }

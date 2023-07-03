@@ -74,11 +74,11 @@ public class RentACarService {
 	private void linkPurchasesRentACar() {
 		RentACarDAO rdao = (RentACarDAO) ctx.getAttribute("rentACarDAO");
 		PurchaseDAO pdao = (PurchaseDAO) ctx.getAttribute("purchaseDAO");
-		for(RentACar rentACar : rdao.getAll()) {
-			rentACar.getRentings().clear();
-			for(Purchase p : pdao.getByRentingsId(rentACar.getId())){
-				rentACar.getRentings().add(p);
-				p.setRentACar(rentACar);
+		VehicleDAO vdao = (VehicleDAO) ctx.getAttribute("vehicleDAO");
+		for(Purchase p : pdao.getAll()) {
+			for(Integer id : p.getVehicleIds()) {
+				p.getRentACars().add(rdao.getById(vdao.getById(id).getRentACar().getId()));
+				rdao.getById(vdao.getById(id).getRentACar().getId()).getRentings().add(p);
 			}
 		}
 	}
@@ -116,6 +116,7 @@ public class RentACarService {
 		RentACarDAO dao = (RentACarDAO) ctx.getAttribute("rentACarDAO");
 		return dao.getById(id);
 	}
+
 	@GET
 	@Path("/manager/{id}")
 	@Produces(MediaType.APPLICATION_JSON)
@@ -124,12 +125,25 @@ public class RentACarService {
 		Manager m = (Manager)dao.getById(id);
 		return m.getRentACar();
 	}
-	@GET
+
+	@POST
 	@Path("/vehicles")
+	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public ArrayList<Vehicle> getAvailableVehicles(){
+	public ArrayList<Vehicle> getAvailableVehicles(Purchase purchase, @Context HttpServletRequest request){
+		PurchaseDAO pdao = (PurchaseDAO) ctx.getAttribute("purchaseDAO");
 		VehicleDAO dao = (VehicleDAO) ctx.getAttribute("vehicleDAO");
-		return dao.getAvailable();
+		ArrayList<Vehicle> result = dao.getAvailable();
+		User u = (User) request.getSession().getAttribute("currentUser");
+		Customer c = (Customer)u;
+		for(Purchase p : c.getShoppingCart().getPrepairedPurchases()) {
+			if(purchase.getStartDateTime().equals(p.getStartDateTime()) && purchase.getEndDateTime().equals(p.getEndDateTime())) {
+				for(Vehicle v : p.getVehicles()) {
+					result.remove(v);
+				}
+			}
+		}
+		return result;
 	}
 	@GET
 	@Path("/vehicles/{id}")

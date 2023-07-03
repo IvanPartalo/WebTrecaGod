@@ -18,6 +18,7 @@ Vue.component("profilePage",{
 			<a href="" v-on:click="showRentACar" style="margin-left:15px">Rent a car shops</a>
 			<a href="" v-on:click="edit" style="margin-left:15px">Edit profile</a>
 			<a href="" v-on:click="changePassword" style="margin-left:15px">Change password</a>
+			<a href="" v-on:click="goToCart" style="margin-left:15px">Cart</a>
 			<a href="" v-on:click="logOut" style="float:right; margin-right:30px">Log out</a>
 		</div>
 		<div class="row">
@@ -25,11 +26,11 @@ Vue.component("profilePage",{
 			    <div style="border:1px solid black; padding-left: 5px;border-radius: 30px; margin:1%;text-align: center;background-color:#8083c9">
 					<h1 style="color:red;">Personal info</h1>
 			        <h2>{{user.firstName}} {{user.lastName}}</h2>
-				    <div style="padding-left: 5px; font-size:20px">
+				    <div style="padding-left: 5px; font-size:19px">
 				        <label>Username:</label>
 				        <b><label>{{user.username}}</label><br><br></b>
 				    </div>
-				    <div style="padding-left: 5px; font-size:20px">
+				    <div style="padding-left: 5px; font-size:19px">
 				        <label>Gender:</label>
 				        <b><label>{{user.gender}}</label><br><br></b>
 				        <label>Date of birth:</label>
@@ -37,22 +38,30 @@ Vue.component("profilePage",{
 				        <label>Role:</label>
 				        <b><label>{{user.role}}</label><br><br></b>
 				    </div>
-				     <div v-if="isCustomer" style="padding-left: 5px; font-size:20px">
+				     <div v-if="isCustomer" style="padding-left: 5px; font-size:19px">
 				    	<label>Collected points:</label>
 				    	<b><label>{{user.collectedPoints}}</label><br><br></b>
 				    	<label>Customer type:</label>
 				    	<b><label>{{user.customerType.name}}</label><br><br></b>
 				    </div>
-				    <div v-bind:class="{hiddenClass: notManager}" style="font-size:15px">
+				    <div v-bind:class="{hiddenClass: notManager}" style="font-size:19px">
 				        <button v-on:click="createVehicle"> Create new vehicle </button>
 				    </div>
-				    <div v-bind:class="{hiddenClass: notAdmin}" style="margin-top: 20px; font-size:15px">
+				    <div v-bind:class="{hiddenClass: notAdmin}" style="margin-bottom: 5px; font-size:19px">
 				        <button v-on:click="createRentACar"> Create new rent a car </button>
 				    </div>
 			    </div>
+			    <div v-if="user.role == 'customer'">
+			    	<vehiclesTemplate></vehiclesTemplate>
+			    </div>
 			</div>
 			<div class="column">
-				//ovde planiram liste iznajmljivanja ili ako ne stane onda negde drugde
+				 <div v-if="user.role == 'customer'">
+			    	<customersRentings></customersRentings>
+			    </div>
+			    <div v-if="user.role == 'manager'">
+			    	<managersRentings></managersRentings>
+			    </div>
 			</div>
 		</div>
 	    <div v-if="isCustomer">
@@ -169,6 +178,10 @@ Vue.component("profilePage",{
 		showRentACar: function(){
 			event.preventDefault()
 			router.push(`/rentacar/`)
+		},
+		goToCart: function(){
+			event.preventDefault()
+			router.push(`/cart`)
 		},
 		createRentACar: function(){
 			event.preventDefault()
