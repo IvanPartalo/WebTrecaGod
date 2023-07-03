@@ -315,4 +315,19 @@ public class UserService {
 		}
 		return Response.status(400).entity("error").build();
 	}
+	@PUT
+	@Path("/decline/{id}/{decliningReason}")
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Response declinePurchase(@PathParam("id") String purchaseId, @PathParam("decliningReason") String decliningReason){
+		PurchaseDAO pdao = (PurchaseDAO) context.getAttribute("purchaseDAO");
+		for(Purchase p : pdao.getAll()) {
+			if(p.getId().equals(purchaseId)) {
+				p.setDecliningReason(decliningReason);
+				p.setStatus(PurchaseStatus.declined);
+				pdao.updatePurchases();
+				return Response.status(200).build();
+			}
+		}
+		return Response.status(400).entity("error").build();
+	}
 }

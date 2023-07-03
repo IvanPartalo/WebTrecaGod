@@ -70,7 +70,6 @@ Vue.component("vehiclesTemplate",{
 			//sa stackoverflow-a preuzeta funkcija koja pravi string za datetime-local
 			document.getElementById("startingDT").min = new Date().toISOString().slice(0,new Date().toISOString().lastIndexOf(":"))
 			document.getElementById("endingDT").min = document.getElementById("startingDT").min
-			console.log(document.getElementById("startingDT").min);
 		},
 		addToCart : function(id){
 			axios.post('rest/users/addToCart/'+ id, this.purchase).then(response => axios.post('rest/rentacar/vehicles', this.purchase).then(response => this.vehicles = response.data))

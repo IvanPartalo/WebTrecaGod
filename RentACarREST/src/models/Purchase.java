@@ -24,17 +24,18 @@ public class Purchase {
 	private int customerId;
 	private PurchaseStatus status;
 	private ArrayList<SubPurchase> subPurchases;
+	private String decliningReason;
 	public Purchase() {
 		this.vehicles = new ArrayList<>();
 		this.vehicleIds = new ArrayList<>();
 		this.subPurchases = new ArrayList<>();
 		this.rentACars = new HashSet<RentACar>();
-		price = 0;
+		this.price = 0;
 	}
 	
 	public Purchase(String id, ArrayList<Vehicle> vehicles, ArrayList<Integer> vehicleIds, HashSet<RentACar> rentACars,
 			int price, LocalDateTime start, LocalDateTime end, int duration, String startDateTime, String endDateTime,
-			Customer customer, int customerId, PurchaseStatus status, ArrayList<SubPurchase> subPurchases) {
+			Customer customer, int customerId, PurchaseStatus status, ArrayList<SubPurchase> subPurchases, String reason) {
 		super();
 		this.id = id;
 		this.vehicles = vehicles;
@@ -50,11 +51,12 @@ public class Purchase {
 		this.customerId = customerId;
 		this.status = status;
 		this.subPurchases = subPurchases;
+		this.decliningReason = reason;
 	}
 
 	public Purchase(String id, ArrayList<Vehicle> vehicles, HashSet<RentACar> rentACars, int customerId, int price,
 			LocalDateTime start, LocalDateTime end, int duration, String startDateTime, String endDateTime,
-			Customer customer, PurchaseStatus status) {
+			Customer customer, PurchaseStatus status, String reason) {
 		super();
 		this.id = id;
 		this.vehicles = vehicles;
@@ -70,9 +72,11 @@ public class Purchase {
 		this.status = status;
 		this.vehicleIds = new ArrayList<>();
 		this.subPurchases = new ArrayList<>();
+		this.decliningReason = reason;
 	}
 	public Purchase(String id, int price, LocalDateTime start, 
-			 LocalDateTime end, int duration, String startDateTime, String endDateTime, PurchaseStatus status, int customerId) {
+			 LocalDateTime end, int duration, String startDateTime, String endDateTime, PurchaseStatus status, 
+			 int customerId, String reason) {
 		this.id = id;
 		this.price = price;
 		this.start = start;
@@ -86,6 +90,7 @@ public class Purchase {
 		this.vehicleIds = new ArrayList<>();
 		this.subPurchases = new ArrayList<>();
 		this.rentACars = new HashSet<RentACar>();
+		this.decliningReason = reason;
 	}
 	public LocalDateTime getStart() {
 		return start;
@@ -192,4 +197,13 @@ public class Purchase {
 	public void setSubPurchases(ArrayList<SubPurchase> subPurchases) {
 		this.subPurchases = subPurchases;
 	}
+
+	public String getDecliningReason() {
+		return decliningReason;
+	}
+
+	public void setDecliningReason(String decliningReason) {
+		this.decliningReason = decliningReason;
+	}
+	
 }

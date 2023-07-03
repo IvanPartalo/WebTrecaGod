@@ -68,9 +68,9 @@ Vue.component("managersRentings",{
 			    			<div v-if="sp.status != 'accepted'">
 			    				<div v-if="r.status == 'pending'">
 					    		<br><br><button style="font-size:19px" v-on:click="accept(r, index)">Accept!</button><br><br><br><br><br>
-						    	<button style="font-size:19px" v-on:click="cancel(r, index)">Decline!</button><br><br>
+						    	<button style="font-size:19px" v-on:click="decline(r, index)">Decline!</button><br><br>
 						    	<label>Leave a comment</label><br>
-						    	<input type="text">
+						    	<input v-model="r.decliningReason" type="text">
 					    	</div>
 		    			</div>
 		    			<div v-else>
@@ -81,7 +81,11 @@ Vue.component("managersRentings",{
 				    	</div>
 			    	</div>
 			    	<div v-if="r.status == 'accepted'">
-			    		<br><br><button style="font-size:19px" v-on:click="cancel(r, index)">Set as taken!</button><br><br><br><br><br>
+			    		<br><br><br><button style="font-size:19px" v-on:click="take(r, index)">Set as taken!</button><br><br><br>
+			    	</div>
+			    	<div v-if="r.status == 'declined'">
+			    		<br><label>Reason for declining:</label><br>
+			    		<br><label style="font-size:19px">{{r.decliningReason}}</label><br><br><br>
 			    	</div>
 			    	<div v-if="r.status == 'taken'">
 			    		<br><br><button style="font-size:19px" v-on:click="cancel(r, index)">Set as returned!</button><br><br><br><br><br>
@@ -109,6 +113,18 @@ Vue.component("managersRentings",{
 	methods:{
 		accept : function(r, index){
 			axios.put('rest/users/accept/' + r.id + "/" + this.manager.rentACarId).then(response => 
+			axios.get("rest/users/managersRentings")
+			.then( response =>
+				this.rentings = response.data
+				)
+			)
+		},
+		decline : function(r, index){
+			if(r.decliningReason.trim().length == 0){
+				alert("You have to give a comment when declining!")
+				return;
+			}
+			axios.put('rest/users/decline/' + r.id + "/" + r.decliningReason).then(response => 
 			axios.get("rest/users/managersRentings")
 			.then( response =>
 				this.rentings = response.data
