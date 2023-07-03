@@ -30,6 +30,7 @@ public class VehicleDAO {
 			String line, id = "", fuelType="", brand = "", model = "", type = "", gearType="", description = "", photo = "", boolString = "";
 			int price=0, rentACarId=0, doors=0, consumption=0, maxPeople=0;
 			boolean available = true;
+			int isDeleted = 0;
 			StringTokenizer st;
 			while ((line = in.readLine()) != null) {
 				line = line.trim();
@@ -51,6 +52,7 @@ public class VehicleDAO {
 					maxPeople = Integer.parseInt(st.nextToken().trim());
 					rentACarId = Integer.parseInt(st.nextToken().trim());
 					boolString = st.nextToken().trim();
+					isDeleted = Integer.parseInt(st.nextToken().trim());
 				}
 				if(boolString.equals("true")) {
 					available = true;
@@ -58,8 +60,10 @@ public class VehicleDAO {
 				else {
 					available = false;
 				}
-				 vehicles.add(new Vehicle(Integer.parseInt(id), brand, model, price, type, Gearshift.valueOf(gearType), null, 
-						rentACarId, consumption, doors, maxPeople, description, photo, available, FuelType.valueOf(fuelType)));
+				if(isDeleted == 0) {
+					 vehicles.add(new Vehicle(Integer.parseInt(id), brand, model, price, type, Gearshift.valueOf(gearType), null, 
+							rentACarId, consumption, doors, maxPeople, description, photo, available, FuelType.valueOf(fuelType)));
+				}
 				}
 		} catch (Exception e) {
 			System.out.println("greska veh");
@@ -84,7 +88,7 @@ public class VehicleDAO {
 				String lineToWrite = 
 				v.getId()+";"+v.getBrand()+";"+v.getModel()+";"+v.getType()+";"+v.getGearshiftType()+";"+v.getDescription()+";"+v.getPhoto()+";"+
 				v.getFuelType()+";"+v.getPrice()+";"+v.getDoors()+";"+v.getConsumption()+";"+v.getMaxPeople()
-				+";"+v.getRentACarId()+";"+v.getAvailable();
+				+";"+v.getRentACarId()+";"+v.getAvailable()+";"+v.getIsDeleted();
 				bw.write(lineToWrite);
 				bw.newLine();
 			}
@@ -136,5 +140,26 @@ public class VehicleDAO {
 			}
 		}
 		return null;
+	}
+	public void editVehicle(Vehicle newVehicle) {
+		Vehicle oldVehicle = getById(newVehicle.getId());
+		oldVehicle.setBrand(newVehicle.getBrand());
+		oldVehicle.setModel(newVehicle.getModel());
+		oldVehicle.setConsumption(newVehicle.getConsumption());
+		oldVehicle.setDescription(newVehicle.getDescription());
+		oldVehicle.setDoors(newVehicle.getDoors());
+		oldVehicle.setFuelType(newVehicle.getFuelType());
+		oldVehicle.setGearshiftType(newVehicle.getGearshiftType());
+		oldVehicle.setMaxPeople(newVehicle.getMaxPeople());
+		oldVehicle.setPrice(newVehicle.getPrice());
+		oldVehicle.setType(newVehicle.getType());
+		SaveToFile();
+	}
+	public ArrayList<Vehicle> deleteVehicle(int id) {
+		Vehicle v = getById(id);
+		v.setIsDeleted(1);
+		SaveToFile();
+		vehicles.remove(v);
+		return vehicles;
 	}
 }

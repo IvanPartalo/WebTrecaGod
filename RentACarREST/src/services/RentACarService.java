@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -115,6 +116,16 @@ public class RentACarService {
 		RentACarDAO dao = (RentACarDAO) ctx.getAttribute("rentACarDAO");
 		return dao.getById(id);
 	}
+
+	@GET
+	@Path("/manager/{id}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public RentACar getByManagerId(@PathParam("id") int id){
+		UserDAO dao = (UserDAO) ctx.getAttribute("userDAO");
+		Manager m = (Manager)dao.getById(id);
+		return m.getRentACar();
+	}
+
 	@POST
 	@Path("/vehicles")
 	@Consumes(MediaType.APPLICATION_JSON)
@@ -133,6 +144,15 @@ public class RentACarService {
 			}
 		}
 		return result;
+	}
+	@GET
+	@Path("/vehicles/{id}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public ArrayList<Vehicle> getVehiclesFromRentACar(@PathParam("id") int id){
+		UserDAO uDao = (UserDAO) ctx.getAttribute("userDAO");
+		Manager m = (Manager)uDao.getById(id);
+		RentACarDAO rDao = (RentACarDAO) ctx.getAttribute("rentACarDAO");
+		return rDao.getFromRentACar(m.getRentACarId());
 	}
 	@POST
 	@Path("/{id}")

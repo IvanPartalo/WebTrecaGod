@@ -22,7 +22,9 @@ public class Vehicle {
 	private String photo;
 	private boolean available;
 	private FuelType fuelType;
+	private int isDeleted;
 	private boolean fromCurrentRentACar;
+
 	public Vehicle() {
 		this.fromCurrentRentACar = false;
 	}
@@ -46,6 +48,7 @@ public class Vehicle {
 		this.available = available;
 		this.fuelType = fuelType;
 		this.gearshiftType = gearshiftType;
+		isDeleted = 0;
 		this.fromCurrentRentACar = false;
 	}
 	
@@ -167,6 +170,14 @@ public class Vehicle {
 
 	public void setGearshiftType(Gearshift gearshiftType) {
 		this.gearshiftType = gearshiftType;
+	}
+
+	public int getIsDeleted() {
+		return isDeleted;
+	}
+
+	public void setIsDeleted(int isDeleted) {
+		this.isDeleted = isDeleted;
 	}
 
 	public boolean isFromCurrentRentACar() {
