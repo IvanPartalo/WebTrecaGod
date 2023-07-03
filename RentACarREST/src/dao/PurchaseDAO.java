@@ -237,6 +237,7 @@ public class PurchaseDAO {
 		SavePurchasesToFile();
 		SavePurchasedVehiclesToFile();
 		SaveSubPurchasesToFile();
+		p.setDecliningReason("");
 	}
 	public void updatePurchases() {
 		SavePurchasesToFile();

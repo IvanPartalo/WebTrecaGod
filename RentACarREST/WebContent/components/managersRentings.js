@@ -65,33 +65,43 @@ Vue.component("managersRentings",{
 			    <div class="columnSpecial2" align="center">
 			    	<div v-for="sp in r.subPurchases">
 			    		<div v-if="sp.fromCurrentRentACar == true">
-			    			<div v-if="sp.status != 'accepted'">
+			    			<div v-if="sp.status == 'pending'">
 			    				<div v-if="r.status == 'pending'">
-					    		<br><br><button style="font-size:19px" v-on:click="accept(r, index)">Accept!</button><br><br><br><br><br>
-						    	<button style="font-size:19px" v-on:click="decline(r, index)">Decline!</button><br><br>
-						    	<label>Leave a comment</label><br>
-						    	<input v-model="r.decliningReason" type="text">
+						    		<br><br><button style="font-size:19px" v-on:click="accept(r, index)">Accept!</button><br><br><br><br><br>
+							    	<button style="font-size:19px" v-on:click="decline(r, index)">Decline!</button><br><br>
+							    	<label>Leave a comment</label><br>
+							    	<input v-model="r.decliningReason" type="text">
+						    	</div>
+						    	
+			    			</div>
+			    			<div v-else>
+			    				<div v-if="sp.status == 'accepted'">
+				    				<div v-if="r.status == 'accepted'">
+							    		<br><br><br><button style="font-size:19px" v-on:click="take(r, index)">Set your cars as taken!</button><br><br><br>
+							    	</div>
+				    			</div>
+			    				<div v-if="sp.status == 'taken'">
+				    				<div v-if="r.status == 'accepted'">
+							    		<br><br><label style="font-size:20px">Your cars are already taken as part of this renting!</label>
+							    	</div>
+							    	<div v-if="r.status == 'taken'">
+							    		<br><br><button style="font-size:19px" v-on:click="returnCars(r, index)">Set as returned!</button><br><br><br><br><br>
+							    	</div>
+				    			</div>
+				    			<div v-if="sp.status == 'returned'">
+				    				<div v-if="r.status == 'taken'">
+							    		<br><br><label style="font-size:20px">Your cars are already returned as part of this renting!</label>
+							    	</div>
+				    			</div>
+			    				<div v-if="r.status == 'pending'">
+					    			<br><br><label style="font-size:20px">You already accepted your part of this renting!</label>
+					    		</div>
 					    	</div>
-		    			</div>
-		    			<div v-else>
-		    				<div v-if="r.status == 'pending'">
-				    			<br><br><label style="font-size:20px">You already accepted your part of this renting!</label>
-				    		</div>
 				    	</div>
-				    	</div>
-			    	</div>
-			    	<div v-if="r.status == 'accepted'">
-			    		<br><br><br><button style="font-size:19px" v-on:click="take(r, index)">Set as taken!</button><br><br><br>
 			    	</div>
 			    	<div v-if="r.status == 'declined'">
 			    		<br><label>Reason for declining:</label><br>
 			    		<br><label style="font-size:19px">{{r.decliningReason}}</label><br><br><br>
-			    	</div>
-			    	<div v-if="r.status == 'taken'">
-			    		<br><br><button style="font-size:19px" v-on:click="cancel(r, index)">Set as returned!</button><br><br><br><br><br>
-			    	</div>
-			    	<div v-if="r.status == 'taken'">
-			    		<br><br><button style="font-size:19px" v-on:click="cancel(r, index)">Set as returned!</button><br><br><br><br><br>
 			    	</div>
 			    </div>
 		    </div>
@@ -125,6 +135,50 @@ Vue.component("managersRentings",{
 				return;
 			}
 			axios.put('rest/users/decline/' + r.id + "/" + r.decliningReason).then(response => 
+			axios.get("rest/users/managersRentings")
+			.then( response =>
+				this.rentings = response.data
+				)
+			)
+		},
+		take : function(r, index){
+			if(true){
+				let currentDate = new Date()
+				if(r.start.year == currentDate.getFullYear()){
+					if(r.start.monthValue == (1+currentDate.getMonth())){
+						if(r.start.dayOfMonth <= currentDate.getDate()){
+							axios.put('rest/users/take/' + r.id + "/" + this.manager.rentACarId).then(response => 
+							axios.get("rest/users/managersRentings")
+							.then( response =>
+								this.rentings = response.data
+								)
+							)
+							return
+						}
+					}else if(r.start.monthValue < (1+currentDate.getMonth())){
+						axios.put('rest/users/take/' + r.id + "/" + this.manager.rentACarId).then(response => 
+						axios.get("rest/users/managersRentings")
+						.then( response =>
+							this.rentings = response.data
+							)
+						)
+						return
+					} 
+				}else if(r.start.year < currentDate.getFullYear()){
+					axios.put('rest/users/take/' + r.id + "/" + this.manager.rentACarId).then(response => 
+					axios.get("rest/users/managersRentings")
+					.then( response =>
+						this.rentings = response.data
+						)
+					)
+					return
+				}
+				alert("Cars can be taken on the first day of the purchase at the earliest!")
+				return;
+			}
+		},
+		returnCars : function(r, index){
+			axios.put('rest/users/return/' + r.id + "/" + this.manager.rentACarId).then(response => 
 			axios.get("rest/users/managersRentings")
 			.then( response =>
 				this.rentings = response.data

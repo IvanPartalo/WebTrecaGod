@@ -112,6 +112,9 @@ public class VehicleDAO {
 		vehicles.add(v);
 		SaveToFile();
 	}
+	public void updateVehicles() {
+		SaveToFile();
+	}
 	public int getNextId() {
 		int maxId = -1;
 		for(Vehicle v : vehicles) {
