@@ -15,6 +15,7 @@ import models.Location;
 import models.Manager;
 import models.RentACar;
 import models.Status;
+import models.Vehicle;
 
 public class RentACarDAO {
 	private ArrayList<RentACar> rentACars = new ArrayList<>();
@@ -151,6 +152,10 @@ public class RentACarDAO {
 			}
 		}
 		return null;
+	}
+	public ArrayList<Vehicle> getFromRentACar(int id){
+		RentACar rent = getById(id);
+		return rent.getVehicles();
 	}
 	public int getNewId() {
 		return newRent.getId();
