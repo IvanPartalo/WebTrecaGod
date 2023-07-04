@@ -21,6 +21,8 @@ public class RentACar {
 	private ArrayList<Purchase> rentings;
 	@JsonIgnoreProperties("rentACar")
 	private ArrayList<Vehicle> vehicles;
+	private double sumGrades;
+	private double gradesCount;
 	public RentACar() {
 		rentings = new ArrayList<>();
 		vehicles = new ArrayList<Vehicle>();
@@ -39,6 +41,8 @@ public class RentACar {
 		Grade = grade;
 		rentings = new ArrayList<>();
 		vehicles = new ArrayList<Vehicle>();
+		this.sumGrades = 0;
+		this.gradesCount = 0;
 	}
 
 	public Integer getId() {
@@ -122,5 +126,9 @@ public class RentACar {
 	public void setVehicles(ArrayList<Vehicle> vehicles) {
 		this.vehicles = vehicles;
 	}
-	
+	public void addGrade(int g) {
+		this.sumGrades += g;
+		this.gradesCount++;
+		this.Grade = this.sumGrades/this.gradesCount;
+	}
 }

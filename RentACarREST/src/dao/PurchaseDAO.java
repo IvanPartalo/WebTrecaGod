@@ -32,7 +32,7 @@ public class PurchaseDAO {
 		try {
 			File file = new File(contextPath + "/subPurchases.txt");
 			in = new BufferedReader(new FileReader(file));
-			String line, purchaseId = "", rentACarId = "", startDateTime = "", duration = "", status = "";
+			String line, purchaseId = "", rentACarId = "", startDateTime = "", duration = "", status = "", graded="";
 			StringTokenizer st;
 			while ((line = in.readLine()) != null) {
 				line = line.trim();
@@ -45,11 +45,12 @@ public class PurchaseDAO {
 					startDateTime = st.nextToken().trim();
 					duration = st.nextToken().trim();
 					status = st.nextToken().trim();
+					graded = st.nextToken().trim();
 				}
 				for(Purchase p : purchases) {
 					if(p.getId().equals(purchaseId)) {
 						p.getSubPurchases().add(new SubPurchase(purchaseId, Integer.parseInt(rentACarId), Integer.parseInt(duration),
-								startDateTime, PurchaseStatus.valueOf(status)));
+								startDateTime, PurchaseStatus.valueOf(status), Boolean.parseBoolean(graded)));
 						break;
 					}
 				}
@@ -212,7 +213,8 @@ public class PurchaseDAO {
 			bw = new BufferedWriter(new OutputStreamWriter(fos));
 			for(Purchase p : purchases) {
 				for(SubPurchase s : p.getSubPurchases()) {
-					String lineToWrite = p.getId()+";" + s.getRentACarId() + ";" + s.getStartDateTime() + ";" + s.getDuration() + ";" + s.getStatus();
+					String lineToWrite = p.getId()+";" + s.getRentACarId() + ";" + s.getStartDateTime() + ";" + s.getDuration() +
+							";" + s.getStatus() + ";" + s.isGraded();
 					bw.write(lineToWrite);
 					bw.newLine();
 				}
