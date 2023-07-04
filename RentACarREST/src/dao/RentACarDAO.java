@@ -176,6 +176,9 @@ public class RentACarDAO {
 		SaveToFile();
 		return newRent.getId();
 	}
+	public void update() {
+		SaveToFile();
+	}
 	private int[] getTime(String time) {
 		String splittedTime[] = time.split(":");
 		int hour, minute;

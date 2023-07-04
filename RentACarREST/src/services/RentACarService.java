@@ -18,15 +18,18 @@ import javax.ws.rs.core.MediaType;
 
 import dao.UserDAO;
 import dao.VehicleDAO;
+import dao.CommentDAO;
 import dao.ManagerDAO;
 import dao.PurchaseDAO;
 import dao.RentACarDAO;
 import dto.RentACarDTO;
+import models.Comment;
 import models.Customer;
 import models.Manager;
 import models.Purchase;
 import models.RentACar;
 import models.Role;
+import models.SubPurchase;
 import models.User;
 import models.Vehicle;
 
@@ -55,10 +58,30 @@ public class RentACarService {
 			String contextPath = ctx.getRealPath("");
 			ctx.setAttribute("purchaseDAO", new PurchaseDAO(contextPath));
 		}
+		if(ctx.getAttribute("commentDAO") == null) {
+			String contextPath = ctx.getRealPath("");
+			ctx.setAttribute("commentDAO", new CommentDAO(contextPath));
+		}
 		linkManagers();
 		linkCars();
 		linkPurchasesRentACar();
 		linkPurchasesVehicles();
+		linkComments();
+	}
+	private void linkComments() {
+		RentACarDAO rdao = (RentACarDAO) ctx.getAttribute("rentACarDAO");
+		CommentDAO cdao = (CommentDAO) ctx.getAttribute("commentDAO");
+		UserDAO udao = (UserDAO) ctx.getAttribute("userDAO");
+		for(Comment c : cdao.getAll()) {
+			User u = udao.getById(c.getCustomerId());
+			Customer customer = (Customer)u;
+			c.setCustomer(customer);
+			RentACar r = rdao.getById(c.getRentACarId());
+			c.setRentACar(r);
+			if(c.isApproved()) {
+				r.addGrade(c.getGrade());
+			}
+		}
 	}
 	private void linkPurchasesVehicles() {
 		VehicleDAO vdao = (VehicleDAO) ctx.getAttribute("vehicleDAO");
@@ -79,6 +102,9 @@ public class RentACarService {
 			for(Integer id : p.getVehicleIds()) {
 				p.getRentACars().add(rdao.getById(vdao.getById(id).getRentACar().getId()));
 				rdao.getById(vdao.getById(id).getRentACar().getId()).getRentings().add(p);
+			}
+			for(SubPurchase sp : p.getSubPurchases()) {
+				sp.setRentACar(rdao.getById(sp.getRentACarId()));
 			}
 		}
 	}

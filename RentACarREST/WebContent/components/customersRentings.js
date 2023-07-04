@@ -64,6 +64,28 @@ Vue.component("customersRentings",{
 			    		<br><label>Reason for declining:</label><br>
 			    		<br><label style="font-size:19px">{{r.decliningReason}}</label><br><br><br>
 			    	</div>
+			    	<div v-if="r.status == 'returned'">
+			    		<div v-for="sp in r.subPurchases">
+			    			<div v-if="sp.graded == false">
+			    				<br><label>Leave a comment</label><br>
+							    <input v-model="sp.comment.commentText" type="text">
+			    				<label for="grades">Grade</label>
+			    				<select v-model="sp.comment.grade" name="grades">
+								  <option value="1">1</option>
+								  <option value="2">2</option>
+								  <option value="3">3</option>
+								  <option value="4">4</option>
+								  <option value="5">5</option>
+								  <option value="6">6</option>
+								  <option value="7">7</option>
+								  <option value="8">8</option>
+								  <option value="9">9</option>
+								  <option value="10">10</option>
+								</select>
+			    				<button v-on:click="grade(r,sp)">Grade rent a car named: {{sp.rentACar.name}}!</button><br><br>
+			    			</div>
+			    		</div>
+			    	</div>
 			    </div>
 		    </div>
 		</div>
@@ -81,6 +103,14 @@ Vue.component("customersRentings",{
 		cancel : function(r, index){
 			axios.put('rest/users/cancel/' + r.id).then(response => 
 			//this.rentings[index].status = "aa",
+			axios.get("rest/users/customersRentings")
+			.then( response =>
+				this.rentings = response.data
+				)
+			)
+		},
+		grade : function(r, sp){
+			axios.put('rest/users/grade/' + r.id, sp).then(response => 
 			axios.get("rest/users/customersRentings")
 			.then( response =>
 				this.rentings = response.data

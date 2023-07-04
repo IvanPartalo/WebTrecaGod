@@ -22,10 +22,13 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import dao.CommentDAO;
 import dao.CustomerTypeDAO;
 import dao.PurchaseDAO;
+import dao.RentACarDAO;
 import dao.UserDAO;
 import dao.VehicleDAO;
+import models.Comment;
 import models.Customer;
 import models.Manager;
 import models.Purchase;
@@ -57,6 +60,14 @@ public class UserService {
 		if(context.getAttribute("purchaseDAO") == null) {
 			String contextPath = context.getRealPath("");
 			context.setAttribute("purchaseDAO", new PurchaseDAO(contextPath));
+		}
+		if(context.getAttribute("commentDAO") == null) {
+			String contextPath = context.getRealPath("");
+			context.setAttribute("commentDAO", new CommentDAO(contextPath));
+		}
+		if (context.getAttribute("rentACarDAO") == null ) {
+	    	String contextPath = context.getRealPath("");
+	    	context.setAttribute("rentACarDAO", new RentACarDAO(contextPath));
 		}
 	}
 	@GET
@@ -100,7 +111,7 @@ public class UserService {
 					if(!p.getRentACars().contains(v.getRentACar())) {
 						p.getRentACars().add(v.getRentACar());
 						p.getSubPurchases().add(new SubPurchase(p.getId(), v.getRentACarId(), p.getDuration(),
-							p.getStartDateTime(), p.getStatus()));
+							p.getStartDateTime(), p.getStatus(), false));
 					}
 					return Response.status(200).build();
 				}
@@ -120,7 +131,7 @@ public class UserService {
 			purchase.getVehicleIds().add(v.getId());
 			purchase.getVehicles().add(v);
 			purchase.getSubPurchases().add(new SubPurchase(purchase.getId(), v.getRentACarId(), purchase.getDuration(),
-					purchase.getStartDateTime(), purchase.getStatus()));
+					purchase.getStartDateTime(), purchase.getStatus(), false));
 			c.getShoppingCart().getPrepairedPurchases().add(purchase);
 			return Response.status(200).build();
 		}
@@ -282,6 +293,35 @@ public class UserService {
 			if(p.getId().equals(purchaseId)) {
 				p.setStatus(PurchaseStatus.canceled);
 				pdao.updatePurchases();
+				return Response.status(200).build();
+			}
+		}
+		return Response.status(400).entity("error").build();
+	}
+	@PUT
+	@Path("/grade/{id}")
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Response grade(@PathParam("id") String purchaseId, SubPurchase subPurchase, @Context HttpServletRequest request){
+		User u = (User) request.getSession().getAttribute("currentUser");
+		PurchaseDAO pdao = (PurchaseDAO) context.getAttribute("purchaseDAO");
+		CommentDAO cdao = (CommentDAO) context.getAttribute("commentDAO");
+		RentACarDAO rDao = (RentACarDAO) context.getAttribute("rentACarDAO");
+		Customer c = (Customer)u;
+		for(Purchase p : c.getRentings()) {
+			if(p.getId().equals(purchaseId)) {
+				for(SubPurchase sp : p.getSubPurchases()) {
+					if(sp.getRentACarId() == subPurchase.getRentACarId()) {
+						Comment comment = subPurchase.getComment();
+						comment.setRentACar(sp.getRentACar());
+						comment.setRentACarId(sp.getRentACarId());
+						comment.setCustomer(c);
+						comment.setCustomerId(c.getId());
+						comment.setApproved(false);
+						cdao.save(comment);
+						sp.setGraded(true);
+						pdao.updatePurchases();
+					}
+				}
 				return Response.status(200).build();
 			}
 		}

@@ -16,8 +16,28 @@ public class SubPurchase {
 	private int duration; //in hours
 	private PurchaseStatus status;
 	private boolean fromCurrentRentACar;
+	private boolean graded;
+	private Comment comment;
+	public SubPurchase() {
+		
+	}
+	public SubPurchase(String purchaseId, RentACar rentACar, Integer rentACarId, String startDateTime,
+			LocalDateTime start, int duration, PurchaseStatus status, boolean fromCurrentRentACar, boolean graded,
+			Comment comment) {
+		super();
+		this.purchaseId = purchaseId;
+		this.rentACar = rentACar;
+		this.rentACarId = rentACarId;
+		this.startDateTime = startDateTime;
+		this.start = start;
+		this.duration = duration;
+		this.status = status;
+		this.fromCurrentRentACar = fromCurrentRentACar;
+		this.graded = graded;
+		this.comment = comment;
+	}
 	public SubPurchase(String purchaseId, Integer rentACarId, RentACar rentACar, LocalDateTime start, int duration, String startDateTime,
-			PurchaseStatus status) {
+			PurchaseStatus status, boolean graded) {
 		super();
 		this.purchaseId = purchaseId;
 		this.rentACar = rentACar;
@@ -27,8 +47,10 @@ public class SubPurchase {
 		this.startDateTime = startDateTime;
 		this.status = status;
 		this.fromCurrentRentACar = false;
+		this.graded = graded;
+		this.comment = new Comment();
 	}
-	public SubPurchase(String purchaseId, Integer rentACarId, int duration, String startDateTime, PurchaseStatus status) {
+	public SubPurchase(String purchaseId, Integer rentACarId, int duration, String startDateTime, PurchaseStatus status, boolean graded) {
 		super();
 		this.purchaseId = purchaseId;
 		this.rentACarId = rentACarId;
@@ -36,6 +58,8 @@ public class SubPurchase {
 		this.startDateTime = startDateTime;
 		this.status = status;
 		this.fromCurrentRentACar = false;
+		this.graded = graded;
+		this.comment = new Comment();
 	}
 	public String getPurchaseId() {
 		return purchaseId;
@@ -84,6 +108,18 @@ public class SubPurchase {
 	}
 	public void setFromCurrentRentACar(boolean fromCurrentRentACar) {
 		this.fromCurrentRentACar = fromCurrentRentACar;
+	}
+	public boolean isGraded() {
+		return graded;
+	}
+	public void setGraded(boolean graded) {
+		this.graded = graded;
+	}
+	public Comment getComment() {
+		return comment;
+	}
+	public void setComment(Comment comment) {
+		this.comment = comment;
 	}
 	
 }
