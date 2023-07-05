@@ -239,10 +239,10 @@ Vue.component("rentACarTemplate",{
 			return newList
 		},
 		moveElements: function(a, b){
-			if (a > b) {
+			if (a < b) {
 			    return -1*this.ascending;
 			}
-			if (a < b) {
+			if (a > b) {
 				return 1*this.ascending;
 			}
 			return 0;

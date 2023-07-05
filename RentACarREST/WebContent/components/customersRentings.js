@@ -1,13 +1,58 @@
 Vue.component("customersRentings",{
 	data:function(){
 		return{
-			rentings : null
+			rentings : null,
+			beginningDate: "",
+			endingDate: "",
+			minPrice: null,
+			maxPrice: null,
+			rentACarObject: '',
+			sortingType: 'ascending',
+			sort: 'None',
+			ascending: 1
 		}
 	},
 	template: `
 	<div style="overflow-y:scroll; height:800px;">
 		<h3 style="text-align: center">Your rentings</h3>
-		<div v-for="(r, index) in this.rentings" style="border:1px solid black; background-color: #CBC3E3; margin: 0% 0% 1% 0%;">
+		<h4> Search rentings: </h4>
+		<table cellspacing="15" style="margin-top:-20px">
+			<tr style="text-align: center">
+				<td>Name of rent a car</td>
+				<td>Min price</td>
+				<td>Max price</td>
+				<td>Beginning date</td>
+				<td>Ending date</td>
+			</tr>
+			<tr>
+				<td><input type="text" style="width: 125px" v-model="rentACarObject"/></td>
+				<td><input type="number" style="width: 100px" v-model="minPrice"/></td>
+				<td><input type="number" style="width: 100px" v-model="maxPrice"/></td>
+				<td><input type="date" v-model="beginningDate"/></td>
+				<td><input type="date" v-model="endingDate"/></td>
+			</tr>
+		</table>
+		<div style="float:left">
+			<label style="font-size:16px"><b>Sort:</b></label>
+			<select style="margin-left:10px" v-model="sort">
+				<option>None</option>
+				<option>Rent a car name</option>
+				<option>Price</option>
+				<option>Date</option>
+			</select>
+		</div>
+		<div style="float:left; margin-left: 10px">
+			<div>
+				<input type="radio" id="asc" name="sort_type" value="ascending" v-model="sortingType">	
+				<label for="asc">ascending</label>
+			</div>
+			<div>
+				<input type="radio" id="desc" name="sort_type" value="descending" v-model="sortingType">
+				<label for="desc">descending</label>
+			</div>
+		</div>
+		<br><br><br>
+		<div v-for="(r, index) in rentingsList" style="border:1px solid black; background-color: #CBC3E3; margin: 0% 0% 1% 0%;">
 			<label>Code: </label>
 		    <b><label>{{r.id}}</label></b>
 		    <label style="margin-left:10px">Date/time: </label>
@@ -92,6 +137,64 @@ Vue.component("customersRentings",{
 	 </div>
 	`,
 	computed:{
+		rentingsList(){
+			let filteredList = this.rentings
+			
+			//sortiranje
+			if(this.sortingType == 'ascending'){
+				this.ascending = 1
+			}
+			else{
+				this.ascending = -1
+			}
+			if(this.sort != 'None'){
+				if (this.sort == "Price"){
+					filteredList.sort((a, b) => {
+					  const priceA = a.price;
+					  const priceB = b.price;
+					  return this.moveElements(priceA, priceB)
+					});
+				}
+				if (this.sort == "Date"){
+					filteredList.sort((a, b) => {
+					  const A = a.start;
+					  const B = b.start;
+					  return this.sortDates(A, B)  
+					});
+				}
+				if (this.sort == "Rent a car name"){
+					filteredList.sort((a, b) => {
+					  const objectA = a.subPurchases[0].rentACar.name;
+					  const objectB = b.subPurchases[0].rentACar.name;
+					  return this.moveElements(objectA, objectB)
+					});
+				}
+			}
+			
+			//pretraga
+			if(this.beginningDate != "" || this.endingDate != "" || this.minPrice || this.maxPrice || this.rentACarObject){
+				if(this.beginningDate != ""){
+					let date = new Date(this.beginningDate)
+					filteredList = filteredList.filter((renting) => this.isAfterSearchedDate(date, renting.start))
+				}
+				if(this.endingDate != ""){
+					let date = new Date(this.endingDate)
+					filteredList = filteredList.filter((renting) => this.isBeforeSearchedDate(date, renting.end))
+				}
+				if(this.minPrice){
+					filteredList = filteredList.filter((renting) => renting.price >= this.minPrice)
+				}
+				if(this.maxPrice){
+					filteredList = filteredList.filter((renting) => renting.price <= this.maxPrice)
+				}
+				if(this.rentACarObject){
+					filteredList = this.getForSearchedRentACars(filteredList)
+				}
+				return filteredList
+			}else{
+				return this.rentings
+			}
+		}
 	},
 	mounted: function() {
 		axios.get("rest/users/customersRentings")
@@ -116,6 +219,63 @@ Vue.component("customersRentings",{
 				this.rentings = response.data
 				)
 			)
+		},
+		isAfterSearchedDate(searchedDate, startDate){
+			var day = startDate.dayOfMonth;
+			var month = startDate.monthValue - 1;// ovde minus jedan, verovatno kad se pravi datum u js-u indeksira se od 0
+			var year = startDate.year;
+			var date = new Date(Date.UTC(year, month, day));
+			return date >= searchedDate
+		},
+		isBeforeSearchedDate(searchedDate, endDate){
+			var day = endDate.dayOfMonth;
+			var month = endDate.monthValue - 1;
+			var year = endDate.year;
+			var date = new Date(Date.UTC(year, month, day));
+			return date <= searchedDate
+		},
+		getForSearchedRentACars: function(rentings){
+			let add = true
+			let newList = []
+			rentings.forEach((rent) => {
+				add = false
+				rent.subPurchases.forEach((subPurchase) => {
+					if(subPurchase.rentACar.name.toLowerCase().includes(this.rentACarObject.toLowerCase())){
+						add = true		
+					}							
+				});
+				if(add){
+					newList.push(rent)
+				}
+			});
+			return newList
+		},
+		moveElements: function(a, b){
+			if (a < b) {
+			    return -1*this.ascending;
+			}
+			if (a > b) {
+				return 1*this.ascending;
+			}
+			return 0;
+		},
+		sortDates: function(a, b){
+			let day = a.dayOfMonth;
+			let month = a.monthValue - 1;
+			let year = a.year;
+			let dateA = new Date(Date.UTC(year, month, day));
+			day = b.dayOfMonth;
+			month = b.monthValue - 1;
+			year = b.year;
+			let dateB = new Date(Date.UTC(year, month, day));
+			
+			if (dateA < dateB) {
+			    return -1*this.ascending;
+			}
+			if (dateA > dateB) {
+				return 1*this.ascending;
+			}
+			return 0;
 		}
 	}
 })
