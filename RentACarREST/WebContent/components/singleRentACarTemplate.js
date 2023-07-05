@@ -42,12 +42,6 @@ Vue.component("singleRentACarTemplate",{
 		</div>
 		<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
 			<div style="clear:both">
-			<div style="margin: 50px; margin-left: 120px">
-				<h2 style="text-align:left"> Comments </h2>
-				<div style="width:600px; height:200px; margin:20px; border:1px solid">
-				to be done
-				</div>
-			</div>
 			</div>
 			<div style="margin: 50px; margin-left: 120px">
 				<h2 style="text-align:left"> Vehicles </h2>
@@ -86,6 +80,12 @@ Vue.component("singleRentACarTemplate",{
 				</div>
 			</div>
 	    </div>
+	    <div style="margin: 50px;">
+				<h2 style="text-align:left"> Comments </h2>
+				<div style="width:600px; height:200px; margin:20px; border:1px solid">
+				to be done
+			</div>
+		</div>
 		</div>
 	</div>
 	`,

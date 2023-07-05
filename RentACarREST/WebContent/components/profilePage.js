@@ -5,6 +5,7 @@ Vue.component("profilePage",{
 			notManager: false,
 			isCustomer: false,
 			isManager: false,
+			isAdmin: false,
 			id: null,
 			user: {id: null, username: null, password: null, firstName: null, 
 			lastName: null, gender: null, role: null, dateOfBirth: null, collectedPoints:null, 
@@ -64,14 +65,14 @@ Vue.component("profilePage",{
 			    </div>
 			</div>
 		</div>
-	
-	
-	
-	<div v-if="isManager">
-	<div style="margin:10px">
-		<h1 style="font-size:40px">{{rentACar.name}}</h1>
-		<img v-bind:src="rentACar.logoImg" style="width:100px; height:100px" />
-	</div>
+		<div v-if="isAdmin">
+			<customersTemplate></customersTemplate>
+		</div>
+		<div v-if="isManager">
+		<div style="margin:10px">
+			<h1 style="font-size:40px">{{rentACar.name}}</h1>
+			<img v-bind:src="rentACar.logoImg" style="width:100px; height:100px" />
+		</div>
 		<div style="float:left; margin:10px; font-size:20px">
 			
 			<div style="float:left; margin:10px">
@@ -223,6 +224,9 @@ Vue.component("profilePage",{
 			}	
 			if(this.user.role == "customer"){
 				this.isCustomer = true
+			}
+			if(this.user.role == "administrator"){
+				this.isAdmin = true
 			}
 			if(this.user.role == "manager"){
 				axios.get('rest/rentacar/manager/'+this.user.id)
