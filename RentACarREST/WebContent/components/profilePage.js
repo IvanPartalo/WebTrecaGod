@@ -64,7 +64,10 @@ Vue.component("profilePage",{
 			    </div>
 			</div>
 		</div>
-	    <div v-if="isManager">
+	
+	
+	
+	<div v-if="isManager">
 	<div style="margin:10px">
 		<h1 style="font-size:40px">{{rentACar.name}}</h1>
 		<img v-bind:src="rentACar.logoImg" style="width:100px; height:100px" />
