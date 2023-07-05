@@ -78,7 +78,7 @@ public class RentACarService {
 			c.setCustomer(customer);
 			RentACar r = rdao.getById(c.getRentACarId());
 			c.setRentACar(r);
-			if(c.isApproved()) {
+			if(c.getApproved()) {
 				r.addGrade(c.getGrade());
 			}
 		}
@@ -180,6 +180,20 @@ public class RentACarService {
 		RentACarDAO rDao = (RentACarDAO) ctx.getAttribute("rentACarDAO");
 		return rDao.getFromRentACar(m.getRentACarId());
 	}
+	@GET
+	@Path("/comments/{id}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public ArrayList<Comment> getRentACarComments(@PathParam("id") int id){
+		CommentDAO dao = (CommentDAO) ctx.getAttribute("commentDAO");
+		return dao.getApprovedRentACarComments(id);
+	}
+	@GET
+	@Path("/allcomments/{id}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public ArrayList<Comment> getAllRentACarComments(@PathParam("id") int id){
+		CommentDAO dao = (CommentDAO) ctx.getAttribute("commentDAO");
+		return dao.getRentACarComments(id);
+	}
 	@POST
 	@Path("/{id}")
 	@Produces(MediaType.APPLICATION_JSON)
@@ -205,7 +219,13 @@ public class RentACarService {
 		UserDAO uDao = (UserDAO) ctx.getAttribute("userDAO");
 		uDao.saveManager(manager, rentacarId);
 	}
-	
+	@PUT
+	@Path("/commentapproval/{id}")
+	@Consumes(MediaType.APPLICATION_JSON)
+	public void approveComment(@PathParam("id") int id) {
+		CommentDAO dao = (CommentDAO) ctx.getAttribute("commentDAO");
+		dao.approveComment(id);
+	}
 	@POST
 	@Path("/vehicle")
 	@Consumes(MediaType.APPLICATION_JSON)
@@ -216,4 +236,5 @@ public class RentACarService {
 		vehicle.setRentACar(manager.getRentACar());
 		vDao.save(vehicle);
 	}
+	
 }

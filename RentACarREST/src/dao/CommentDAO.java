@@ -70,6 +70,37 @@ public class CommentDAO {
 	public ArrayList<Comment> getAll(){
 		return comments;
 	}
+	public ArrayList<Comment> getApprovedRentACarComments(int rentACarId){
+		ArrayList<Comment> approvedComments = new ArrayList<>();
+		for(Comment c : comments) {
+			if(c.getApproved() && c.getRentACarId() == rentACarId) {
+				approvedComments.add(c);
+			}
+		}
+		return approvedComments;
+	}
+	public ArrayList<Comment> getRentACarComments(int rentACarId){
+		ArrayList<Comment> rentComments = new ArrayList<>();
+		for(Comment c : comments) {
+			if(c.getRentACarId() == rentACarId) {
+				rentComments.add(c);
+			}
+		}
+		return rentComments;
+	}
+	public Comment getById(int id){
+		for(Comment c : comments) {
+			if(c.getId() == id) {
+				return c;
+			}
+		}
+		return null;
+	}
+	public void approveComment(int id) {
+		Comment comment = getById(id);
+		comment.setApproved(true);
+		SaveToFile();
+	}
 	public void SaveToFile() {
 		BufferedWriter bw = null;
 		try {
@@ -78,7 +109,7 @@ public class CommentDAO {
 			bw = new BufferedWriter(new OutputStreamWriter(fos));
 			for(Comment c : comments) {
 				String lineToWrite = 
-				c.getId()+";"+c.getCustomerId()+";"+c.getRentACarId()+";"+c.getCommentText()+";"+c.getGrade()+";"+c.isApproved()+";";
+				c.getId()+";"+c.getCustomerId()+";"+c.getRentACarId()+";"+c.getCommentText()+";"+c.getGrade()+";"+c.getApproved()+";";
 				bw.write(lineToWrite);
 				bw.newLine();
 			}
