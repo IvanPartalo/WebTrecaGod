@@ -22,6 +22,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.StringTokenizer;
 
+import dto.UserDTO;
 import models.Customer;
 import models.CustomerType;
 import models.Gender;
@@ -156,6 +157,20 @@ public class UserDAO {
 	}
 	public Collection<User> getAll(){
 		return users.values();
+	}
+	public ArrayList<UserDTO> getAllUsersDTO(){
+		ArrayList<UserDTO> usersToShow = new ArrayList<>();
+		for(User user : users.values()) {
+			UserDTO u = new UserDTO(user.getUsername(), user.getFirstName(), user.getLastName(), user.getGender(), user.getRole(),
+					user.getDateOfBirth());
+			if(user.getRole() == Role.customer) {
+				Customer c = (Customer)user;
+				u.setCollectedPoints(c.getCollectedPoints());
+				u.setCustomerType(c.getCustomerType().getName());
+			}
+			usersToShow.add(u);
+		}
+		return usersToShow;
 	}
 	
 	public User getById(Integer id){

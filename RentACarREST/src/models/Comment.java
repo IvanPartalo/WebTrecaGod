@@ -80,7 +80,7 @@ public class Comment {
 	public void setId(int id) {
 		this.id = id;
 	}
-	public boolean isApproved() {
+	public boolean getApproved() {
 		return approved;
 	}
 	public void setApproved(boolean approved) {

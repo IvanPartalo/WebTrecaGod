@@ -28,6 +28,7 @@ import dao.PurchaseDAO;
 import dao.RentACarDAO;
 import dao.UserDAO;
 import dao.VehicleDAO;
+import dto.UserDTO;
 import models.Comment;
 import models.Customer;
 import models.Manager;
@@ -84,6 +85,13 @@ public class UserService {
 	public Collection<User> getAll(){
 		UserDAO dao = (UserDAO) context.getAttribute("userDAO");
 		return dao.getAll();
+	}
+	@GET
+	@Path("/userstoshow")
+	@Produces(MediaType.APPLICATION_JSON)
+	public ArrayList<UserDTO> getUsers(){
+		UserDAO dao = (UserDAO) context.getAttribute("userDAO");
+		return dao.getAllUsersDTO();
 	}
 	@GET
 	@Path("/{id}")

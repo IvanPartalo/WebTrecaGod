@@ -274,7 +274,7 @@ Vue.component("managersRentings",{
 				)
 			)
 		},
-				isAfterSearchedDate(searchedDate, startDate){
+		isAfterSearchedDate(searchedDate, startDate){
 			var day = startDate.dayOfMonth;
 			var month = startDate.monthValue - 1;// ovde minus jedan, verovatno kad se pravi datum u js-u indeksira se od 0
 			var year = startDate.year;

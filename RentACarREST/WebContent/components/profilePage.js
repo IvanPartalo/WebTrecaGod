@@ -5,11 +5,13 @@ Vue.component("profilePage",{
 			notManager: false,
 			isCustomer: false,
 			isManager: false,
+			isAdmin: false,
 			id: null,
 			user: {id: null, username: null, password: null, firstName: null, 
 			lastName: null, gender: null, role: null, dateOfBirth: null, collectedPoints:null, 
 			customerType:{name:null, discount:null, requiredPoints:null}},
-			rentACar: null
+			rentACar: null,
+			comments: null
 		}
 	},
 	template: `
@@ -64,14 +66,14 @@ Vue.component("profilePage",{
 			    </div>
 			</div>
 		</div>
-	
-	
-	
-	<div v-if="isManager">
-	<div style="margin:10px">
-		<h1 style="font-size:40px">{{rentACar.name}}</h1>
-		<img v-bind:src="rentACar.logoImg" style="width:100px; height:100px" />
-	</div>
+		<div v-if="isAdmin">
+			<customersTemplate></customersTemplate>
+		</div>
+		<div v-if="isManager">
+		<div style="margin:10px">
+			<h1 style="font-size:40px">{{rentACar.name}}</h1>
+			<img v-bind:src="rentACar.logoImg" style="width:100px; height:100px" />
+		</div>
 		<div style="float:left; margin:10px; font-size:20px">
 			
 			<div style="float:left; margin:10px">
@@ -144,8 +146,20 @@ Vue.component("profilePage",{
 			</div>
 			<div style="margin: 50px; margin-left: 120px">
 				<h2 style="text-align:left"> Comments </h2>
-				<div style="width:600px; height:200px; margin:20px; border:1px solid">
-				to be done
+				<div style="margin:20px;">
+					<div v-for="c in comments" style="display:flex">
+					<div style="border-style: outset; flex:1">
+						<h3>{{c.customer.username}}</h3>
+						<p style="font-size:18px; padding-left:20px">{{c.commentText}}</p>
+						<p style="font-size:18px; padding-left:20px">Grade: {{c.grade}}/10</p>
+					</div>
+					<div style="text-align:center">
+						<p>Status:</p>
+						<p v-if="c.approved" style="margin-left:20px"><b>Approved</b></p>
+						<p v-if="!c.approved"><b>Not approved</b></p>
+						<button v-if="!c.approved" v-on:click="ApproveComment(c)">Approve</button>		
+					</div>
+					</div>
 				</div>
 			</div>
 			
@@ -200,6 +214,10 @@ Vue.component("profilePage",{
 				.then(response => this.setAppearance())
 			}
 		},
+		ApproveComment: function(c){
+			c.approved = true
+			axios.put('rest/rentacar/commentapproval/'+c.id)
+		},
 		setAppearance: function(){
 			let date = new Date(this.user.dateOfBirth)
 			let day = date.getDate()
@@ -224,12 +242,17 @@ Vue.component("profilePage",{
 			if(this.user.role == "customer"){
 				this.isCustomer = true
 			}
+			if(this.user.role == "administrator"){
+				this.isAdmin = true
+			}
 			if(this.user.role == "manager"){
 				axios.get('rest/rentacar/manager/'+this.user.id)
     			.then(response => this.rentACar = response.data)
 				setTimeout(() => {
 				this.isManager = true
-      			}, 100)
+				axios.get('rest/rentacar/allcomments/'+this.rentACar.id)
+      			.then(response => this.comments = response.data)
+      			}, 200)
 			}
 		}
 	}

@@ -14,6 +14,7 @@ const SingleRentACar = {template: '<singleRentACarTemplate></singleRentACarTempl
 const EditVehicle = {template: '<editVehicle></editVehicle>'}
 const CustomersRentings = {template: '<customersRentings></customersRentings>'}
 const ManagersRentings = {template: '<managersRentings></managersRentings>'}
+const CustomersTemplate = {template: '<customersTemplate></customersTemplate>'}
 
 const router = new VueRouter({
 	mode: 'hash',
@@ -31,7 +32,8 @@ const router = new VueRouter({
 		{path: '/vehiclecreate/', component: VehicleCreate},
 		{path: '/cart/', component: Cart},
 		{path: '/singleRentACar/:id', component: SingleRentACar},
-		{path: '/editvehicle/:id', component: EditVehicle}
+		{path: '/editvehicle/:id', component: EditVehicle},
+		{path: '/customerstemplate/', component: CustomersTemplate}
 	]
 })
 

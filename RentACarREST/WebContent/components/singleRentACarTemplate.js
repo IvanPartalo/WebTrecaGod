@@ -2,6 +2,7 @@ Vue.component("singleRentACarTemplate",{
 	data:function(){
 		return{
 			rentACar: null,
+			comments: null,
 			id: -1
 		}
 	},
@@ -42,12 +43,6 @@ Vue.component("singleRentACarTemplate",{
 		</div>
 		<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
 			<div style="clear:both">
-			<div style="margin: 50px; margin-left: 120px">
-				<h2 style="text-align:left"> Comments </h2>
-				<div style="width:600px; height:200px; margin:20px; border:1px solid">
-				to be done
-				</div>
-			</div>
 			</div>
 			<div style="margin: 50px; margin-left: 120px">
 				<h2 style="text-align:left"> Vehicles </h2>
@@ -86,6 +81,16 @@ Vue.component("singleRentACarTemplate",{
 				</div>
 			</div>
 	    </div>
+	    <div style="margin-top: 50px; margin-bottom:30px">
+			<h2 style="text-align:left"> Comments </h2>
+			<div style="margin:20px;">
+				<div v-for="c in comments" style="border-style: outset">
+					<h3>{{c.customer.username}}</h3>
+					<p style="font-size:18px; padding-left:20px">{{c.commentText}}</p>
+					<p style="font-size:18px; padding-left:20px">Grade: {{c.grade}}/10</p>
+				</div>
+			</div>
+		</div>
 		</div>
 	</div>
 	`,
@@ -95,8 +100,14 @@ Vue.component("singleRentACarTemplate",{
     	console.log(this.id)
     	axios.get('rest/rentacar/'+this.id)
     	.then(response => this.rentACar = response.data)
+    	setTimeout(() => {
+        	this.loadComments()
+      	}, 200)
     },
 	methods:{
-	
+		loadComments: function(){
+			axios.get('rest/rentacar/comments/'+this.id)
+    		.then(response => this.comments = response.data)
+		}
 	}
 })
