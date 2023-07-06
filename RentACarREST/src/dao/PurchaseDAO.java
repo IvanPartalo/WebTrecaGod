@@ -128,10 +128,10 @@ public class PurchaseDAO {
 				LocalDateTime start = LocalDateTime.parse(startDateTime, formatter);
 				LocalDateTime end = LocalDateTime.parse(endDateTime, formatter);
 				if(decliningReason.equals("nothing")) {
-					 purchases.add(new Purchase(id, Integer.parseInt(price), start, end, Integer.parseInt(duration), 
+					 purchases.add(new Purchase(id, Double.parseDouble(price), start, end, Integer.parseInt(duration), 
 							 startDateTime, endDateTime, PurchaseStatus.valueOf(status), Integer.parseInt(customerId), ""));
 				}else {
-					purchases.add(new Purchase(id, Integer.parseInt(price), start, end, Integer.parseInt(duration), 
+					purchases.add(new Purchase(id, Double.parseDouble(price), start, end, Integer.parseInt(duration), 
 							startDateTime, endDateTime, PurchaseStatus.valueOf(status), Integer.parseInt(customerId), decliningReason));
 					
 				}

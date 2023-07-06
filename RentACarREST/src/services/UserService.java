@@ -110,12 +110,12 @@ public class UserService {
 		if(v != null) {
 			Customer c = (Customer)u;
 			c.getShoppingCart().addVehicle(v);
-			c.getShoppingCart().addPrice(v.getPrice());
+			c.getShoppingCart().addPrice(v.getPrice()*(1.0-c.getCustomerType().getDiscount()/100.0));
 			for(Purchase p : c.getShoppingCart().getPrepairedPurchases()) {
 				if(p.getStartDateTime().equals(purchase.getStartDateTime()) && p.getEndDateTime().equals(purchase.getEndDateTime())) {
 					p.getVehicleIds().add(v.getId());
 					p.getVehicles().add(v);
-					p.addPrice(v.getPrice());
+					p.addPrice(v.getPrice()*(1.0-c.getCustomerType().getDiscount()/100.0));
 					if(!p.getRentACars().contains(v.getRentACar())) {
 						p.getRentACars().add(v.getRentACar());
 						p.getSubPurchases().add(new SubPurchase(p.getId(), v.getRentACarId(), p.getDuration(),
@@ -131,7 +131,7 @@ public class UserService {
 			purchase.setEnd(dateTime);
 			Duration d = Duration.between(purchase.getStart(), purchase.getEnd());
 			purchase.setDuration((int) (d.getSeconds()/3600));
-			purchase.setPrice(v.getPrice());
+			purchase.setPrice(v.getPrice()*(1.0-c.getCustomerType().getDiscount()/100.0));
 			purchase.setStatus(PurchaseStatus.pending);
 			purchase.setCustomerId(c.getId());
 			purchase.setCustomer(c);
@@ -150,14 +150,40 @@ public class UserService {
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Response rent(@Context HttpServletRequest request){
 		PurchaseDAO pdao = (PurchaseDAO) context.getAttribute("purchaseDAO");
+		UserDAO udao = (UserDAO) context.getAttribute("userDAO");
 		User u = (User) request.getSession().getAttribute("currentUser");
 		Customer c = (Customer)u;
 		for(Purchase p : c.getShoppingCart().getPrepairedPurchases()) {
 			pdao.save(p);
 		}
+		c.setCollectedPoints(c.getCollectedPoints() + c.getShoppingCart().getPrice()/1000.0*133.0);
+		udao.SaveAll();
 		c.setShoppingCart(new ShoppingCart());
 		c.getShoppingCart().setUser(c);
 		return Response.status(200).build();
+	}
+	@PUT
+	@Path("/cancel/{id}")
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Response cancelPurchase(@PathParam("id") String purchaseId, @Context HttpServletRequest request){
+		User u = (User) request.getSession().getAttribute("currentUser");
+		PurchaseDAO pdao = (PurchaseDAO) context.getAttribute("purchaseDAO");
+		UserDAO udao = (UserDAO) context.getAttribute("userDAO");
+		Customer c = (Customer)u;
+		for(Purchase p : c.getRentings()) {
+			if(p.getId().equals(purchaseId)) {
+				if((c.getCollectedPoints() - (double)p.getPrice()/1000.0*133.0*4.0) <= 0.0) {
+					c.setCollectedPoints(0.0);
+				}else {
+					c.setCollectedPoints(c.getCollectedPoints() - (double)p.getPrice()/1000.0*133.0*4.0);
+				}
+				udao.SaveAll();
+				p.setStatus(PurchaseStatus.canceled);
+				pdao.updatePurchases();
+				return Response.status(200).build();
+			}
+		}
+		return Response.status(400).entity("error").build();
 	}
 	@POST
 	@Path("/removeFromCart/{id}")
@@ -289,22 +315,6 @@ public class UserService {
 			}
 		}
 		return result;
-	}
-	@PUT
-	@Path("/cancel/{id}")
-	@Consumes(MediaType.APPLICATION_JSON)
-	public Response cancelPurchase(@PathParam("id") String purchaseId, @Context HttpServletRequest request){
-		User u = (User) request.getSession().getAttribute("currentUser");
-		PurchaseDAO pdao = (PurchaseDAO) context.getAttribute("purchaseDAO");
-		Customer c = (Customer)u;
-		for(Purchase p : c.getRentings()) {
-			if(p.getId().equals(purchaseId)) {
-				p.setStatus(PurchaseStatus.canceled);
-				pdao.updatePurchases();
-				return Response.status(200).build();
-			}
-		}
-		return Response.status(400).entity("error").build();
 	}
 	@PUT
 	@Path("/grade/{id}")

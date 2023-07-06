@@ -9,7 +9,7 @@ Vue.component("cart",{
 	<div>
 		<div class="row" style="font-size:22px">
 			<div class="column">
-				<label>Total price:</label>
+				<label>Total price with discount applied:</label>
 				<b><label>{{this.cart.price}} euros</label></b><br>
 			</div>
 			<div class="column">
@@ -24,7 +24,7 @@ Vue.component("cart",{
 		    	<b><label>{{p.start.dayOfMonth}}-{{p.start.month}}-{{p.start.year}}</label></b>
 			    <label style="margin-left:20px">Duration: </label>
 			    <b><label>{{p.duration}} hours</label></b>
-			    <label style="margin-left:20px">Price for this time: </label>
+			    <label style="margin-left:20px">Price for this time(with discount applied): </label>
 			    <b><label>{{p.price}} euros</label></b>
 	    	</div>
 		    <div v-for="(v,index) in p.vehicles" style="border:1px solid black; font-size:21px; padding: 10px; width: 70%; margin: 0% 12% 1% 12%; background-color: #FBD603">
@@ -42,7 +42,7 @@ Vue.component("cart",{
 						<div class="column">
 							<label>Brand:</label>
 							<b><label>{{v.brand}}</label></b><br>
-							<label>Price:</label>
+							<label>Regular price:</label>
 							<b><label>{{v.price}}</label></b><br>
 							<label>Type:</label>
 							<b><label>{{v.type}}</label></b><br>

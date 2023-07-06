@@ -57,10 +57,10 @@ public class ShoppingCart {
 	public void removeVehicle(Vehicle v) {
 		this.vehicles.remove(v);
 	}
-	public void addPrice(int p) {
-		this.price += p;
+	public void addPrice(double d) {
+		this.price += d;
 	}
-	public void removePrice(int p) {
+	public void removePrice(double p) {
 		this.price -= p;
 	}
 	public ArrayList<Purchase> getPrepairedPurchases() {

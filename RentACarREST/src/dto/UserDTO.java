@@ -13,7 +13,7 @@ public class UserDTO {
 	private Gender gender;
 	private Date dateOfBirth;
 	private Role role;
-	private int collectedPoints;
+	private Double collectedPoints;
 	private String customerType;
 	public UserDTO() {
 		
@@ -66,10 +66,10 @@ public class UserDTO {
 	public void setDateOfBirth(Date dateOfBirth) {
 		this.dateOfBirth = dateOfBirth;
 	}
-	public int getCollectedPoints() {
+	public Double getCollectedPoints() {
 		return collectedPoints;
 	}
-	public void setCollectedPoints(int collectedPoints) {
+	public void setCollectedPoints(Double collectedPoints) {
 		this.collectedPoints = collectedPoints;
 	}
 	public String getCustomerType() {

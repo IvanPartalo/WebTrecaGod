@@ -60,6 +60,12 @@ Vue.component("managersRentings",{
 		    <b><label>{{r.price}} euros</label></b>
 		    <label style="margin-left:10px">Status: </label>
 		    <b><label>{{r.status}}</label></b>
+		    <div>
+			    <label>Rented from these objects:</label>
+			    <div v-for="rObject in r.rentACars">
+			    	<b><label>{{rObject.name}}</label></b>
+			    </div>
+		    </div>
 		    <div class="row">
 			    <div class="columnSpecial1">
 				    <div v-for="v in r.vehicles" style="border:1px solid black; font-size:15px; padding: 5px; width: 100%; margin: 0% 0% 1% 1%; background-color: #FBD603">
@@ -80,7 +86,7 @@ Vue.component("managersRentings",{
 								<div class="column">
 									<label>Brand:</label>
 									<b><label>{{v.brand}}</label></b><br>
-									<label>Price:</label>
+									<label>Regular price:</label>
 									<b><label >{{v.price}}</label></b><br>
 									<label>Type:</label>
 									<b><label>{{v.type}}</label></b><br>

@@ -57,7 +57,7 @@ public class CustomerTypeDAO {
 		}
 		return null;
 	}
-	public CustomerType getByPoints(Integer collectedPoints) {
+	public CustomerType getByPoints(Double collectedPoints) {
 		int maxPoints = 0;
 		CustomerType customerType = null;
 		for(CustomerType c : customerTypes) {

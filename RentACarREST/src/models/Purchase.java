@@ -13,7 +13,7 @@ public class Purchase {
 	private ArrayList<Integer> vehicleIds;
 	@JsonIgnoreProperties({"rentings", "vehicles"})
 	private HashSet<RentACar> rentACars;
-	private int price;
+	private Double price;
 	private LocalDateTime start;
 	private LocalDateTime end;
 	private int duration; //in hours
@@ -30,11 +30,11 @@ public class Purchase {
 		this.vehicleIds = new ArrayList<>();
 		this.subPurchases = new ArrayList<>();
 		this.rentACars = new HashSet<RentACar>();
-		this.price = 0;
+		this.price = 0.0;
 	}
 	
 	public Purchase(String id, ArrayList<Vehicle> vehicles, ArrayList<Integer> vehicleIds, HashSet<RentACar> rentACars,
-			int price, LocalDateTime start, LocalDateTime end, int duration, String startDateTime, String endDateTime,
+			Double price, LocalDateTime start, LocalDateTime end, int duration, String startDateTime, String endDateTime,
 			Customer customer, int customerId, PurchaseStatus status, ArrayList<SubPurchase> subPurchases, String reason) {
 		super();
 		this.id = id;
@@ -54,7 +54,7 @@ public class Purchase {
 		this.decliningReason = reason;
 	}
 
-	public Purchase(String id, ArrayList<Vehicle> vehicles, HashSet<RentACar> rentACars, int customerId, int price,
+	public Purchase(String id, ArrayList<Vehicle> vehicles, HashSet<RentACar> rentACars, int customerId, Double price,
 			LocalDateTime start, LocalDateTime end, int duration, String startDateTime, String endDateTime,
 			Customer customer, PurchaseStatus status, String reason) {
 		super();
@@ -74,7 +74,7 @@ public class Purchase {
 		this.subPurchases = new ArrayList<>();
 		this.decliningReason = reason;
 	}
-	public Purchase(String id, int price, LocalDateTime start, 
+	public Purchase(String id, Double price, LocalDateTime start, 
 			 LocalDateTime end, int duration, String startDateTime, String endDateTime, PurchaseStatus status, 
 			 int customerId, String reason) {
 		this.id = id;
@@ -126,10 +126,10 @@ public class Purchase {
 	public void setRentACars(HashSet<RentACar> rentACars) {
 		this.rentACars = rentACars;
 	}
-	public int getPrice() {
+	public Double getPrice() {
 		return price;
 	}
-	public void setPrice(int price) {
+	public void setPrice(double price) {
 		this.price = price;
 	}
 	public int getDuration() {
@@ -185,10 +185,10 @@ public class Purchase {
 		}
 		this.vehicleIds = result;
 	}
-	public void addPrice(int p) {
+	public void addPrice(double p) {
 		this.price += p;
 	}
-	public void removePrice(int p) {
+	public void removePrice(double p) {
 		this.price -= p;
 	}
 	public ArrayList<SubPurchase> getSubPurchases() {

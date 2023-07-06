@@ -20,7 +20,7 @@ Vue.component("profilePage",{
 			<a href="" v-on:click="showRentACar" style="margin-left:15px">Rent a car shops</a>
 			<a href="" v-on:click="edit" style="margin-left:15px">Edit profile</a>
 			<a href="" v-on:click="changePassword" style="margin-left:15px">Change password</a>
-			<a href="" v-on:click="goToCart" style="margin-left:15px">Cart</a>
+			<a v-if="user.role == 'customer'" href="" v-on:click="goToCart" style="margin-left:15px">Cart</a>
 			<a href="" v-on:click="logOut" style="float:right; margin-right:30px">Log out</a>
 		</div>
 		<div class="row">
@@ -59,7 +59,7 @@ Vue.component("profilePage",{
 			</div>
 			<div class="column">
 				 <div v-if="user.role == 'customer'">
-			    	<customersRentings></customersRentings>
+			    	<customersRentings @changed="changedCancel"></customersRentings>
 			    </div>
 			    <div v-if="user.role == 'manager'">
 			    	<managersRentings></managersRentings>
@@ -176,6 +176,15 @@ Vue.component("profilePage",{
       	}, 200)
     },
 	methods:{
+		changedCancel: function(){
+			axios.get("rest/currentUser")
+			.then( response =>
+				this.user = response.data
+				)
+		setTimeout(() => {
+        	this.setAppearance()
+      	}, 200)
+		},
 		edit: function(){
 			event.preventDefault()
 			router.push(`/user/edit/`)
