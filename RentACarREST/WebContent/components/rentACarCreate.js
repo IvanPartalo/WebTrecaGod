@@ -11,13 +11,15 @@ Vue.component("rentACarCreate",{
 			id:-1,
 			buttonText: "Create!",
 			additionalInfo: "",
-			errorMessage: ''
+			errorMessage: '',
+			map: null
 		}
 	},
 	template: `
 	<div >
 		<h1 style="width:400px; margin:auto">Create new rent a car</h1>
-		<div style="width:480px; margin:auto; font-size:18px">
+		<div style="width:480px; float:left; border:1px outset"></div>
+		<div style="width:480px; font-size:18px; float:left">
 			<form>
 				<div style="border:1px solid black; margin:5px">
 					<div style="margin:10px">
@@ -71,6 +73,12 @@ Vue.component("rentACarCreate",{
 				<br>
 			</form>
 		</div>
+		<div id="map" class="map" style="float:left; height:400px; width:400px" v-on:click="getCoordinates">
+		
+		</div>
+		<div style="clear:both; ">
+		<p style="right:0; position:absolute; padding 10px; padding-right:150px">Click anywhere on map to select longitude and latitude</p>
+		</div>
 	</div>
 	`,
 	mounted(){
@@ -79,6 +87,19 @@ Vue.component("rentACarCreate",{
 		setTimeout(() => {
         	this.setButtonText()
       	}, 200)
+      	this.map = new ol.Map({
+        target: 'map',
+        layers: [
+          new ol.layer.Tile({
+            source: new ol.source.OSM()
+          })
+        ],
+        view: new ol.View({
+          center: ol.proj.fromLonLat([19, 45]),
+          zoom: 4
+        })
+      });
+
 	},
 	methods:{
 		setButtonText: function(){
@@ -88,9 +109,20 @@ Vue.component("rentACarCreate",{
 				this.additionalInfo = "There is no free managers, you will need to add new one."
 			}
 		},
+		getCoordinates: function(evt){
+			this.map.on('click', function(evt){
+			    test(evt)
+			});
+        	this.setCoordinates()
+		},
+		setCoordinates: function(){
+			coords = getCoords()
+			this.rentACarDTO.longitude = coords[0]
+			this.rentACarDTO.latitude = coords[1]
+		},
 		create: function(){
 			event.preventDefault()
-			this.rentACarDTO.address = this.streetAndNumber+'|'+this.place+'|'+this.zipCode
+			this.rentACarDTO.address = this.streetAndNumber+'@'+this.place+' '+this.zipCode
 			
 			if(this.rentACarDTO.name.trim().length == 0){
 				this.errorMessage = "Enter name!"
@@ -108,11 +140,11 @@ Vue.component("rentACarCreate",{
 				this.errorMessage = "Enter zip code!"
 				return;
 			}
-			else if(this.rentACarDTO.longitude.trim().length == 0){
+			else if(!this.rentACarDTO.longitude){
 				this.errorMessage = "Enter longitude!"
 				return;
 			}
-			else if(this.rentACarDTO.latitude.trim().length == 0){
+			else if(!this.rentACarDTO.latitude){
 				this.errorMessage = "Enter latitude!"
 				return;
 			}

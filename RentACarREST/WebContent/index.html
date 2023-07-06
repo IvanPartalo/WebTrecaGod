@@ -4,8 +4,9 @@
 <meta charset="ISO-8859-1">
 <script src="js/jquery.min.js"></script>
 <title>Rent a car IvanBosko</title>
-<script src="js/jquery.min.js"></script>
 <link rel="icon" type="image/x-icon" href="images/logo.ico">
+<script src="https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v6.5.0/build/ol.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ol@v7.4.0/ol.css">
 <style>
 .container {
   display: flex;
@@ -75,5 +76,14 @@
 	<script src="components/managersRentings.js"></script>
 	<script src="components/customersTemplate.js"></script>
 	<script src="js/app.js"></script>
+	<script>
+	var coords
+	function test(evt) {
+		coords = ol.proj.toLonLat(evt.coordinate)
+	}
+	function getCoords(){
+		return coords
+	}
+	</script>
 </body>
 </html>

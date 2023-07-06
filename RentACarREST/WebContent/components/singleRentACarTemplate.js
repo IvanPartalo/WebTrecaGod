@@ -3,11 +3,12 @@ Vue.component("singleRentACarTemplate",{
 		return{
 			rentACar: null,
 			comments: null,
-			id: -1
+			id: -1,
+			map: null
 		}
 	},
 	template: `
-	<div>
+	<div v-if="rentACar!=null">
 	<div style="float:left; margin:10px">
 		<img v-bind:src="rentACar.logoImg" style="width:100px; height:100px" />
 	</div>
@@ -35,13 +36,15 @@ Vue.component("singleRentACarTemplate",{
 	        <div style="float:left; margin:10px">
 	        	Rating:
 	        </div>
-	        <div style="float: left; margin:10px; margin-left:65px">
+	        <div style="float: left; margin:10px; margin-left:5px">
 	        	{{rentACar.grade}}/10
 			</div>
 			</div>
+		</div>
+		<div id="map" class="map" style ="width: 400px; height: 400px; margin:auto;">
 			
 		</div>
-		<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+		<br><br>
 			<div style="clear:both">
 			</div>
 			<div style="margin: 50px; margin-left: 120px">
@@ -97,17 +100,50 @@ Vue.component("singleRentACarTemplate",{
 	
 	mounted: function() {
     	this.id = this.$route.params.id
-    	console.log(this.id)
     	axios.get('rest/rentacar/'+this.id)
     	.then(response => this.rentACar = response.data)
     	setTimeout(() => {
         	this.loadComments()
+        	this.loadMap()
       	}, 200)
     },
 	methods:{
 		loadComments: function(){
 			axios.get('rest/rentacar/comments/'+this.id)
     		.then(response => this.comments = response.data)
+		},
+		loadMap: function(){
+			this.rentACar.location.longitude = this.rentACar.location.longitude.toFixed(2)
+			this.rentACar.location.latitude = this.rentACar.location.latitude.toFixed(2)
+			this.map = new ol.Map({
+	        target: 'map',
+	        layers: [
+	          new ol.layer.Tile({
+	            source: new ol.source.OSM()
+	          })
+	        ],
+	        view: new ol.View({
+	          center: ol.proj.fromLonLat([this.rentACar.location.longitude, this.rentACar.location.latitude]),
+	          zoom: 8
+	        })
+	      });
+	      const layer = new ol.layer.Vector({
+			source: new ol.source.Vector({
+			    features: [
+			    new ol.Feature({
+			        geometry: new ol.geom.Point(ol.proj.fromLonLat([this.rentACar.location.longitude, this.rentACar.location.latitude])),
+			    })
+			    ]
+			}),
+			style: new ol.style.Style({
+			    image: new ol.style.Icon({
+			    anchor: [0.5, 1],
+			    crossOrigin: 'anonymous',
+			    src: 'https://docs.maptiler.com/openlayers/default-marker/marker-icon.png',
+			    })
+			})
+			});
+			this.map.addLayer(layer);
 		}
 	}
 })

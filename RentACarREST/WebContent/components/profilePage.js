@@ -11,7 +11,9 @@ Vue.component("profilePage",{
 			lastName: null, gender: null, role: null, dateOfBirth: null, collectedPoints:null, 
 			customerType:{name:null, discount:null, requiredPoints:null}},
 			rentACar: null,
-			comments: null
+			comments: null,
+			map:null,
+			mapShowed: false
 		}
 	},
 	template: `
@@ -98,6 +100,9 @@ Vue.component("profilePage",{
 	        <div style="float: left; margin:10px; margin-left:10px">
 	        	{{rentACar.grade}}/10
 			</div>
+			<div id="map" class="map" style ="width: 400px; height: 300px; float:left;">
+			</div>
+			<button v-on:click="loadMap">Show location on map</button>
 		</div>
 		<br><br><br><br><br><br>
 			<div style="clear:both">
@@ -162,7 +167,6 @@ Vue.component("profilePage",{
 					</div>
 				</div>
 			</div>
-			
 	    </div>
 	</div>
 	`,
@@ -254,6 +258,41 @@ Vue.component("profilePage",{
       			.then(response => this.comments = response.data)
       			}, 200)
 			}
+		},
+		loadMap: function(){
+			if(this.mapShowed){
+				return
+			}
+			this.map = new ol.Map({
+	        target: 'map',
+	        layers: [
+	          new ol.layer.Tile({
+	            source: new ol.source.OSM()
+	          })
+	        ],
+	        view: new ol.View({
+	          center: ol.proj.fromLonLat([this.rentACar.location.longitude, this.rentACar.location.latitude]),
+	          zoom: 8
+	        })
+	      });
+	      const layer = new ol.layer.Vector({
+			source: new ol.source.Vector({
+			    features: [
+			    new ol.Feature({
+			        geometry: new ol.geom.Point(ol.proj.fromLonLat([this.rentACar.location.longitude, this.rentACar.location.latitude])),
+			    })
+			    ]
+			}),
+			style: new ol.style.Style({
+			    image: new ol.style.Icon({
+			    anchor: [0.5, 1],
+			    crossOrigin: 'anonymous',
+			    src: 'https://docs.maptiler.com/openlayers/default-marker/marker-icon.png',
+			    })
+			})
+			});
+			this.map.addLayer(layer);
+			this.mapShowed = true
 		}
 	}
 })
