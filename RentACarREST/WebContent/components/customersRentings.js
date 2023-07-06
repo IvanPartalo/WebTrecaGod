@@ -63,6 +63,12 @@ Vue.component("customersRentings",{
 		    <b><label>{{r.price}} euros</label></b>
 		    <label style="margin-left:10px">Status: </label>
 		    <b><label>{{r.status}}</label></b>
+		    <div>
+			    <label>Rented from these objects:</label>
+			    <div v-for="rObject in r.rentACars">
+			    	<b><label>{{rObject.name}}</label></b>
+			    </div>
+		    </div>
 		    <div class="row">
 			    <div class="columnSpecial1">
 				    <div v-for="v in r.vehicles" style="border:1px solid black; font-size:15px; padding: 5px; width: 100%; margin: 0% 0% 1% 1%; background-color: #FBD603">
@@ -80,7 +86,7 @@ Vue.component("customersRentings",{
 								<div class="column">
 									<label>Brand:</label>
 									<b><label>{{v.brand}}</label></b><br>
-									<label>Price:</label>
+									<label>Regular price:</label>
 									<b><label>{{v.price}}</label></b><br>
 									<label>Type:</label>
 									<b><label>{{v.type}}</label></b><br>
@@ -203,15 +209,20 @@ Vue.component("customersRentings",{
 				)
     },
 	methods:{
+		refreshView: function(){
+			
+		},
 		cancel : function(r, index){
 			axios.put('rest/users/cancel/' + r.id).then(response => 
 			//this.rentings[index].status = "aa",
 			axios.get("rest/users/customersRentings")
-			.then( response =>
+			.then( response =>{
 				this.rentings = response.data
+				this.$emit('changed', "df")
+			}
 				)
 			)
-		},
+		}, 
 		grade : function(r, sp){
 			axios.put('rest/users/grade/' + r.id, sp).then(response => 
 			axios.get("rest/users/customersRentings")

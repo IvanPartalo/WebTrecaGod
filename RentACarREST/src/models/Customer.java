@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 
 public class Customer extends User {
-	private Integer collectedPoints;
+	private Double collectedPoints;
 	private ShoppingCart shoppingCart;
 	private CustomerType customerType;
 	private ArrayList<Purchase> rentings;
@@ -12,7 +12,7 @@ public class Customer extends User {
 	public Customer() {
 		
 	}
-	public Customer(Integer id, String username, String password, String firstName, String lastName, Gender gender, Role role, Date dateOfBirth, Integer collectedPoints, ShoppingCart shoppingCart, CustomerType customerType,
+	public Customer(Integer id, String username, String password, String firstName, String lastName, Gender gender, Role role, Date dateOfBirth, Double collectedPoints, ShoppingCart shoppingCart, CustomerType customerType,
 			ArrayList<Purchase> rentings) {
 		super(id, username, password, firstName, lastName, gender, role, dateOfBirth);
 		this.collectedPoints = collectedPoints;
@@ -20,15 +20,15 @@ public class Customer extends User {
 		this.customerType = customerType;
 		this.rentings = rentings;
 	}
-	public Customer(User u, Integer points) {
+	public Customer(User u, Double points) {
 		super(u.getId(), u.getUsername(), u.getPassword(), u.getFirstName(), u.getLastName(), u.getGender(), u.getRole(), u.getDateOfBirth());
 		this.collectedPoints = points;
 		this.rentings = new ArrayList<>();
 	}
-	public Integer getCollectedPoints() {
+	public Double getCollectedPoints() {
 		return collectedPoints;
 	}
-	public void setCollectedPoints(Integer collectedPoints) {
+	public void setCollectedPoints(Double collectedPoints) {
 		this.collectedPoints = collectedPoints;
 	}
 	public ShoppingCart getShoppingCart() {

@@ -105,7 +105,7 @@ public class UserDAO {
 				User newUser = users.get(Integer.parseInt(userId));
 				if(newUser.getRole() == Role.customer) {
 					users.remove(Integer.parseInt(userId));
-					users.put(Integer.parseInt(userId), new Customer(newUser, Integer.parseInt(collectedPoints)));
+					users.put(Integer.parseInt(userId), new Customer(newUser, Double.parseDouble(collectedPoints)));
 				}
 			}
 		} catch (Exception e) {
@@ -213,7 +213,7 @@ public class UserDAO {
 		c.setId(maxId);
 		if(c.getRole() == Role.customer) {
 			//new user starts with 50 points
-			Customer p = new Customer(c, 50);
+			Customer p = new Customer(c, 50.0);
 			users.put(c.getId(), p);
 		}else {
 			users.put(c.getId(), c);
@@ -222,7 +222,7 @@ public class UserDAO {
 		SaveCustomersToFile();
 		return "ok";
 	}
-	private void SaveAll() {
+	public void SaveAll() {
 		SaveUsersToFile();
 		SaveCustomersToFile();
 		SaveManagersToFile();
