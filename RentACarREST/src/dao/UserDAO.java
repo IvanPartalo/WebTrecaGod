@@ -172,7 +172,15 @@ public class UserDAO {
 		}
 		return usersToShow;
 	}
-	
+	public ArrayList<Customer> getAllCustomers(){
+		ArrayList<Customer> customers = new ArrayList<>();
+		for(User user : users.values()) {
+			if(user.getRole() == Role.customer) {
+				customers.add((Customer)user);
+			}
+		}
+		return customers;
+	}
 	public User getById(Integer id){
 		return users.get(id);
 	}

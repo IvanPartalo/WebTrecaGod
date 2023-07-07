@@ -57,6 +57,22 @@ public class CancelingDAO {
 	public ArrayList<Canceling> getAll(){
 		return cancelings;
 	}
+	@SuppressWarnings("deprecation")
+	public Boolean isSuspecious(int id) {
+		int counter = 0;
+		Date date = new Date();
+		date.setMonth(date.getMonth()-1);
+		for(Canceling c : cancelings) {
+			if(c.getCustomerId() == id && c.getDate().after(date)) {
+				counter++;
+			}
+		}
+		if(counter>=5) {
+			return true;
+		}else {
+			return false;
+		}
+	}
 	public void SaveToFile() {
 		SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy");
 		BufferedWriter bw = null;

@@ -76,6 +76,14 @@ public class BlockedUserDAO {
 			}
 		}
 	}
+	public Boolean isNotBlocked(int id) {
+		for(Integer b : blocked) {
+			if(b == id) {
+				return false;
+			}
+		}
+		return true;
+	}
 	public void save(int b) {
 		blocked.add(b);
 		SaveToFile();

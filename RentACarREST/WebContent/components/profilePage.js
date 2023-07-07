@@ -66,6 +66,9 @@ Vue.component("profilePage",{
 			    <div v-if="user.role == 'manager'">
 			    	<managersRentings></managersRentings>
 			    </div>
+			    <div v-if="user.role == 'administrator'">
+			    	<suspects></suspects>
+			    </div>
 			</div>
 		</div>
 		<div v-if="isAdmin">
