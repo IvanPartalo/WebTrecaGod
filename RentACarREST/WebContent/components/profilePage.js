@@ -230,6 +230,13 @@ Vue.component("profilePage",{
 		ApproveComment: function(c){
 			c.approved = true
 			axios.put('rest/rentacar/commentapproval/'+c.id)
+			axios.get('rest/rentacar/manager/'+this.user.id)
+    			.then(response => this.rentACar = response.data)
+				setTimeout(() => {
+				this.isManager = true
+				axios.get('rest/rentacar/allcomments/'+this.rentACar.id)
+      			.then(response => this.comments = response.data)
+      			}, 200)
 		},
 		setAppearance: function(){
 			let date = new Date(this.user.dateOfBirth)

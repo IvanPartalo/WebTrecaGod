@@ -72,6 +72,9 @@ public class RentACarService {
 		RentACarDAO rdao = (RentACarDAO) ctx.getAttribute("rentACarDAO");
 		CommentDAO cdao = (CommentDAO) ctx.getAttribute("commentDAO");
 		UserDAO udao = (UserDAO) ctx.getAttribute("userDAO");
+		for(RentACar r : rdao.getAll()) {
+			r.setSumGradesCountZero();
+		}
 		for(Comment c : cdao.getAll()) {
 			User u = udao.getById(c.getCustomerId());
 			Customer customer = (Customer)u;
@@ -223,8 +226,13 @@ public class RentACarService {
 	@Path("/commentapproval/{id}")
 	@Consumes(MediaType.APPLICATION_JSON)
 	public void approveComment(@PathParam("id") int id) {
-		CommentDAO dao = (CommentDAO) ctx.getAttribute("commentDAO");
-		dao.approveComment(id);
+		CommentDAO cdao = (CommentDAO) ctx.getAttribute("commentDAO");
+		RentACarDAO rdao = (RentACarDAO) ctx.getAttribute("rentACarDAO");
+		Comment c = cdao.getById(id);
+		RentACar r = rdao.getById(c.getRentACarId());
+		r.addGrade(c.getGrade());
+		cdao.approveComment(id);
+		rdao.update();
 	}
 	@POST
 	@Path("/vehicle")
