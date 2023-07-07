@@ -12,6 +12,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import dao.BlockedUserDAO;
 import dao.CustomerTypeDAO;
 import dao.PurchaseDAO;
 import dao.UserDAO;
@@ -43,6 +44,10 @@ public class LoginService {
 		if(ctx.getAttribute("purchaseDAO") == null) {
 			String contextPath = ctx.getRealPath("");
 			ctx.setAttribute("purchaseDAO", new PurchaseDAO(contextPath));
+		}
+		if (ctx.getAttribute("blockedUserDAO") == null ) {
+	    	String contextPath = ctx.getRealPath("");
+	    	ctx.setAttribute("blockedUserDAO", new BlockedUserDAO(contextPath));
 		}
 		linkCustomerTypes();
 		linkPurchasesCustomer();
@@ -80,6 +85,12 @@ public class LoginService {
 		User loggedUser = userDAO.find(user.getUsername(), user.getPassword());
 		if(loggedUser == null) {
 			return Response.status(400).entity("Wrong username or password").build();
+		}
+		BlockedUserDAO bdao = (BlockedUserDAO) ctx.getAttribute("blockedUserDAO");
+		for(Integer id : bdao.getAll()) {
+			if(loggedUser.getId() == id) {
+				return Response.status(400).entity("User is blocked").build();
+			}
 		}
 		request.getSession().setAttribute("currentUser", loggedUser);
 		if(loggedUser.getRole() == Role.customer) {

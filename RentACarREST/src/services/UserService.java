@@ -22,6 +22,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import dao.BlockedUserDAO;
 import dao.CommentDAO;
 import dao.CustomerTypeDAO;
 import dao.PurchaseDAO;
@@ -29,6 +30,7 @@ import dao.RentACarDAO;
 import dao.UserDAO;
 import dao.VehicleDAO;
 import dto.UserDTO;
+import models.BlockedUser;
 import models.Comment;
 import models.Customer;
 import models.Manager;
@@ -70,6 +72,10 @@ public class UserService {
 	    	String contextPath = context.getRealPath("");
 	    	context.setAttribute("rentACarDAO", new RentACarDAO(contextPath));
 		}
+		if (context.getAttribute("blockedUserDAO") == null ) {
+	    	String contextPath = context.getRealPath("");
+	    	context.setAttribute("blockedUserDAO", new BlockedUserDAO(contextPath));
+		}
 	}
 	@GET
 	@Path("/cart")
@@ -91,7 +97,22 @@ public class UserService {
 	@Produces(MediaType.APPLICATION_JSON)
 	public ArrayList<UserDTO> getUsers(){
 		UserDAO dao = (UserDAO) context.getAttribute("userDAO");
-		return dao.getAllUsersDTO();
+		ArrayList<UserDTO> users = dao.getAllUsersDTO();
+		for(UserDTO u : users) {
+			BlockedUserDAO bdao = (BlockedUserDAO) context.getAttribute("blockedUserDAO");
+			for(Integer id : bdao.getAll()) {
+				if(u.getId() == id) {
+					u.setBlocked(true);
+				}
+			}
+		}
+		return users;
+	}
+	@POST
+	@Path("/block/{id}")
+	public void block(@PathParam("id") Integer id){
+		BlockedUserDAO dao = (BlockedUserDAO) context.getAttribute("blockedUserDAO");
+		dao.save(id);
 	}
 	@GET
 	@Path("/{id}")
