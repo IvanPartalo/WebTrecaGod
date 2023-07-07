@@ -41,7 +41,7 @@ Vue.component("registerPage",{
 					</div>
 					<div style="margin:10px">
 						<label>Date of birth*</label>
-						<input id="dateInput"  type="date" v-model="customer.dateOfBirth" style="float:right; font-size:17px"><br>
+						<input id="dateInput" type="date" min='1900-01-01' max='2006-01-01' v-model="customer.dateOfBirth" style="float:right; font-size:17px"><br>
 					</div>
 				</div>
 				<div style="width:80px; margin:auto">

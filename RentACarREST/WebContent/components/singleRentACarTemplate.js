@@ -4,7 +4,9 @@ Vue.component("singleRentACarTemplate",{
 			rentACar: null,
 			comments: null,
 			id: -1,
-			map: null
+			map: null,
+			commentsEmpty: true,
+			vehiclesEmpty: true
 		}
 	},
 	template: `
@@ -49,6 +51,9 @@ Vue.component("singleRentACarTemplate",{
 			</div>
 			<div style="margin: 50px; margin-left: 120px">
 				<h2 style="text-align:left"> Vehicles </h2>
+				<div v-if="vehiclesEmpty">
+					There are no vehicles at the moment
+				</div>
 				<div v-for="v in rentACar.vehicles" style="border:1px solid black; font-size:21px; padding: 10px; width: 70%; margin: 0% 12% 1% 12%; background-color: #FBD603">
 	    	<div>
 				<div class="row">
@@ -86,6 +91,9 @@ Vue.component("singleRentACarTemplate",{
 	    </div>
 	    <div style="margin-top: 50px; margin-bottom:30px">
 			<h2 style="text-align:left"> Comments </h2>
+			<div v-if="commentsEmpty">
+				There are no comments for this rent a car shop
+			</div>
 			<div style="margin:20px;">
 				<div v-for="c in comments" style="border-style: outset">
 					<h3>{{c.customer.username}}</h3>
@@ -101,20 +109,43 @@ Vue.component("singleRentACarTemplate",{
 	mounted: function() {
     	this.id = this.$route.params.id
     	axios.get('rest/rentacar/'+this.id)
-    	.then(response => this.rentACar = response.data)
+    	.then(response => {this.rentACar = response.data
+    		if(this.rentACar.vehicles.length != 0){
+				this.vehiclesEmpty = false
+			}
+    	})
     	setTimeout(() => {
         	this.loadComments()
         	this.loadMap()
+        	this.formatOutput()
       	}, 200)
     },
 	methods:{
 		loadComments: function(){
 			axios.get('rest/rentacar/comments/'+this.id)
-    		.then(response => this.comments = response.data)
+    		.then(response => {this.comments = response.data
+    			if(this.comments.length != 0){
+					this.commentsEmpty = false
+				}
+    		})
+		},
+		formatOutput: function(){
+				this.rentACar.location.longitude = this.rentACar.location.longitude.toFixed(2)
+				this.rentACar.location.latitude = this.rentACar.location.latitude.toFixed(2)
+				if(this.rentACar.startHour < 10){
+					this.rentACar.startHour = '0'+this.rentACar.startHour
+				}
+				if(this.rentACar.startMinute < 10){
+					this.rentACar.startMinute = '0'+this.rentACar.startMinute
+				}
+				if(this.rentACar.endHour < 10){
+					this.rentACar.endHour = '0'+this.rentACar.endHour
+				}
+				if(this.rentACar.endMinute < 10){
+					this.rentACar.endMinute = '0'+this.rentACar.endMinute
+				}
 		},
 		loadMap: function(){
-			this.rentACar.location.longitude = this.rentACar.location.longitude.toFixed(2)
-			this.rentACar.location.latitude = this.rentACar.location.latitude.toFixed(2)
 			this.map = new ol.Map({
 	        target: 'map',
 	        layers: [

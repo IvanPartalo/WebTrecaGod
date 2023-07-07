@@ -16,6 +16,7 @@ public class RentACar {
 	private int endMinute;
 	private Status status;
 	private String logoImg;
+	private int logoId;
 	private double Grade;
 	private Location location;
 	private ArrayList<Purchase> rentings;
@@ -28,7 +29,7 @@ public class RentACar {
 		vehicles = new ArrayList<Vehicle>();
 	}
 	public RentACar(Integer id, int locationId, String name, int startHour, int startMinute, int endHour, int endMinute, Status status,
-			String logoImg, double grade) {
+			int logoId, double grade) {
 		this.id = id;
 		this.locationId = locationId;
 		this.name = name;
@@ -37,7 +38,7 @@ public class RentACar {
 		this.endHour = endHour;
 		this.endMinute = endMinute;
 		this.status = status;
-		this.logoImg = logoImg;
+		this.logoId = logoId;
 		Grade = grade;
 		rentings = new ArrayList<>();
 		vehicles = new ArrayList<Vehicle>();
@@ -52,6 +53,12 @@ public class RentACar {
 		this.id = id;
 	}
 	
+	public int getLogoId() {
+		return logoId;
+	}
+	public void setLogoId(int logoId) {
+		this.logoId = logoId;
+	}
 	public int getLocationId() {
 		return locationId;
 	}

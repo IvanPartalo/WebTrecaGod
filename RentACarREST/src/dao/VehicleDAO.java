@@ -12,15 +12,50 @@ import java.util.StringTokenizer;
 
 import models.FuelType;
 import models.Gearshift;
+import models.Logo;
 import models.Vehicle;
 
 
 public class VehicleDAO {
 	private ArrayList<Vehicle> vehicles = new ArrayList<>();
+	private ArrayList<Logo> photos = new ArrayList<>();
 	private String path;
 	public VehicleDAO(String contextPath) {
 		path = contextPath;
 		loadVehicles(contextPath);
+		loadPhotos(contextPath);
+		LinkPhotos();
+	}
+	public void loadPhotos(String contextPath) {
+		BufferedReader in = null;
+		try {
+			File file = new File(contextPath + "/vehiclePhotos.txt");
+			in = new BufferedReader(new FileReader(file));
+			String line, id = "", url = "";
+			StringTokenizer st;
+			while ((line = in.readLine()) != null) {
+				line = line.trim();
+				if (line.equals("") || line.indexOf('#') == 0)
+					continue;
+				st = new StringTokenizer(line, "|");
+				while (st.hasMoreTokens()) {
+					id = st.nextToken().trim();
+					url = st.nextToken().trim();
+				}
+				Logo logo = new Logo(Integer.parseInt(id), url);
+				photos.add(logo);
+			}
+		} catch (Exception e) {
+			System.out.println("greska slike");
+			e.printStackTrace();
+		} finally {
+			if ( in != null ) {
+				try {
+					in.close();
+				}
+				catch (Exception e) { }
+			}
+		}
 	}
 	public void loadVehicles(String contextPath) {
 		BufferedReader in = null;
@@ -62,7 +97,7 @@ public class VehicleDAO {
 				}
 				if(isDeleted == 0) {
 					 vehicles.add(new Vehicle(Integer.parseInt(id), brand, model, price, type, Gearshift.valueOf(gearType), null, 
-							rentACarId, consumption, doors, maxPeople, description, photo, available, FuelType.valueOf(fuelType)));
+							rentACarId, consumption, doors, maxPeople, description, Integer.parseInt(photo), available, FuelType.valueOf(fuelType)));
 				}
 				}
 		} catch (Exception e) {
@@ -78,6 +113,27 @@ public class VehicleDAO {
 		}
 		
 	}
+	private String getPhotoStringById(int id) {
+		for(Logo p : photos) {
+			if(p.getId() == id) {
+				return p.getUrl();
+			}
+		}
+		return "";
+	}
+	private Logo getPhotoById(int id) {
+		for(Logo p : photos) {
+			if(p.getId() == id) {
+				return p;
+			}
+		}
+		return null;
+	}
+	private void LinkPhotos() {
+		for(Vehicle v: vehicles) {
+			v.setPhoto(getPhotoStringById(v.getPhotoId()));
+		}
+	}
 	private void SaveToFile() {
 		BufferedWriter bw = null;
 		try {
@@ -86,7 +142,7 @@ public class VehicleDAO {
 			bw = new BufferedWriter(new OutputStreamWriter(fos));
 			for(Vehicle v : vehicles) {
 				String lineToWrite = 
-				v.getId()+";"+v.getBrand()+";"+v.getModel()+";"+v.getType()+";"+v.getGearshiftType()+";"+v.getDescription()+";"+v.getPhoto()+";"+
+				v.getId()+";"+v.getBrand()+";"+v.getModel()+";"+v.getType()+";"+v.getGearshiftType()+";"+v.getDescription()+";"+v.getPhotoId()+";"+
 				v.getFuelType()+";"+v.getPrice()+";"+v.getDoors()+";"+v.getConsumption()+";"+v.getMaxPeople()
 				+";"+v.getRentACarId()+";"+v.getAvailable()+";"+v.getIsDeleted();
 				bw.write(lineToWrite);
@@ -105,10 +161,25 @@ public class VehicleDAO {
 			}
 		}
 	}
+	private int getNextPhotoId() {
+		int maxId = -1;
+		for(Logo p : photos) {
+			if(p.getId()>maxId) {
+				maxId = p.getId();
+			}
+		}
+		return ++maxId;
+	}
 	public void save(Vehicle v) {
-		v.setPhoto("asd");
+		int photoId = getNextPhotoId();
+		Logo photo = new Logo();
+		photo.setId(photoId);
+		photo.setUrl(v.getPhoto());
+		photos.add(photo);
+		SavePhotosToFile();
 		v.setAvailable(true);
 		v.setId(getNextId());
+		v.setPhotoId(photoId);
 		vehicles.add(v);
 		SaveToFile();
 	}
@@ -156,7 +227,11 @@ public class VehicleDAO {
 		oldVehicle.setMaxPeople(newVehicle.getMaxPeople());
 		oldVehicle.setPrice(newVehicle.getPrice());
 		oldVehicle.setType(newVehicle.getType());
+		oldVehicle.setPhoto(newVehicle.getPhoto());
 		SaveToFile();
+		Logo oldPhoto = getPhotoById(oldVehicle.getPhotoId());
+		oldPhoto.setUrl(oldVehicle.getPhoto());
+		SavePhotosToFile();
 	}
 	public ArrayList<Vehicle> deleteVehicle(int id) {
 		Vehicle v = getById(id);
@@ -164,5 +239,30 @@ public class VehicleDAO {
 		SaveToFile();
 		vehicles.remove(v);
 		return vehicles;
+	}
+	private void SavePhotosToFile() {
+		BufferedWriter bw = null;
+		try {
+			File fout = new File(path + "/vehiclePhotos.txt");
+			FileOutputStream fos = new FileOutputStream(fout);
+			bw = new BufferedWriter(new OutputStreamWriter(fos));
+			for(Logo l : photos) {
+				String lineToWrite = 
+				l.getId()+"|"+l.getUrl();
+				bw.write(lineToWrite);
+				bw.newLine();
+			}
+			bw.close();
+		}catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			if(bw!=null) {
+				try {
+					bw.close();
+				} catch (Exception e2) {
+					// TODO: handle exception
+				}
+			}
+		}
 	}
 }

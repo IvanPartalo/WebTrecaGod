@@ -9,11 +9,12 @@ Vue.component("customersRentings",{
 			rentACarObject: '',
 			sortingType: 'ascending',
 			sort: 'None',
-			ascending: 1
+			ascending: 1,
+			noRentingsText:''
 		}
 	},
 	template: `
-	<div style="overflow-y:scroll; height:800px;">
+	<div class="klasa" style="overflow-y:scroll;">
 		<h3 style="text-align: center">Your rentings</h3>
 		<h4> Search rentings: </h4>
 		<table cellspacing="15" style="margin-top:-20px">
@@ -52,6 +53,7 @@ Vue.component("customersRentings",{
 			</div>
 		</div>
 		<br><br><br>
+		<p style="font-size:20px"><b>{{noRentingsText}}</b></p>
 		<div v-for="(r, index) in rentingsList" style="border:1px solid black; background-color: #CBC3E3; margin: 0% 0% 1% 0%;">
 			<label>Code: </label>
 		    <b><label>{{r.id}}</label></b>
@@ -207,6 +209,16 @@ Vue.component("customersRentings",{
 			.then( response =>
 				this.rentings = response.data
 				)
+		setTimeout(() => {
+		   var x = document.getElementsByClassName("klasa");
+		   if(this.rentings.length == 0){
+		   	  x[0].style.height = "400px";
+		   	  this.noRentingsText = "You have no rentings"
+		   }
+		   else{
+			  x[0].style.height = "800px";
+		   }
+      	}, 500)
     },
 	methods:{
 		refreshView: function(){

@@ -3,6 +3,7 @@ package dto;
 public class RentACarDTO {
 	private String name;
 	private String address;
+	private String logo;
 	private double longitude;
 	private double latitude;
 	private String beginWorkTime;
@@ -10,6 +11,15 @@ public class RentACarDTO {
 	public RentACarDTO() {
 
 	}
+	
+	public String getLogo() {
+		return logo;
+	}
+
+	public void setLogo(String logo) {
+		this.logo = logo;
+	}
+
 	public String getName() {
 		return name;
 	}
