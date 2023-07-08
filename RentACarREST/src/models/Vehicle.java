@@ -20,6 +20,7 @@ public class Vehicle {
 	private int maxPeople;
 	private String description;
 	private String photo;
+	private int photoId;
 	private boolean available;
 	private FuelType fuelType;
 	private int isDeleted;
@@ -30,7 +31,7 @@ public class Vehicle {
 	}
 
 	public Vehicle(int id, String brand, String model, int price, String type, Gearshift gearshiftType, RentACar rentACar, int rentACarId,
-			int consumption, int doors, int maxPeople, String description, String photo, boolean available,
+			int consumption, int doors, int maxPeople, String description, int photoId, boolean available,
 			FuelType fuelType) {
 		super();
 		this.id = id;
@@ -44,7 +45,7 @@ public class Vehicle {
 		this.doors = doors;
 		this.maxPeople = maxPeople;
 		this.description = description;
-		this.photo = photo;
+		this.photoId = photoId;
 		this.available = available;
 		this.fuelType = fuelType;
 		this.gearshiftType = gearshiftType;
@@ -66,6 +67,14 @@ public class Vehicle {
 
 	public void setId(int id) {
 		this.id = id;
+	}
+	
+	public int getPhotoId() {
+		return photoId;
+	}
+
+	public void setPhotoId(int photoId) {
+		this.photoId = photoId;
 	}
 
 	public int getRentACarId() {

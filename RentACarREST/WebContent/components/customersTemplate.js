@@ -17,7 +17,8 @@ Vue.component("customersTemplate",{
 	<div>
 		<h1 style="text-align:center">USERS</h1>
 		<dialog id="dijalog" ref="dijalog" style="padding: 20px; margin-left:auto; margin-bottom:20px; margin-right:20px; position:absolute">
-			<h4>Filters</h4>
+			<h4 margin-top:-15px>Filters</h4>
+			<button v-on:click="CloseAndReset" style="position:absolute; top:0; right:0; background-color:#e1e8e8"><b>X</b></button>
 			<label>Role: </label>
 			<select v-model="role" style="margin-left:10px">
 				<option>All</option>
@@ -62,7 +63,7 @@ Vue.component("customersTemplate",{
 				</div>
 			</div>
 			<div style="float:left">
-				<button style="margin-left:20px">Filters</button>
+				<button v-on:click="showDialog" style="margin-left:40px">Filters</button>
 			</div>
 		</div>
 		<br>
@@ -70,7 +71,7 @@ Vue.component("customersTemplate",{
 			<tr style="border: solid thin; background-color:#8083c9">
 				<th class="first-td" style="width:100px">Username</th>
 				<th class="td-users">Name</th>
-				<th class="td-users">Surname</th>
+				<th class="td-users">Last name</th>
 				<th class="td-users">Gender</th>
 				<th class="td-users">Date of birth</th>
 				<th class="td-users">Role</th>
@@ -212,6 +213,12 @@ Vue.component("customersTemplate",{
 		},
 		closeDialog: function(){
 			this.filterApplied = true
+			this.$refs.dijalog.close()
+		},
+		CloseAndReset: function(){
+			this.filterApplied = true
+			this.role = 'All',
+			this.customerType = 'All',
 			this.$refs.dijalog.close()
 		},
 		Block: function(id){

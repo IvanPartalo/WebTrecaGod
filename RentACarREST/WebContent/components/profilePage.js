@@ -13,7 +13,9 @@ Vue.component("profilePage",{
 			rentACar: null,
 			comments: null,
 			map:null,
-			mapShowed: false
+			mapShowed: false,
+			commentsEmpty: true,
+			vehiclesEmpty: true
 		}
 	},
 	template: `
@@ -111,6 +113,9 @@ Vue.component("profilePage",{
 			<div style="clear:both">
 			<div style="margin: 50px; margin-left: 120px">
 				<h2 style="text-align:left"> Vehicles </h2>
+				<div v-if="vehiclesEmpty">
+					There are no vehicles at the moment
+				</div>
 				<div v-for="v in rentACar.vehicles" style="border:1px solid black; font-size:21px; padding: 10px; width: 70%; margin: 0% 12% 1% 12%; background-color: #FBD603">
 	    	<div>
 				<div class="row">
@@ -154,6 +159,9 @@ Vue.component("profilePage",{
 			</div>
 			<div style="margin: 50px; margin-left: 120px">
 				<h2 style="text-align:left"> Comments </h2>
+				<div v-if="commentsEmpty">
+					There are no comments for this rent a car shop
+				</div>
 				<div style="margin:20px;">
 					<div v-for="c in comments" style="display:flex">
 					<div style="border-style: outset; flex:1">
@@ -270,13 +278,40 @@ Vue.component("profilePage",{
 			}
 			if(this.user.role == "manager"){
 				axios.get('rest/rentacar/manager/'+this.user.id)
-    			.then(response => this.rentACar = response.data)
+    			.then(response => {
+					this.rentACar = response.data
+    				if(this.rentACar.vehicles.length != 0){
+						this.vehiclesEmpty = false
+					}
+    			})
 				setTimeout(() => {
 				this.isManager = true
 				axios.get('rest/rentacar/allcomments/'+this.rentACar.id)
-      			.then(response => this.comments = response.data)
-      			}, 200)
+      			.then(response => {
+					this.comments = response.data
+      				if(this.comments.length != 0){
+						this.commentsEmpty = false
+					}
+      			})
+      			this.formatOutput()
+      			}, 300)
 			}
+		},
+		formatOutput: function(){
+				this.rentACar.location.longitude = this.rentACar.location.longitude.toFixed(2)
+				this.rentACar.location.latitude = this.rentACar.location.latitude.toFixed(2)
+				if(this.rentACar.startHour < 10){
+					this.rentACar.startHour = '0'+this.rentACar.startHour
+				}
+				if(this.rentACar.startMinute < 10){
+					this.rentACar.startMinute = '0'+this.rentACar.startMinute
+				}
+				if(this.rentACar.endHour < 10){
+					this.rentACar.endHour = '0'+this.rentACar.endHour
+				}
+				if(this.rentACar.endMinute < 10){
+					this.rentACar.endMinute = '0'+this.rentACar.endMinute
+				}
 		},
 		loadMap: function(){
 			if(this.mapShowed){

@@ -1,7 +1,7 @@
 Vue.component("rentACarCreate",{
 	data:function(){
 		return{
-			rentACarDTO: {name:"", address:"", longitude:"", latitude:"", beginWorkTime:'08:00', endWorkTime:'16:00'},
+			rentACarDTO: {name:"", logo:"" ,address:"", longitude:"", latitude:"", beginWorkTime:'08:00', endWorkTime:'16:00'},
 			streetAndNumber: '',
 			place: '',
 			zipCode: '',
@@ -18,11 +18,20 @@ Vue.component("rentACarCreate",{
 	template: `
 	<div >
 		<h1 style="width:400px; margin:auto">Create new rent a car</h1>
-		<div style="width:480px; float:left; border:1px outset"></div>
+		<div style="width:480px; float:left; border:1px outset">
+		<h3>Logo preview</h3>
+			<img v-bind:src="rentACarDTO.logo"/>
+		</div>
 		<div style="width:480px; font-size:18px; float:left">
 			<form>
 				<div style="border:1px solid black; margin:5px">
 					<div style="margin:10px">
+						<label>Logo*</label>
+						<label for="imageInput" class="file-upload-label" style="float:right">Choose image</label>
+						<input type="file" id="imageInput" v-on:change="uploadImage" style="float:right; font-size:17px">
+						
+					</div>
+					<div style="margin:10px; margin-top:15px">
 						<label>Name*</label>
 						<input type="text" v-model="rentACarDTO.name" style="float:right; font-size:17px"><br>
 					</div>
@@ -77,7 +86,7 @@ Vue.component("rentACarCreate",{
 		
 		</div>
 		<div style="clear:both; ">
-		<p style="right:0; position:absolute; padding 10px; padding-right:150px">Click anywhere on map to select longitude and latitude</p>
+		<p style="right:0; position:absolute; padding-right:150px">Click anywhere on map to select longitude and latitude</p>
 		</div>
 	</div>
 	`,
@@ -120,10 +129,27 @@ Vue.component("rentACarCreate",{
 			this.rentACarDTO.longitude = coords[0]
 			this.rentACarDTO.latitude = coords[1]
 		},
+		uploadImage: function(e) {
+	      var files = e.target.files || e.dataTransfer.files;
+	      if (!files.length)
+	        return;
+	      const file = files[0];
+	      const fr = new FileReader();
+		  fr.readAsDataURL(file);
+		  setTimeout(() => {
+		  const url = fr.result
+		  console.log(url)
+		  this.rentACarDTO.logo = url
+      	  }, 200)
+	      
+		},
 		create: function(){
 			event.preventDefault()
 			this.rentACarDTO.address = this.streetAndNumber+'@'+this.place+' '+this.zipCode
-			
+			if(this.rentACarDTO.logo.length == 0){
+				this.errorMessage = "Choose logo"
+				return;
+			}
 			if(this.rentACarDTO.name.trim().length == 0){
 				this.errorMessage = "Enter name!"
 				return;

@@ -9,10 +9,19 @@ Vue.component("editVehicle",{
 	template: `
 	<div >
 		<h1 style="width:200px; margin:auto">Edit vehicle</h1>
+		<div style="width:480px; float:left; border:1px outset">
+		<h3>Image preview</h3>
+			<img v-bind:src="vehicle.photo" style="width:400px; height: 400px"/>
+		</div>
 		<div style="width:480px; margin:auto; font-size:18px">
 			<form>
 				<div style="border:1px solid black; margin:5px">
 					<div style="margin:10px">
+						<label>Image*</label>
+						<label for="imageInput" class="file-upload-label" style="float:right">Change image</label>
+						<input type="file" id="imageInput" v-on:change="uploadImage" style="float:right; font-size:17px">
+					</div>
+					<div style="margin:10px; margin-top:15px">
 						<label>Brand*</label>
 						<input type="text" v-model="vehicle.brand" placeholder="Enter brand" style="float:right; font-size:17px"><br>
 					</div>
@@ -42,7 +51,7 @@ Vue.component("editVehicle",{
 					</div>
 					<div style="margin:10px">
 						<label>Fuel type*</label>
-						<select v-model="vehicle.fuelType">
+						<select v-model="vehicle.fuelType" style="float:right; font-size:18px; width:200px">
 							<option>diesel</option>
 							<option>benzine</option>
 							<option>hybrid</option>
@@ -51,7 +60,7 @@ Vue.component("editVehicle",{
 					</div>
 					<div style="margin:10px">
 						<label>Gearshift type*</label>
-						<select v-model="vehicle.gearshiftType">
+						<select v-model="vehicle.gearshiftType" style="float:right; font-size:18px; width:200px">
 							<option>manual</option>
 							<option>automatic</option>
 						</select>
@@ -76,11 +85,47 @@ Vue.component("editVehicle",{
 		.then(response => this.vehicle = response.data)
 	},
 	methods:{
+		uploadImage: function(e) {
+	      var files = e.target.files || e.dataTransfer.files;
+	      if (!files.length)
+	        return;
+	      const file = files[0];
+	      const fr = new FileReader();
+		  fr.readAsDataURL(file);
+		  setTimeout(() => {
+		  const url = fr.result
+		  this.vehicle.photo = url
+      	  }, 200)
+	      
+		},
 		editVehicle: function(){
 			event.preventDefault()
 			this.errorMessage = ""
+			if(!this.vehicle.brand){
+				this.errorMessage = "You must enter brand"
+				return;
+			}
+			if(!this.vehicle.model){
+				this.errorMessage = "You must enter model"
+				return;
+			}
+			if(!this.vehicle.price){
+				this.errorMessage = "You must enter price"
+				return;
+			}
+			if(!this.vehicle.consumption){
+				this.errorMessage = "You must enter consumption"
+				return;
+			}
+			if(!this.vehicle.doors){
+				this.errorMessage = "You must enter number of doors"
+				return;
+			}
+			if(!this.vehicle.maxPeople){
+				this.errorMessage = "You must enter people capacity"
+				return;
+			}
 			this.vehicle.rentACar = null
-			//axios.post("rest/rentacar/vehicle", this.vehicle)
 			axios.put("rest/vehicles/", this.vehicle)
 			.then(response => (router.push(`/user/`)))
 		}

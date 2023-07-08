@@ -20,7 +20,8 @@ Vue.component("rentACarTemplate",{
 	template: `
 	<div>
 		<dialog id="dijalog" ref="dijalog" style="padding: 20px; margin-left:auto; margin-top:200px; margin-right:20px; position:absolute">
-			<h4>Filters</h4>
+			<h4 style="margin-top:-10px;">Filters</h4>
+			<button v-on:click="CloseAndReset" style="position:absolute; top:0; right:0; background-color:#e1e8e8"><b>X</b></button>
 			<input type="checkbox" value="working" v-model="workFilter">
 			<label>Show working only</label>
 			<br>
@@ -92,9 +93,11 @@ Vue.component("rentACarTemplate",{
 		    	<p>Rating: {{r.grade}}/10</p>
 	    	</div>
 	    	
-	    	<div style="overflow: hidden; padding: 40px;">
-				<p>Vehicles in offer:</p>
-				<button v-on:click="showRentACar(r.id)">Show</button>
+	    	<div style="overflow: hidden; margin-top:40px; padding: 40px;">
+				<button v-on:click="showRentACar(r.id)" style="font-size:20px; border-radius:10px; padding:10px; 
+				background-color:#5638a8; color:white">
+					More details
+				</button>
 	    	</div>
 	    </div>
 	 </div>
@@ -174,10 +177,33 @@ Vue.component("rentACarTemplate",{
     	.then(response => {
 			this.rentACars = response.data
 			this.rentACarsCopy = this.rentACars.slice()})
+		setTimeout(() => {
+        	this.formatOutput()
+      	}, 500)
     },
 	methods:{
-		makeCopy: function(){
-			this.rentACarsCopy = this.rentACars.slice()
+		formatOutput: function(){
+			this.rentACars.forEach((rentACar) => {
+				rentACar.location.longitude = rentACar.location.longitude.toFixed(2)
+				rentACar.location.latitude = rentACar.location.latitude.toFixed(2)
+				if(rentACar.startHour < 10){
+					rentACar.startHour = '0'+rentACar.startHour
+				}
+				if(rentACar.startMinute < 10){
+					rentACar.startMinute = '0'+rentACar.startMinute
+				}
+				if(rentACar.endHour < 10){
+					rentACar.endHour = '0'+rentACar.endHour
+				 }
+				if(rentACar.endMinute < 10){
+					rentACar.endMinute = '0'+rentACar.endMinute
+				}
+			});
+			this.rentACars =  this.rentACars.sort((a, b) => {
+				  const A = a.status;
+				  const B = b.status;
+				  return this.moveElements(A, B)
+				});
 		},
 		showDialog: function(){
 			this.filterApplied = false
@@ -185,6 +211,14 @@ Vue.component("rentACarTemplate",{
 		},
 		closeDialog: function(){
 			this.filterApplied = true
+			this.$refs.dijalog.close()
+		},
+		CloseAndReset: function(){
+			this.filterApplied = true
+			this.fuelType = 'all'
+			this.manual = false
+			this.automatic = false
+			this.workFilter = false
 			this.$refs.dijalog.close()
 		},
 		showRentACar: function(id){
