@@ -13,7 +13,7 @@ Vue.component("cart",{
 				<b><label>{{this.cart.price}} euros</label></b><br>
 			</div>
 			<div class="column">
-				<button style="font-size:20px" v-on:click="rent()">Rent!</button>
+				<button v-if="cart.price != '0'" style="font-size:20px" v-on:click="rent()">Rent!</button>
 				<button style="font-size:18px" v-on:click="goBack()">Go back!</button>
 			</div>
 		</div>
@@ -42,7 +42,7 @@ Vue.component("cart",{
 						<div class="column">
 							<label>Brand:</label>
 							<b><label>{{v.brand}}</label></b><br>
-							<label>Regular price:</label>
+							<label>Regular price per h:</label>
 							<b><label>{{v.price}}</label></b><br>
 							<label>Type:</label>
 							<b><label>{{v.type}}</label></b><br>
@@ -61,7 +61,7 @@ Vue.component("cart",{
 							<label>Desription:</label>
 							<b><label>{{v.description}}</label></b><br><br>
 							<div align="right">
-								<button v-on:click="removeFromCart(v.id, v.price, index, ip)">Remove from cart!</button>
+								<button v-on:click="removeFromCart(v.id, v.price, index, ip, p.duration)">Remove from cart!</button>
 							</div>
 						</div>
 					</div>
@@ -78,18 +78,18 @@ Vue.component("cart",{
     	.then(response => this.cart = response.data)
     },
 	methods:{
-		removeFromCart : function(id, p, index, ip){
+		removeFromCart : function(id, p, index, ip, d){
 			//this.cart.vehicles.splice(0,this.cart.vehicles.length)
 			//axios.get('rest/rentacar/vehicles')
     		//.then(response => this.cart.vehicles = response.data)
     		this.purchase.startDateTime = this.cart.prepairedPurchases[ip].startDateTime
     		this.purchase.endDateTime = this.cart.prepairedPurchases[ip].endDateTime
-			axios.post('rest/users/removeFromCart/'+ id, this.purchase).then(response => this.remove(p, index, ip))
+			axios.post('rest/users/removeFromCart/'+ id, this.purchase).then(response => this.remove(p, index, ip, d))
 		},
-		remove(p, index, ip){
+		remove(p, index, ip, d){
 			this.cart.prepairedPurchases[ip].vehicles.splice(index, 1)
-			this.cart.price-=p
-			this.cart.prepairedPurchases[ip].price-=p
+			this.cart.price-=(p*d)
+			this.cart.prepairedPurchases[ip].price-=(p*d)
 			if(this.cart.prepairedPurchases[ip].vehicles.length == 0){
 				this.cart.prepairedPurchases.splice(ip,1)
 			}

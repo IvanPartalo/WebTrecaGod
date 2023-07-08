@@ -160,17 +160,17 @@ public class UserService {
 		if(v != null) {
 			Customer c = (Customer)u;
 			c.getShoppingCart().addVehicle(v);
-			c.getShoppingCart().addPrice(v.getPrice()*(1.0-c.getCustomerType().getDiscount()/100.0));
 			for(Purchase p : c.getShoppingCart().getPrepairedPurchases()) {
 				if(p.getStartDateTime().equals(purchase.getStartDateTime()) && p.getEndDateTime().equals(purchase.getEndDateTime())) {
 					p.getVehicleIds().add(v.getId());
 					p.getVehicles().add(v);
-					p.addPrice(v.getPrice()*(1.0-c.getCustomerType().getDiscount()/100.0));
+					p.addPrice(v.getPrice()*p.getDuration()*(1.0-c.getCustomerType().getDiscount()/100.0));
 					if(!p.getRentACars().contains(v.getRentACar())) {
 						p.getRentACars().add(v.getRentACar());
 						p.getSubPurchases().add(new SubPurchase(p.getId(), v.getRentACarId(), p.getDuration(),
 							p.getStartDateTime(), p.getStatus(), false));
 					}
+					c.getShoppingCart().addPrice(v.getPrice()*p.getDuration()*(1.0-c.getCustomerType().getDiscount()/100.0));
 					return Response.status(200).build();
 				}
 			}
@@ -181,7 +181,7 @@ public class UserService {
 			purchase.setEnd(dateTime);
 			Duration d = Duration.between(purchase.getStart(), purchase.getEnd());
 			purchase.setDuration((int) (d.getSeconds()/3600));
-			purchase.setPrice(v.getPrice()*(1.0-c.getCustomerType().getDiscount()/100.0));
+			purchase.setPrice(v.getPrice()*purchase.getDuration()*(1.0-c.getCustomerType().getDiscount()/100.0));
 			purchase.setStatus(PurchaseStatus.pending);
 			purchase.setCustomerId(c.getId());
 			purchase.setCustomer(c);
@@ -191,6 +191,7 @@ public class UserService {
 			purchase.getSubPurchases().add(new SubPurchase(purchase.getId(), v.getRentACarId(), purchase.getDuration(),
 					purchase.getStartDateTime(), purchase.getStatus(), false));
 			c.getShoppingCart().getPrepairedPurchases().add(purchase);
+			c.getShoppingCart().addPrice(v.getPrice()*purchase.getDuration()*(1.0-c.getCustomerType().getDiscount()/100.0));
 			return Response.status(200).build();
 		}
 		return Response.status(400).entity("error").build();
@@ -247,13 +248,13 @@ public class UserService {
 		if(v != null) {
 			Customer c = (Customer)u;
 			c.getShoppingCart().removeVehicle(v);
-			c.getShoppingCart().removePrice(v.getPrice());
 			Purchase PforDeleting = null;
 			for(Purchase p : c.getShoppingCart().getPrepairedPurchases()){
 				if(p.getVehicles().contains(v) && p.getStartDateTime().equals(purchase.getStartDateTime()) && p.getEndDateTime().equals(purchase.getEndDateTime())) {
 					p.getVehicles().remove(v);
 					p.removeVehicleId(v.getId());
-					p.removePrice(v.getPrice());
+					p.removePrice(v.getPrice()*p.getDuration());
+					c.getShoppingCart().removePrice(v.getPrice()*p.getDuration());
 					p.getRentACars().clear();
 					for(Vehicle vehicle : p.getVehicles()) {
 						p.getRentACars().add(vehicle.getRentACar());

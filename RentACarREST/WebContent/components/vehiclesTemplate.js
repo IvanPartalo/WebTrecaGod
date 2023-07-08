@@ -31,8 +31,8 @@ Vue.component("vehiclesTemplate",{
 					<div class="column">
 						<label>Brand:</label>
 						<b><label>{{v.brand}}</label></b><br>
-						<label>Price:</label>
-						<b><label>{{v.price}}</label></b><br>
+						<label>Price per h:</label>
+						<b><label>{{v.price}}e</label></b><br>
 						<label>Type:</label>
 						<b><label>{{v.type}}</label></b><br>
 						<label>Fuel type:</label>
