@@ -1,5 +1,7 @@
 package services;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -165,6 +167,9 @@ public class RentACarService {
 		ArrayList<Vehicle> result = dao.getAvailable();
 		User u = (User) request.getSession().getAttribute("currentUser");
 		Customer c = (Customer)u;
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
+		LocalDateTime start = LocalDateTime.parse(purchase.getStartDateTime(), formatter);
+		LocalDateTime end = LocalDateTime.parse(purchase.getEndDateTime(), formatter);
 		for(Purchase p : c.getShoppingCart().getPrepairedPurchases()) {
 			if(purchase.getStartDateTime().equals(p.getStartDateTime()) && purchase.getEndDateTime().equals(p.getEndDateTime())) {
 				for(Vehicle v : p.getVehicles()) {
@@ -172,8 +177,31 @@ public class RentACarService {
 				}
 			}
 		}
+		for(Purchase p : c.getShoppingCart().getPrepairedPurchases()) {
+			if( (end.isBefore(p.getEnd()) && end.isAfter(p.getStart())) || (start.isBefore(p.getEnd()) && start.isAfter(p.getStart())) ||
+					(end.isAfter(p.getEnd()) && start.isBefore(p.getStart())) || (end.isBefore(p.getEnd()) && start.isAfter(p.getStart())) ||
+					(end.isAfter(p.getEnd()) && start.isEqual(p.getStart())) || (end.isEqual(p.getEnd()) && start.isAfter(p.getStart())) ||
+					(end.isEqual(p.getEnd()) && start.isBefore(p.getStart())) || (end.isBefore(p.getEnd()) && start.isEqual(p.getStart())) ||
+					(end.isEqual(p.getEnd()) && start.isEqual(p.getStart())) ) {
+				for(Vehicle v : p.getVehicles()) {
+					result.remove(v);
+				}
+			}
+		}
+		for(Purchase p : pdao.getAll()) {
+			if( (end.isBefore(p.getEnd()) && end.isAfter(p.getStart())) || (start.isBefore(p.getEnd()) && start.isAfter(p.getStart())) ||
+					(end.isAfter(p.getEnd()) && start.isBefore(p.getStart())) || (end.isBefore(p.getEnd()) && start.isAfter(p.getStart())) ||
+					(end.isAfter(p.getEnd()) && start.isEqual(p.getStart())) || (end.isEqual(p.getEnd()) && start.isAfter(p.getStart())) ||
+					(end.isEqual(p.getEnd()) && start.isBefore(p.getStart())) || (end.isBefore(p.getEnd()) && start.isEqual(p.getStart())) ||
+					(end.isEqual(p.getEnd()) && start.isEqual(p.getStart())) ) {
+				for(Vehicle v : p.getVehicles()) {
+					result.remove(v);
+				}
+			}
+		}
 		return result;
 	}
+
 	@GET
 	@Path("/vehicles/{id}")
 	@Produces(MediaType.APPLICATION_JSON)

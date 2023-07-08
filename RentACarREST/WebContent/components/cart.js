@@ -20,8 +20,8 @@ Vue.component("cart",{
 		
 	    <div v-for="(p, ip) in this.cart.prepairedPurchases">
 	    	<div>
-		    	<label>Start date: </label>
-		    	<b><label>{{p.start.dayOfMonth}}-{{p.start.month}}-{{p.start.year}}</label></b>
+		    	<label>Start date/time: </label>
+		    	<b><label>{{p.start.dayOfMonth}}-{{p.start.month}}-{{p.start.year}} {{p.start.hour}}:{{p.start.minute}}</label></b>
 			    <label style="margin-left:20px">Duration: </label>
 			    <b><label>{{p.duration}} hours</label></b>
 			    <label style="margin-left:20px">Price for this time(with discount applied): </label>
