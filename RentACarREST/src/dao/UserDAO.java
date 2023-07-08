@@ -161,7 +161,7 @@ public class UserDAO {
 	public ArrayList<UserDTO> getAllUsersDTO(){
 		ArrayList<UserDTO> usersToShow = new ArrayList<>();
 		for(User user : users.values()) {
-			UserDTO u = new UserDTO(user.getUsername(), user.getFirstName(), user.getLastName(), user.getGender(), user.getRole(),
+			UserDTO u = new UserDTO(user.getId(), user.getUsername(), user.getFirstName(), user.getLastName(), user.getGender(), user.getRole(),
 					user.getDateOfBirth());
 			if(user.getRole() == Role.customer) {
 				Customer c = (Customer)user;
@@ -172,7 +172,15 @@ public class UserDAO {
 		}
 		return usersToShow;
 	}
-	
+	public ArrayList<Customer> getAllCustomers(){
+		ArrayList<Customer> customers = new ArrayList<>();
+		for(User user : users.values()) {
+			if(user.getRole() == Role.customer) {
+				customers.add((Customer)user);
+			}
+		}
+		return customers;
+	}
 	public User getById(Integer id){
 		return users.get(id);
 	}

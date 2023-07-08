@@ -62,7 +62,7 @@ Vue.component("customersTemplate",{
 				</div>
 			</div>
 			<div style="float:left">
-				<button v-on:click="showDialog" style="margin-left:20px">Filters</button>
+				<button style="margin-left:20px">Filters</button>
 			</div>
 		</div>
 		<br>
@@ -76,6 +76,7 @@ Vue.component("customersTemplate",{
 				<th class="td-users">Role</th>
 				<th class="td-users">Points</th>
 				<th class="td-users">Customer type</th>
+				<th class="td-users">Block</th>
 			</tr>
 			<tr v-for="u in usersList" style="border: solid thin; margin-top:10px">
 				<td class="first-td"  style="width:100px">{{u.username}}</td>
@@ -86,6 +87,14 @@ Vue.component("customersTemplate",{
 				<td class="td-users">{{u.role}}</td>
 				<td class="td-users">{{u.collectedPoints}}</td>
 				<td class="td-users">{{u.customerType}}</td>
+				<td v-if="u.role != 'administrator'" class="td-users">
+					<div v-if="u.blocked == false">
+						<button v-on:click="Block(u.id)">block</button>
+					</div>
+					<div v-else>
+						<label>User is blocked</label>
+					</div>
+				</td>
 			</tr>
 		</table>
 	</div>
@@ -205,5 +214,15 @@ Vue.component("customersTemplate",{
 			this.filterApplied = true
 			this.$refs.dijalog.close()
 		},
+		Block: function(id){
+			axios.post("rest/users/block/" + id)
+			.then(response => {
+				axios.get('rest/users/userstoshow')
+				.then(response => this.users = response.data)
+				setTimeout(() => {
+		        	this.formatTableData()
+		      	}, 200)
+			})
+		}
 	}
 })

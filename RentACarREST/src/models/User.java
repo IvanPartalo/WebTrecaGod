@@ -13,6 +13,7 @@ public class User {
 	private Gender gender;
 	private Date dateOfBirth;
 	private Role role;
+	private Boolean blocked;
 	public User() {
 		
 	}
@@ -76,5 +77,10 @@ public class User {
 	public void setDateOfBirth(Date dateOfBirth) {
 		this.dateOfBirth = dateOfBirth;
 	}
-	
+	public Boolean getBlocked() {
+		return blocked;
+	}
+	public void setBlocked(Boolean blocked) {
+		this.blocked = blocked;
+	}
 }
