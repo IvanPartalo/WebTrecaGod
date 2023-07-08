@@ -29,7 +29,7 @@ Vue.component("logingPage",{
 			event.preventDefault()
 			axios.post("rest/login/", this.user)
 			.then(response => (router.push(`/user/`) ))
-			.catch(error => alert('wrong username and/or password'))
+			.catch(error => alert(error.response.data))
 		}
 	}
 })

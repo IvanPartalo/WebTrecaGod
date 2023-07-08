@@ -15,6 +15,7 @@ const EditVehicle = {template: '<editVehicle></editVehicle>'}
 const CustomersRentings = {template: '<customersRentings></customersRentings>'}
 const ManagersRentings = {template: '<managersRentings></managersRentings>'}
 const CustomersTemplate = {template: '<customersTemplate></customersTemplate>'}
+const Suspects = {template: '<suspects></suspects>'}
 
 const router = new VueRouter({
 	mode: 'hash',

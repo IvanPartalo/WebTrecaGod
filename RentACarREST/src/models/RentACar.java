@@ -133,9 +133,13 @@ public class RentACar {
 	public void setVehicles(ArrayList<Vehicle> vehicles) {
 		this.vehicles = vehicles;
 	}
-	public void addGrade(int g) {
+	public void addGrade(double g) {
 		this.sumGrades += g;
 		this.gradesCount++;
 		this.Grade = this.sumGrades/this.gradesCount;
+	}
+	public void setSumGradesCountZero() {
+		this.sumGrades = 0;
+		this.gradesCount = 0;
 	}
 }

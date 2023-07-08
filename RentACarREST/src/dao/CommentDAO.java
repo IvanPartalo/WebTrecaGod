@@ -65,7 +65,7 @@ public class CommentDAO {
 				maxId = c.getId();
 			}
 		}
-		return maxId++;
+		return ++maxId;
 	}
 	public ArrayList<Comment> getAll(){
 		return comments;
