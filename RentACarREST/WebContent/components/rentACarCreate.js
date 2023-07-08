@@ -185,6 +185,10 @@ Vue.component("rentACarCreate",{
 			
 			if(this.managers.length != 0)
 			{
+				if(this.selectedManager == null){
+					this.errorMessage = "Enter manager!"
+					return;	
+				}
 				this.id = this.selectedManager.id
 				axios.post("rest/rentacar/"+this.id, this.rentACarDTO)
 				.then(response => ( router.push(`/user/`)))

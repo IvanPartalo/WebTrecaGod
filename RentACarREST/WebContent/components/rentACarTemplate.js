@@ -14,7 +14,9 @@ Vue.component("rentACarTemplate",{
 			fuelType: 'all',
 			filterApplied: false,
 			manual: false,
-			automatic: false
+			automatic: false,
+			admin: null,
+			isAdmin: false,
 		}
 	},
 	template: `
@@ -95,8 +97,16 @@ Vue.component("rentACarTemplate",{
 	    	
 	    	<div style="overflow: hidden; margin-top:40px; padding: 40px;">
 				<button v-on:click="showRentACar(r.id)" style="font-size:20px; border-radius:10px; padding:10px; 
-				background-color:#5638a8; color:white">
+				background-color:#6cacf5">
 					More details
+				</button>
+	    	</div>
+	    	<div v-if="isAdmin">
+	    		<button v-on:click="deleteRentACar(r.id)"
+	    		 style="font-size:18px; border-radius:10px; padding:10px; 
+				background-color:#6cacf5; margin-left:30px"> 
+					<img src="https://cdn-icons-png.flaticon.com/512/535/535246.png" style="width:15px; height:15px"/>
+					Delete this shop
 				</button>
 	    	</div>
 	    </div>
@@ -176,13 +186,7 @@ Vue.component("rentACarTemplate",{
     	axios.get('rest/rentacar/')
     	.then(response => {
 			this.rentACars = response.data
-			this.rentACarsCopy = this.rentACars.slice()})
-		setTimeout(() => {
-        	this.formatOutput()
-      	}, 500)
-    },
-	methods:{
-		formatOutput: function(){
+			this.rentACarsCopy = this.rentACars.slice()
 			this.rentACars.forEach((rentACar) => {
 				rentACar.location.longitude = rentACar.location.longitude.toFixed(2)
 				rentACar.location.latitude = rentACar.location.latitude.toFixed(2)
@@ -204,7 +208,19 @@ Vue.component("rentACarTemplate",{
 				  const B = b.status;
 				  return this.moveElements(A, B)
 				});
-		},
+			})
+		axios.get('rest/currentUser')
+		.then(response => {
+			this.admin = response.data
+			if(this.admin != null){
+				if(this.admin.role == 'administrator'){
+					this.isAdmin = true
+				}
+			}
+		})
+			
+    },
+	methods:{
 		showDialog: function(){
 			this.filterApplied = false
 			this.$refs.dijalog.showModal()
@@ -223,6 +239,34 @@ Vue.component("rentACarTemplate",{
 		},
 		showRentACar: function(id){
 			router.push(`/singleRentACar/${id}`)
+		},
+		deleteRentACar: function(id){
+			let conf = confirm("Are you sure? Click ok to confirm.")
+			if(conf){
+				axios.delete('rest/rentacar/deleterent/'+id)
+				.then(response => (router.push(`/rentacar/`)))
+				axios.get('rest/rentacar/')
+				.then(response => {
+				this.rentACars = response.data
+				this.rentACarsCopy = this.rentACars.slice()
+				this.rentACars.forEach((rentACar) => {
+					rentACar.location.longitude = rentACar.location.longitude.toFixed(2)
+					rentACar.location.latitude = rentACar.location.latitude.toFixed(2)
+					if(rentACar.startHour < 10){
+						rentACar.startHour = '0'+rentACar.startHour
+					}
+					if(rentACar.startMinute < 10){
+						rentACar.startMinute = '0'+rentACar.startMinute
+					}
+					if(rentACar.endHour < 10){
+						rentACar.endHour = '0'+rentACar.endHour
+					 }
+					if(rentACar.endMinute < 10){
+						rentACar.endMinute = '0'+rentACar.endMinute
+					}
+				});
+				})
+			}
 		},
 		getByGearType: function(rentList, type){
 			let add = true

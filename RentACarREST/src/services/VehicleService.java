@@ -15,7 +15,9 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
+import dao.RentACarDAO;
 import dao.VehicleDAO;
+import models.RentACar;
 import models.Vehicle;
 
 
@@ -52,6 +54,15 @@ public class VehicleService {
 	@Path("/{id}")
 	public ArrayList<Vehicle> deleteVehicle(@PathParam("id") int id){
 		VehicleDAO dao = (VehicleDAO) ctx.getAttribute("vehicleDAO");
+		RentACarDAO rdao = (RentACarDAO) ctx.getAttribute("rentACarDAO");
+		Vehicle veh = dao.getById(id);
+		RentACar rent = rdao.getById(veh.getRentACarId());
+		for (Vehicle v : rent.getVehicles()) {
+			if(v.getId() == veh.getId()) {
+				v.setIsDeleted(1);
+				break;
+			}
+		}
 		return dao.deleteVehicle(id);
 	}
 }

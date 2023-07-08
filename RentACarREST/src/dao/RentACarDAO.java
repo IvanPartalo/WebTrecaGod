@@ -72,7 +72,7 @@ public class RentACarDAO {
 			File file = new File(contextPath + "/rentacars.txt");
 			in = new BufferedReader(new FileReader(file));
 			String line, id = "", name = "", grade="";
-			int startMinute=0, endMinute=0, startHour=0, endHour=0, locationId=0, logoId = 0;
+			int startMinute=0, endMinute=0, startHour=0, endHour=0, locationId=0, logoId = 0, isDeleted = 0;
 			StringTokenizer st;
 			while ((line = in.readLine()) != null) {
 				line = line.trim();
@@ -89,9 +89,11 @@ public class RentACarDAO {
 					logoId = Integer.parseInt(st.nextToken().trim());
 					grade = st.nextToken().trim();
 					locationId = Integer.parseInt(st.nextToken().trim());
+					isDeleted = Integer.parseInt(st.nextToken().trim());
 				}
 				Status status = getWorkStatus(startHour, startMinute, endHour, endMinute);
-				tmpRentACars.add(new RentACar(Integer.parseInt(id), locationId, name, startHour, startMinute, endHour, endMinute, status, logoId, Double.parseDouble(grade)));
+				tmpRentACars.add(new RentACar(Integer.parseInt(id), locationId, name, startHour, startMinute, endHour, endMinute, 
+						status, logoId, Double.parseDouble(grade), isDeleted));
 			}
 			sort(tmpRentACars);
 		} catch (Exception e) {
@@ -172,6 +174,15 @@ public class RentACarDAO {
 		}
 		return ++maxId;
 	}
+	public ArrayList<RentACar> getNotDeleted(){
+		ArrayList<RentACar> result = new ArrayList<>();
+		for(RentACar rent : rentACars) {
+			if(rent.getIsDeleted() == 0) {
+				result.add(rent);
+			}
+		}
+		return result;
+	}
 	public ArrayList<RentACar> getAll(){
 		return rentACars;
 	}
@@ -201,7 +212,7 @@ public class RentACarDAO {
 		System.out.println(status);
 		int id = getNextId()+1;
 		newRent = new RentACar(id, locId, rentACarDTO.getName(), startHour, startMinute, endHour, endMinute,
-				status, logoId, 0.0);
+				status, logoId, 0.0, 0);
 		newRent.setLocation(location);
 		newRent.setLogoImg(getLogoById(logoId));
 		rentACars.add(newRent);
@@ -232,8 +243,6 @@ public class RentACarDAO {
 	}
 	public int save(RentACarDTO rentACarDTO, int managerId) {
 		createRentACar(rentACarDTO);
-		rentACars.add(newRent);
-		SaveToFile();
 		return newRent.getId();
 	}
 	public void update() {
@@ -259,6 +268,14 @@ public class RentACarDAO {
 		array[1] = minute;
 		return array;
 	}
+	public void deleteRentACar(int id) {
+		RentACar rent = getById(id);
+		rent.setIsDeleted(1);
+		for(Vehicle v : rent.getVehicles()) {
+			v.setIsDeleted(1);
+		}
+		SaveToFile();
+	}
 	private void SaveToFile() {
 		BufferedWriter bw = null;
 		try {
@@ -268,7 +285,7 @@ public class RentACarDAO {
 			for(RentACar r : rentACars) {
 				String lineToWrite = 
 				r.getId()+";"+r.getName()+";"+r.getStartHour()+";"+r.getStartMinute()+";"+r.getEndHour()+";"+r.getEndMinute()+
-				";"+r.getLogoId()+";"+r.getGrade()+";"+r.getLocationId();
+				";"+r.getLogoId()+";"+r.getGrade()+";"+r.getLocationId()+";"+r.getIsDeleted();
 				bw.write(lineToWrite);
 				bw.newLine();
 			}

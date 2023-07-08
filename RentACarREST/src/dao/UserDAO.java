@@ -396,4 +396,17 @@ public class UserDAO {
 		}
 		return managers;
 	}
+	public void removeManagersRent(int id){
+		for(User u : users.values()) {
+			if(u.getRole() == Role.manager) {
+				Manager m = (Manager)u;
+				if(m.getRentACarId() == id) {
+					m.setRentACarId(-1);
+					m.setRentACar(null);
+					SaveManagersToFile();
+					break;
+				}
+			}
+		}
+	}
 }

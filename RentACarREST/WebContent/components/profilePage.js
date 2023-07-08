@@ -15,7 +15,9 @@ Vue.component("profilePage",{
 			map:null,
 			mapShowed: false,
 			commentsEmpty: true,
-			vehiclesEmpty: true
+			vehiclesEmpty: true,
+			noObjectText: '',
+			noObject: false
 		}
 	},
 	template: `
@@ -51,7 +53,7 @@ Vue.component("profilePage",{
 				    	<b><label>{{user.customerType.name}}</label><br><br></b>
 				    </div>
 				    <div v-bind:class="{hiddenClass: notManager}" style="font-size:19px">
-				        <button v-on:click="createVehicle"> Create new vehicle </button>
+				        <button v-if="!noObject" v-on:click="createVehicle"> Create new vehicle </button>
 				    </div>
 				    <div v-bind:class="{hiddenClass: notAdmin}" style="margin-bottom: 5px; font-size:19px">
 				        <button v-on:click="createRentACar"> Create new rent a car </button>
@@ -73,6 +75,7 @@ Vue.component("profilePage",{
 			    </div>
 			</div>
 		</div>
+		<h2>{{noObjectText}}</h2>
 		<div v-if="isAdmin">
 			<customersTemplate></customersTemplate>
 		</div>
@@ -280,20 +283,35 @@ Vue.component("profilePage",{
 				axios.get('rest/rentacar/manager/'+this.user.id)
     			.then(response => {
 					this.rentACar = response.data
-    				if(this.rentACar.vehicles.length != 0){
-						this.vehiclesEmpty = false
+					if(this.rentACar != ""){
+	    				if(this.rentACar.vehicles.length != 0){
+							this.vehiclesEmpty = false
+							newList = []						
+							this.rentACar.vehicles.forEach((vehicle) => {
+								if(vehicle.isDeleted == 0){
+									newList.push(vehicle)
+								}
+							})
+							this.rentACar.vehicles = newList
+						}
+					}
+					else{
+						this.noObjectText = "You currently don't have rent a car shop assigned."
+						this.noObject = true
 					}
     			})
 				setTimeout(() => {
-				this.isManager = true
-				axios.get('rest/rentacar/allcomments/'+this.rentACar.id)
-      			.then(response => {
-					this.comments = response.data
-      				if(this.comments.length != 0){
-						this.commentsEmpty = false
-					}
-      			})
-      			this.formatOutput()
+				if(this.rentACar != ""){
+					this.isManager = true
+					axios.get('rest/rentacar/allcomments/'+this.rentACar.id)
+	      			.then(response => {
+						this.comments = response.data
+	      				if(this.comments.length != 0){
+							this.commentsEmpty = false
+						}
+	      			})
+	      			this.formatOutput()
+      			}
       			}, 300)
 			}
 		},

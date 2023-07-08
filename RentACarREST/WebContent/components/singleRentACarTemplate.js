@@ -112,6 +112,13 @@ Vue.component("singleRentACarTemplate",{
     	.then(response => {this.rentACar = response.data
     		if(this.rentACar.vehicles.length != 0){
 				this.vehiclesEmpty = false
+				newList = []						
+				this.rentACar.vehicles.forEach((vehicle) => {
+					if(vehicle.isDeleted == 0){
+						newList.add(vehicle)
+					}
+				})
+				this.rentACar.vehicles = newList
 			}
     	})
     	setTimeout(() => {

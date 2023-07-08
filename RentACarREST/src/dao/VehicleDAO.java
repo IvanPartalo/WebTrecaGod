@@ -95,10 +95,9 @@ public class VehicleDAO {
 				else {
 					available = false;
 				}
-				if(isDeleted == 0) {
-					 vehicles.add(new Vehicle(Integer.parseInt(id), brand, model, price, type, Gearshift.valueOf(gearType), null, 
-							rentACarId, consumption, doors, maxPeople, description, Integer.parseInt(photo), available, FuelType.valueOf(fuelType)));
-				}
+				//ako je isDeleted 0 nije obrisan
+				vehicles.add(new Vehicle(Integer.parseInt(id), brand, model, price, type, Gearshift.valueOf(gearType), null, 
+				rentACarId, consumption, doors, maxPeople, description, Integer.parseInt(photo), available, FuelType.valueOf(fuelType), isDeleted));
 				}
 		} catch (Exception e) {
 			System.out.println("greska veh");
@@ -198,7 +197,7 @@ public class VehicleDAO {
 	public ArrayList<Vehicle> getAvailable() {
 		ArrayList<Vehicle> availables = new ArrayList<>();
 		for(Vehicle v : vehicles) {
-			if(v.getAvailable() == true) {
+			if(v.getAvailable() == true && v.getIsDeleted() == 0) {
 				availables.add(v);
 			}
 		}
@@ -237,7 +236,6 @@ public class VehicleDAO {
 		Vehicle v = getById(id);
 		v.setIsDeleted(1);
 		SaveToFile();
-		vehicles.remove(v);
 		return vehicles;
 	}
 	private void SavePhotosToFile() {

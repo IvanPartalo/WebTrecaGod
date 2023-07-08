@@ -32,7 +32,7 @@ public class Vehicle {
 
 	public Vehicle(int id, String brand, String model, int price, String type, Gearshift gearshiftType, RentACar rentACar, int rentACarId,
 			int consumption, int doors, int maxPeople, String description, int photoId, boolean available,
-			FuelType fuelType) {
+			FuelType fuelType, int isDeleted) {
 		super();
 		this.id = id;
 		this.brand = brand;
@@ -49,7 +49,7 @@ public class Vehicle {
 		this.available = available;
 		this.fuelType = fuelType;
 		this.gearshiftType = gearshiftType;
-		isDeleted = 0;
+		this.isDeleted = isDeleted;
 		this.fromCurrentRentACar = false;
 	}
 	

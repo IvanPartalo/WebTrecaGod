@@ -24,12 +24,13 @@ public class RentACar {
 	private ArrayList<Vehicle> vehicles;
 	private double sumGrades;
 	private double gradesCount;
+	private int isDeleted;
 	public RentACar() {
 		rentings = new ArrayList<>();
 		vehicles = new ArrayList<Vehicle>();
 	}
 	public RentACar(Integer id, int locationId, String name, int startHour, int startMinute, int endHour, int endMinute, Status status,
-			int logoId, double grade) {
+			int logoId, double grade, int isDeleted) {
 		this.id = id;
 		this.locationId = locationId;
 		this.name = name;
@@ -44,6 +45,7 @@ public class RentACar {
 		vehicles = new ArrayList<Vehicle>();
 		this.sumGrades = 0;
 		this.gradesCount = 0;
+		this.isDeleted = isDeleted;
 	}
 
 	public Integer getId() {
@@ -142,4 +144,11 @@ public class RentACar {
 		this.sumGrades = 0;
 		this.gradesCount = 0;
 	}
+	public int getIsDeleted() {
+		return isDeleted;
+	}
+	public void setIsDeleted(int isDeleted) {
+		this.isDeleted = isDeleted;
+	}
+	
 }

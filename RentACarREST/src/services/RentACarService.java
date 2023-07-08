@@ -9,6 +9,7 @@ import javax.annotation.PostConstruct;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
@@ -138,7 +139,7 @@ public class RentACarService {
 	@Produces(MediaType.APPLICATION_JSON)
 	public ArrayList<RentACar> getAll(){
 		RentACarDAO dao = (RentACarDAO) ctx.getAttribute("rentACarDAO");
-		return dao.getAll();
+		return dao.getNotDeleted();
 	}
 	@GET
 	@Path("/{id}")
@@ -233,6 +234,7 @@ public class RentACarService {
 		int rentacarId = dao.save(rentACarDTO, id);
 		UserDAO uDao = (UserDAO) ctx.getAttribute("userDAO");
 		uDao.updateManager(id, rentacarId);
+		linkManagers();
 	}
 	@POST
 	@Path("/")
@@ -272,5 +274,18 @@ public class RentACarService {
 		vehicle.setRentACar(manager.getRentACar());
 		vDao.save(vehicle);
 	}
-	
+	@DELETE
+	@Path("/deleterent/{id}")
+	@Consumes(MediaType.APPLICATION_JSON)
+	public void removeRent(@PathParam("id") int id) {
+		RentACarDAO rdao = (RentACarDAO) ctx.getAttribute("rentACarDAO");
+		VehicleDAO vDao = (VehicleDAO) ctx.getAttribute("vehicleDAO");
+		UserDAO uDao = (UserDAO) ctx.getAttribute("userDAO");
+		rdao.deleteRentACar(id);
+		RentACar rent = rdao.getById(id);
+		for(Vehicle v : rent.getVehicles()) {
+			vDao.deleteVehicle(v.getId());
+		}
+		uDao.removeManagersRent(id);
+	}
 }
