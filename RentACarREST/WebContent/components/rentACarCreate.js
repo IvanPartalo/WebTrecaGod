@@ -76,7 +76,7 @@ Vue.component("rentACarCreate",{
 				</div>
 				<p v-if="errorMessage.length" style="color:red; width:200px; margin:auto">{{errorMessage}}</p>
 				<p>{{additionalInfo}}</p>
-				<div style="width:280px; margin:auto">
+				<div style="width:380px; margin:auto">
 					<input type="submit" v-bind:value="buttonText" v-on:click="create" style="background-color:powderblue; font-size:20px;">
 					<input type="submit" value="Go back" v-on:click="goBack" style="background-color:powderblue; font-size:20px; float:right;">
 				</div>

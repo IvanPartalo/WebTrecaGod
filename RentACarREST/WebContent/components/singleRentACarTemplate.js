@@ -8,7 +8,8 @@ Vue.component("singleRentACarTemplate",{
 			commentsEmpty: true,
 			vehiclesEmpty: true,
 			isAdmin: false,
-			admin: null
+			admin: null,
+			mapShowed: false
 		}
 	},
 	template: `
@@ -48,9 +49,10 @@ Vue.component("singleRentACarTemplate",{
 			</div>
 			</div>
 		</div>
-		<div id="map" class="map" style ="width: 400px; height: 400px; margin:auto;">
+		<div id="map" class="map" style ="width: 400px; height: 400px; float:left; margin:auto;">
 			
 		</div>
+		<button v-on:click="loadMap">Show location on map</button>
 		<br><br>
 			<div style="clear:both">
 			</div>
@@ -138,12 +140,9 @@ Vue.component("singleRentACarTemplate",{
 				})
 				this.rentACar.vehicles = newList
 			}
-    	})
-    	setTimeout(() => {
-        	this.loadComments()
-        	this.loadMap()
+			this.loadComments()
         	this.formatOutput()
-      	}, 200)
+    	})
     },
 	methods:{
 		loadComments: function(){
@@ -181,6 +180,9 @@ Vue.component("singleRentACarTemplate",{
 				}
 		},
 		loadMap: function(){
+			if(this.mapShowed){
+				return
+			}
 			this.map = new ol.Map({
 	        target: 'map',
 	        layers: [
@@ -210,6 +212,7 @@ Vue.component("singleRentACarTemplate",{
 			})
 			});
 			this.map.addLayer(layer);
+			this.mapShowed = true
 		}
 	}
 })
