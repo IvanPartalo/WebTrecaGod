@@ -1,6 +1,6 @@
 1;admin;admin;Milan;Administric;male;administrator;14-06-2003;
 2;joca;123;Jovan;Jovanovic;male;customer;15-04-2002;
 3;Mika;123;Mika;Mikic;male;customer;14-05-2002;
-4;Fox;123;Filip;Filipovic;male;manager;07-06-2000;
+4;Fox;123;Filipo;Filipovic;male;manager;07-06-2000;
 5;Mica;123;Milana;Milanovic;female;customer;06-04-1996;
 6;Adrijan;123;Adrian;Mutu;male;manager;01-03-1984;

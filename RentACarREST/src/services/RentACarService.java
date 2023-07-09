@@ -197,7 +197,7 @@ public class RentACarService {
 					(end.isAfter(p.getEnd()) && start.isEqual(p.getStart())) || (end.isEqual(p.getEnd()) && start.isAfter(p.getStart())) ||
 					(end.isEqual(p.getEnd()) && start.isBefore(p.getStart())) || (end.isBefore(p.getEnd()) && start.isEqual(p.getStart())) ||
 					(end.isEqual(p.getEnd()) && start.isEqual(p.getStart())) ) {
-				if(p.getStatus() != PurchaseStatus.canceled) {
+				if(p.getStatus() != PurchaseStatus.canceled && p.getStatus() != PurchaseStatus.declined) {
 					for(Vehicle v : p.getVehicles()) {
 						result.remove(v);
 					}
