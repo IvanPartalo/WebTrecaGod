@@ -1,2 +1,5 @@
-/services/
+/.DS_Store
 /dao/
+/dto/
+/models/
+/services/

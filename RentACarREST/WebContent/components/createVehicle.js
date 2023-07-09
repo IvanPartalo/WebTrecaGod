@@ -11,7 +11,7 @@ Vue.component("createVehicle",{
 		<h1 style="width:200px; margin:auto">Create new vehicle</h1>
 		<div style="width:480px; float:left; border:1px outset">
 		<h3>Image preview</h3>
-			<img v-bind:src="vehicle.photo" style="width:400px; height: 400px"/>
+			<img v-bind:src="vehicle.photo" style="width:450px; height:400px"/>
 		</div>
 		<div style="width:480px; margin:auto; font-size:18px">
 			<form>

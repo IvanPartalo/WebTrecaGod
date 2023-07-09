@@ -54,6 +54,11 @@ Vue.component("createManager",{
 	</div>
 	`,
 	mounted(){
+		let todaysDate = new Date()
+		let year = todaysDate.getFullYear() - 18
+		let month = todaysDate.getMonth()
+		let day = todaysDate.getDate()
+		document.getElementById("dateInput").max = new Date(year, month, day).toISOString().split("T")[0];
 	},
 	methods:{
 		registerManager: function(){
