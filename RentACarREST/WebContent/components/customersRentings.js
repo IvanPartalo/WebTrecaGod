@@ -26,16 +26,16 @@ Vue.component("customersRentings",{
 				<td>Ending date</td>
 			</tr>
 			<tr>
-				<td><input type="text" style="width: 125px" v-model="rentACarObject"/></td>
-				<td><input type="number" style="width: 100px" v-model="minPrice"/></td>
-				<td><input type="number" style="width: 100px" v-model="maxPrice"/></td>
-				<td><input type="date" v-model="beginningDate"/></td>
-				<td><input type="date" v-model="endingDate"/></td>
+				<td><input class="searchInput" type="text" style="width: 125px" v-model="rentACarObject"/></td>
+				<td><input class="searchInput" type="number" style="width: 100px" v-model="minPrice"/></td>
+				<td><input class="searchInput" type="number" style="width: 100px" v-model="maxPrice"/></td>
+				<td><input class="searchInput" type="date" v-model="beginningDate"/></td>
+				<td><input class="searchInput" type="date" v-model="endingDate"/></td>
 			</tr>
 		</table>
 		<div style="float:left">
 			<label style="font-size:16px"><b>Sort:</b></label>
-			<select style="margin-left:10px" v-model="sort">
+			<select class="searchInput" style="margin-left:10px" v-model="sort">
 				<option>None</option>
 				<option>Rent a car name</option>
 				<option>Price</option>

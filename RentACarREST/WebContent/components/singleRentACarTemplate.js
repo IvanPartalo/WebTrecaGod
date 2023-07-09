@@ -52,7 +52,9 @@ Vue.component("singleRentACarTemplate",{
 		<div id="map" class="map" style ="width: 400px; height: 400px; float:left; margin:auto;">
 			
 		</div>
-		<button v-on:click="loadMap">Show location on map</button>
+		<button v-on:click="loadMap" style ="font-size: 18px">
+			Show location on map
+		</button>
 		<br><br>
 			<div style="clear:both">
 			</div>

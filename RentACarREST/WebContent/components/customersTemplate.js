@@ -20,14 +20,14 @@ Vue.component("customersTemplate",{
 			<h4 margin-top:-15px>Filters</h4>
 			<button v-on:click="CloseAndReset" style="position:absolute; top:0; right:0; background-color:#e1e8e8"><b>X</b></button>
 			<label>Role: </label>
-			<select v-model="role" style="margin-left:10px">
+			<select class="searchInput" v-model="role" style="margin-left:10px; border:1px solid">
 				<option>All</option>
 				<option>Customer</option>
 				<option>Manager</option>
 				<option>Administrator</option>
 			</select>
 			<label>Customer type</label>
-			<select v-model="customerType" style="margin-left:10px">
+			<select class="searchInput" v-model="customerType" style="margin-left:10px; border:1px solid">
 				<option>All</option>
 				<option>Golden</option>
 				<option>Silver</option>
@@ -40,11 +40,11 @@ Vue.component("customersTemplate",{
 		<h3 style="margin-left:20px">Search for specific user</h3>
 		<div style="margin-left: 40px">
 			<div style="float:left">
-				<label>First name: </label><input type="text" v-model="firstName" style="margin-right:20px">
-				<label>Last name: </label><input type="text" v-model="lastName" style="margin-right:20px">
-				<label>Username: </label><input type="text" v-model="username" style="margin-right:20px">
+				<label>First name: </label><input class="searchInput" type="text" v-model="firstName" style="margin-right:20px">
+				<label>Last name: </label><input class="searchInput" type="text" v-model="lastName" style="margin-right:20px">
+				<label>Username: </label><input class="searchInput" type="text" v-model="username" style="margin-right:20px">
 				<label style="margin-left:20px">Sort</label>
-				<select v-model="sort" style="margin-left:10px">
+				<select class="searchInput" v-model="sort" style="margin-left:10px">
 					<option>None</option>
 					<option>First name</option>
 					<option>Last name</option>
@@ -63,7 +63,10 @@ Vue.component("customersTemplate",{
 				</div>
 			</div>
 			<div style="float:left">
-				<button v-on:click="showDialog" style="margin-left:40px">Filters</button>
+				<button class="filterButton" v-on:click="showDialog" style="margin-left:40px">
+				<img src="https://cdn-icons-png.flaticon.com/512/107/107799.png" style="width:10px; height:10px"/>
+				Filters
+				</button>
 			</div>
 		</div>
 		<br>

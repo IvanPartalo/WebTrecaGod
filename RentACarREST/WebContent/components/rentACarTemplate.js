@@ -34,7 +34,7 @@ Vue.component("rentACarTemplate",{
 			<label>Show automatic only</label>
 			<br><br>
 			<label>Fuel type</label>
-			<select v-model="fuelType" style="margin-left:10px">
+			<select class="searchInput" v-model="fuelType" style="margin-left:10px; border:1px solid">
 				<option>all</option>
 				<option>diesel</option>
 				<option>benzine</option>
@@ -49,12 +49,12 @@ Vue.component("rentACarTemplate",{
 		<h3 style="margin-left:20px">Search for specific shop</h3>
 		<div style="margin-left: 40px">
 		<div style="float:left">
-		<label>Name: </label><input type="text" v-model="nameSearch" style="margin-right:20px">
-		<label>Vehicle type: </label><input type="text" v-model="vehicleType" style="margin-right:20px">
-		<label>Location: </label><input type="text" v-model="locationSearch" style="margin-right:20px">
-		<label>Minimum grade: </label><input type="number" v-model="minGrade" style="margin-right:20px">
+		<label>Name: </label><input class="searchInput" type="text" v-model="nameSearch" style="margin-right:20px">
+		<label>Vehicle type: </label><input class="searchInput" type="text" v-model="vehicleType" style="margin-right:20px">
+		<label>Location: </label><input class="searchInput" type="text" v-model="locationSearch" style="margin-right:20px">
+		<label>Minimum grade: </label><input class="searchInput" type="number" v-model="minGrade" style="margin-right:20px">
 		<label style="margin-left:20px">Sort</label>
-		<select v-model="sorting" style="margin-left:10px">
+		<select class="searchInput" v-model="sorting" style="margin-left:10px">
 			<option>None</option>
 			<option>Grade</option>
 			<option>Name</option>
@@ -72,7 +72,10 @@ Vue.component("rentACarTemplate",{
 		</div>
 		</div>
 		<div style="float:left">
-		<button v-on:click="showDialog" style="margin-left:20px">Filters</button>
+		<button class="filterButton" v-on:click="showDialog" style="margin-left:20px">
+			<img src="https://cdn-icons-png.flaticon.com/512/107/107799.png" style="width:10px; height:10px"/>
+			Filters
+		</button>
 		</div>
 		</div>
 	    <div v-for="r in rentACarList" style="border:1px solid black; font-size:20px; overflow: hidden; padding: 15px; width: 70%; margin: 0% 12% 1% 12%;background-color: #FBD603">
@@ -204,10 +207,10 @@ Vue.component("rentACarTemplate",{
 					rentACar.endMinute = '0'+rentACar.endMinute
 				}
 			});
-			this.rentACars =  this.rentACars.sort((a, b) => {
+			this.rentACarsCopy = this.rentACarsCopy.sort((a, b) => {
 				  const A = a.status;
 				  const B = b.status;
-				  return this.moveElements(A, B)
+				  return this.moveElements(B, A)
 				});
 			})
 		axios.get('rest/currentUser')

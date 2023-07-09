@@ -110,7 +110,9 @@ Vue.component("profilePage",{
 			</div>
 			<div id="map" class="map" style ="width: 400px; height: 300px; float:left;">
 			</div>
-			<button v-on:click="loadMap">Show location on map</button>
+			<button v-on:click="loadMap" style="font-size:18px">
+				Show location on map
+			</button>
 		</div>
 		<br><br><br><br><br><br>
 			<div style="clear:both">
