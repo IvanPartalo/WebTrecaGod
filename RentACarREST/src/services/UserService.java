@@ -100,20 +100,36 @@ public class UserService {
 		return dao.getAll();
 	}
 	@GET
-	@Path("/userstoshow")
+	@Path("/userstoshow/{id}")
 	@Produces(MediaType.APPLICATION_JSON)
-	public ArrayList<UserDTO> getUsers(){
-		UserDAO dao = (UserDAO) context.getAttribute("userDAO");
-		ArrayList<UserDTO> users = dao.getAllUsersDTO();
-		for(UserDTO u : users) {
-			BlockedUserDAO bdao = (BlockedUserDAO) context.getAttribute("blockedUserDAO");
-			for(Integer id : bdao.getAll()) {
-				if(u.getId() == id) {
-					u.setBlocked(true);
+	public ArrayList<UserDTO> getUsers(@PathParam("id") int rentId){
+		if(rentId == -1) {
+			UserDAO dao = (UserDAO) context.getAttribute("userDAO");
+			ArrayList<UserDTO> users = dao.getAllUsersDTO();
+			for(UserDTO u : users) {
+				BlockedUserDAO bdao = (BlockedUserDAO) context.getAttribute("blockedUserDAO");
+				for(Integer id : bdao.getAll()) {
+					if(u.getId() == id) {
+						u.setBlocked(true);
+					}
 				}
 			}
+			return users;
 		}
-		return users;
+		else {
+			PurchaseDAO pdao = (PurchaseDAO) context.getAttribute("purchaseDAO");
+			ArrayList<Purchase> purchases= pdao.getByRentId(rentId);
+			ArrayList<UserDTO> users = new ArrayList<UserDTO>();
+			for(Purchase p : purchases) {
+				UserDTO u = new UserDTO(p.getCustomer().getId(), p.getCustomer().getUsername(), p.getCustomer().getFirstName(), 
+				p.getCustomer().getLastName(), p.getCustomer().getGender(), p.getCustomer().getRole(), p.getCustomer().getDateOfBirth());
+				u.setCollectedPoints(p.getCustomer().getCollectedPoints());
+				u.setCustomerType(p.getCustomer().getCustomerType().getName());
+				users.add(u);
+			}
+			return users;
+		}
+		
 	}
 	@GET
 	@Path("/suspects")

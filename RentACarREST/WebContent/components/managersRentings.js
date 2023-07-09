@@ -10,7 +10,8 @@ Vue.component("managersRentings",{
 			sortingType: 'ascending',
 			sort: 'None',
 			ascending: 1,
-			noRentingsText:''
+			noRentingsText:'',
+			noRentings: false
 		}
 	},
 	template: `
@@ -155,6 +156,7 @@ Vue.component("managersRentings",{
 			    </div>
 		    </div>
 		</div>
+		<button v-if="!noRentings" v-on:click="ShowCustomers" style="font-size:18px; padding:5px; display:block; width:100%">Show customers who have rented</button>
 	 </div>
 	`,
 	computed:{
@@ -221,6 +223,7 @@ Vue.component("managersRentings",{
 		   if(this.rentings.length == 0){
 		   	  x[0].style.height = "400px";
 		   	  this.noRentingsText = "There is no rentings for vehicles in your shop"
+		   	  this.noRentings = true
 		   }
 		   else{
 			  x[0].style.height = "800px";
@@ -332,6 +335,10 @@ Vue.component("managersRentings",{
 				return 1*this.ascending;
 			}
 			return 0;
+		},
+		ShowCustomers: function(){
+			let id = this.manager.rentACarId
+			router.push(`/customerswhopurchased/${id}`)
 		}
 	}
 })

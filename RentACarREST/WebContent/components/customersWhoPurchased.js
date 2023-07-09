@@ -1,4 +1,4 @@
-Vue.component("customersTemplate",{
+Vue.component("customersWhoPurchased",{
 	data:function(){
 		return{
 			users : null,
@@ -10,12 +10,13 @@ Vue.component("customersTemplate",{
 			ascending: 1,
 			role: 'All',
 			customerType: 'All',
-			filterApplied: false
+			filterApplied: false,
+			rentId: -1
 		}
 	},
 	template: `
 	<div>
-		<h1 style="text-align:center">USERS</h1>
+		<h1 style="text-align:center">CUSTOMERS</h1>
 		<dialog id="dijalog" ref="dijalog" style="padding: 20px; margin-left:auto; margin-bottom:20px; margin-right:20px; position:absolute">
 			<h4 margin-top:-15px>Filters</h4>
 			<button v-on:click="CloseAndReset" style="position:absolute; top:0; right:0; background-color:#e1e8e8"><b>X</b></button>
@@ -101,7 +102,8 @@ Vue.component("customersTemplate",{
 	</div>
 	`,
 	mounted: function() {
-		axios.get('rest/users/userstoshow/-1')
+		this.rentId = this.$route.params.id
+		axios.get('rest/users/userstoshow/'+this.rentId)
 		.then(response => this.users = response.data)
 		setTimeout(() => {
         	this.formatTableData()

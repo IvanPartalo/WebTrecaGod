@@ -18,6 +18,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 import dao.UserDAO;
 import dao.VehicleDAO;
@@ -239,9 +240,14 @@ public class RentACarService {
 	@POST
 	@Path("/")
 	@Produces(MediaType.APPLICATION_JSON)
-	public void save(RentACarDTO rentACarDTO) {
+	public Response save(RentACarDTO rentACarDTO) {
 		RentACarDAO dao = (RentACarDAO) ctx.getAttribute("rentACarDAO");
-		dao.createRentACar(rentACarDTO);
+		String message = dao.createRentACar(rentACarDTO);
+		if(!message.equals("ok")) {
+			return Response.status(400).entity(message).build();
+		}else {
+			return Response.status(200).build();
+		}
 	}
 	@POST
 	@Path("/newmanager")
@@ -267,12 +273,17 @@ public class RentACarService {
 	@POST
 	@Path("/vehicle")
 	@Consumes(MediaType.APPLICATION_JSON)
-	public void createVehicle(Vehicle vehicle, @Context HttpServletRequest request) {
+	public Response createVehicle(Vehicle vehicle, @Context HttpServletRequest request) {
 		Manager manager = (Manager) request.getSession().getAttribute("currentUser");
 		VehicleDAO vDao = (VehicleDAO) ctx.getAttribute("vehicleDAO");
 		vehicle.setRentACarId(manager.getRentACarId());
 		vehicle.setRentACar(manager.getRentACar());
-		vDao.save(vehicle);
+		String message = vDao.save(vehicle);
+		if(!message.equals("ok")) {
+			return Response.status(400).entity(message).build();
+		}else {
+			return Response.status(200).build();
+		}
 	}
 	@DELETE
 	@Path("/deleterent/{id}")
