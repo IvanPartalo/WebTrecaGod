@@ -92,7 +92,8 @@ Vue.component("rentACarTemplate",{
 			        <p>{{r.location.streetNumber}} <br>{{r.location.placeZipCode}}<br> {{r.location.longitude}}, {{r.location.latitude}}</p>
 		        </div>
 		    	<p><br><br><br><br>Working time: {{r.startHour}}:{{r.startMinute}} - {{r.endHour}}:{{r.endMinute}} {{r.status}}</p>
-		    	<p>Rating: {{r.grade}}/10</p>
+		    	<p v-if="r.grade == 0">Not graded yet</p>
+		    	<p v-else>Rating: {{r.grade}}/5</p>
 	    	</div>
 	    	
 	    	<div style="overflow: hidden; margin-top:40px; padding: 40px;">

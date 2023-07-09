@@ -70,8 +70,9 @@ Vue.component("editVehicle",{
 						<input type="text" v-model="vehicle.description" placeholder="Description" style="float:right; font-size:17px"><br>
 					</div>
 				</div>
-				<div style="width:80px; margin:auto">
+				<div style="width:280px; margin:auto">
 					<input type="submit" value="Edit vehicle!" v-on:click="editVehicle" style="background-color:powderblue; font-size:20px">
+					<input type="submit" value="Go back" v-on:click="goBack" style="background-color:powderblue; font-size:20px; float:right;">
 				</div>
 				<br>
 				<p v-if="errorMessage.length" style="color:red; width:200px; margin:auto">{{errorMessage}}</p>
@@ -113,6 +114,10 @@ Vue.component("editVehicle",{
 				this.errorMessage = "You must enter price"
 				return;
 			}
+			if(!this.vehicle.type){
+				this.errorMessage = "You must enter vehicle type"
+				return;
+			}
 			if(!this.vehicle.consumption){
 				this.errorMessage = "You must enter consumption"
 				return;
@@ -128,6 +133,10 @@ Vue.component("editVehicle",{
 			this.vehicle.rentACar = null
 			axios.put("rest/vehicles/", this.vehicle)
 			.then(response => (router.push(`/user/`)))
+		},
+		goBack: function(){
+			event.preventDefault()
+			router.push(`/user/`)
 		}
 	}
 })

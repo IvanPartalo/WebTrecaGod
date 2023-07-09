@@ -106,7 +106,7 @@ Vue.component("profilePage",{
 	        	<b>Rating:</b>
 	        </div>
 	        <div style="float: left; margin:10px; margin-left:10px">
-	        	{{rentACar.grade}}/10
+	        	{{rentACar.grade}}/5
 			</div>
 			<div id="map" class="map" style ="width: 400px; height: 300px; float:left;">
 			</div>
@@ -170,7 +170,7 @@ Vue.component("profilePage",{
 					<div style="border-style: outset; flex:1">
 						<h3>{{c.customer.username}}</h3>
 						<p style="font-size:18px; padding-left:20px">{{c.commentText}}</p>
-						<p style="font-size:18px; padding-left:20px">Grade: {{c.grade}}/10</p>
+						<p style="font-size:18px; padding-left:20px">Grade: {{c.grade}}/5</p>
 					</div>
 					<div style="text-align:center">
 						<p>Status:</p>

@@ -194,7 +194,11 @@ public class RentACarDAO {
 		}
 		return null;
 	}
-	public void createRentACar(RentACarDTO rentACarDTO) {
+	public String createRentACar(RentACarDTO rentACarDTO) {
+		if(rentACarDTO.getAddress().isBlank() || rentACarDTO.getEndWorkTime().isBlank()
+			|| rentACarDTO.getBeginWorkTime().isBlank()	|| rentACarDTO.getName().isBlank()) {
+			return "Can not create this rent a car, not all fields have been filled correctly";
+		}
 		int locId = locDAO.getNextId() + 1;
 		Location location = new Location(locId, rentACarDTO.getLatitude(), rentACarDTO.getLongitude(), rentACarDTO.getAddress());
 		locDAO.formatLocation(location);
@@ -217,6 +221,7 @@ public class RentACarDAO {
 		newRent.setLogoImg(getLogoById(logoId));
 		rentACars.add(newRent);
 		SaveToFile();
+		return "ok";
 	}
 	private int saveNewLogo(String url) {
 		int id = getNextLogoId();

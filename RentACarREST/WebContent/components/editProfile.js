@@ -31,7 +31,7 @@ Vue.component("editProfile",{
 					</div>
 					<div style="margin:10px">
 						<label>Date of birth*</label>
-						<input type="date" v-model="customer.dateOfBirth" style="float:right; font-size:17px"><br>
+						<input id="dateInput" type="date" v-model="customer.dateOfBirth" style="float:right; font-size:17px"><br>
 					</div>
 				</div>
 				<div style="width:280px; margin:auto">
@@ -45,8 +45,12 @@ Vue.component("editProfile",{
 	</div>
 	`,
 	mounted: function() {
+	 let todaysDate = new Date()
+	 let year = todaysDate.getFullYear() - 18
+	 let month = todaysDate.getMonth()
+	 let day = todaysDate.getDate()
+	 document.getElementById("dateInput").max = new Date(year, month, day).toISOString().split("T")[0];
      this.loadData()
-     
      setTimeout(() => {
         this.formatDate()
       }, 1000);

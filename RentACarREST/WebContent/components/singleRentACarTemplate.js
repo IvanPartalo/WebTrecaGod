@@ -6,7 +6,9 @@ Vue.component("singleRentACarTemplate",{
 			id: -1,
 			map: null,
 			commentsEmpty: true,
-			vehiclesEmpty: true
+			vehiclesEmpty: true,
+			isAdmin: false,
+			admin: null
 		}
 	},
 	template: `
@@ -38,8 +40,11 @@ Vue.component("singleRentACarTemplate",{
 	        <div style="float:left; margin:10px">
 	        	Rating:
 	        </div>
-	        <div style="float: left; margin:10px; margin-left:5px">
-	        	{{rentACar.grade}}/10
+	        <div v-if="rentACar.grade == 0" style="float: left; margin:10px; margin-left:5px">
+	        	Not graded yet
+			</div>
+			<div v-else style="float: left; margin:10px; margin-left:5px">
+	        	{{rentACar.grade}}/5
 			</div>
 			</div>
 		</div>
@@ -96,9 +101,12 @@ Vue.component("singleRentACarTemplate",{
 			</div>
 			<div style="margin:20px;">
 				<div v-for="c in comments" style="border-style: outset">
+					<h3 v-if="isAdmin" style="float:left">Comment status-</h3>
+					<h3 v-if="isAdmin && c.approved"> approved</h3>
+					<h3 v-if="isAdmin && !c.approved"> not approved</h3>
 					<h3>{{c.customer.username}}</h3>
 					<p style="font-size:18px; padding-left:20px">{{c.commentText}}</p>
-					<p style="font-size:18px; padding-left:20px">Grade: {{c.grade}}/10</p>
+					<p style="font-size:18px; padding-left:20px">Grade: {{c.grade}}/5</p>
 				</div>
 			</div>
 		</div>
@@ -107,7 +115,17 @@ Vue.component("singleRentACarTemplate",{
 	`,
 	
 	mounted: function() {
+		axios.get('rest/currentUser')
+		.then(response => {
+			this.admin = response.data
+			if(this.admin != null){
+				if(this.admin.role == 'administrator'){
+					this.isAdmin = true
+				}
+			}
+		})
     	this.id = this.$route.params.id
+    	axios.get('rest/currentUser')
     	axios.get('rest/rentacar/'+this.id)
     	.then(response => {this.rentACar = response.data
     		if(this.rentACar.vehicles.length != 0){
@@ -115,7 +133,7 @@ Vue.component("singleRentACarTemplate",{
 				newList = []						
 				this.rentACar.vehicles.forEach((vehicle) => {
 					if(vehicle.isDeleted == 0){
-						newList.add(vehicle)
+						newList.push(vehicle)
 					}
 				})
 				this.rentACar.vehicles = newList
@@ -129,12 +147,22 @@ Vue.component("singleRentACarTemplate",{
     },
 	methods:{
 		loadComments: function(){
-			axios.get('rest/rentacar/comments/'+this.id)
-    		.then(response => {this.comments = response.data
-    			if(this.comments.length != 0){
-					this.commentsEmpty = false
-				}
-    		})
+			if(this.isAdmin){
+				axios.get('rest/rentacar/allcomments/'+this.id)
+	    		.then(response => {this.comments = response.data
+	    			if(this.comments.length != 0){
+						this.commentsEmpty = false
+					}
+	    		})
+			}
+			else{
+				axios.get('rest/rentacar/comments/'+this.id)
+	    		.then(response => {this.comments = response.data
+	    			if(this.comments.length != 0){
+						this.commentsEmpty = false
+					}
+	    		})
+    		}
 		},
 		formatOutput: function(){
 				this.rentACar.location.longitude = this.rentACar.location.longitude.toFixed(2)

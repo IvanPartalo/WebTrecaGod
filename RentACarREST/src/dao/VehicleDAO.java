@@ -169,7 +169,10 @@ public class VehicleDAO {
 		}
 		return ++maxId;
 	}
-	public void save(Vehicle v) {
+	public String save(Vehicle v) {
+		if(v.getModel().isBlank() || v.getBrand().isBlank()) {
+			return "Can not create this vehicle, not all fields have been filled correctly";
+		}
 		int photoId = getNextPhotoId();
 		Logo photo = new Logo();
 		photo.setId(photoId);
@@ -179,8 +182,12 @@ public class VehicleDAO {
 		v.setAvailable(true);
 		v.setId(getNextId());
 		v.setPhotoId(photoId);
+		if(v.getDescription().isBlank()) {
+			v.setDescription("/");
+		}
 		vehicles.add(v);
 		SaveToFile();
+		return "ok";
 	}
 	public void updateVehicles() {
 		SaveToFile();

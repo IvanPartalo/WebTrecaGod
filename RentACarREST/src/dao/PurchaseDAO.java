@@ -288,4 +288,15 @@ public class PurchaseDAO {
 		}
 		return result;
 	}
+	public ArrayList<Purchase> getByRentId(int id) {
+		ArrayList<Purchase> result = new ArrayList<>();
+		for(Purchase p : purchases) {
+			for(Vehicle v : p.getVehicles()) {
+				if(v.getRentACarId() == id) {
+					result.add(p);
+				}
+			}
+		}
+		return result;
+	}
 }
