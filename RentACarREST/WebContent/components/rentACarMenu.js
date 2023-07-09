@@ -17,7 +17,8 @@ Vue.component("rentACarMenu",{
 	methods:{
 		logOut: function(){
 			event.preventDefault()
-			router.push(`/`)
+			axios.post("rest/logout")
+			.then(response => router.push(`/`))
 		},
 		backToProfile: function(){
 			event.preventDefault()

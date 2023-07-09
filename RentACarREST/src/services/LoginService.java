@@ -12,7 +12,14 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import dao.CustomerDAO;
+import dao.BlockedUserDAO;
+import dao.CustomerTypeDAO;
+import dao.PurchaseDAO;
+import dao.UserDAO;
+import models.Customer;
+import models.Purchase;
+import models.Role;
+import models.ShoppingCart;
 import models.User;
 
 @Path("")
@@ -26,23 +33,71 @@ public class LoginService {
 	
 	@PostConstruct
 	public void init() {
-		if (ctx.getAttribute("customerDAO") == null) {
+		if (ctx.getAttribute("userDAO") == null) {
 	    	String contextPath = ctx.getRealPath("");
-			ctx.setAttribute("customerDAO", new CustomerDAO(contextPath));
+			ctx.setAttribute("userDAO", new UserDAO(contextPath));
+		}
+		if(ctx.getAttribute("customerTypeDAO") == null) {
+			String contextPath = ctx.getRealPath("");
+			ctx.setAttribute("customerTypeDAO", new CustomerTypeDAO(contextPath));
+		}
+		if(ctx.getAttribute("purchaseDAO") == null) {
+			String contextPath = ctx.getRealPath("");
+			ctx.setAttribute("purchaseDAO", new PurchaseDAO(contextPath));
+		}
+		if (ctx.getAttribute("blockedUserDAO") == null ) {
+	    	String contextPath = ctx.getRealPath("");
+	    	ctx.setAttribute("blockedUserDAO", new BlockedUserDAO(contextPath));
+		}
+		linkCustomerTypes();
+		linkPurchasesCustomer();
+	}
+	private void linkCustomerTypes() {
+		UserDAO udao = (UserDAO) ctx.getAttribute("userDAO");
+		CustomerTypeDAO cTdao = (CustomerTypeDAO) ctx.getAttribute("customerTypeDAO");
+		for(User u : udao.getAll()) {
+			if(u.getRole() == Role.customer) {
+				Customer c = (Customer)u;
+				c.setCustomerType(cTdao.getByPoints(c.getCollectedPoints()));
+			}
 		}
 	}
-	
+	private void linkPurchasesCustomer() {
+		UserDAO udao = (UserDAO) ctx.getAttribute("userDAO");
+		PurchaseDAO pdao = (PurchaseDAO) ctx.getAttribute("purchaseDAO");
+		for(User u : udao.getAll()) {
+			if(u.getRole() == Role.customer) {
+				Customer c = (Customer)u;
+				c.getRentings().clear();
+				for(Purchase p : pdao.getByCustomerId(c.getId())){
+					c.getRentings().add(p);
+					p.setCustomer(c);
+				}
+			}
+		}
+	}
 	@POST
 	@Path("/login")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response login(User user, @Context HttpServletRequest request) {
-		CustomerDAO customerDAO = (CustomerDAO) ctx.getAttribute("customerDAO");
-		User loggedUser = customerDAO.find(user.getUsername(), user.getPassword());
+		UserDAO userDAO = (UserDAO) ctx.getAttribute("userDAO");
+		User loggedUser = userDAO.find(user.getUsername(), user.getPassword());
 		if(loggedUser == null) {
 			return Response.status(400).entity("Wrong username or password").build();
 		}
+		BlockedUserDAO bdao = (BlockedUserDAO) ctx.getAttribute("blockedUserDAO");
+		for(Integer id : bdao.getAll()) {
+			if(loggedUser.getId() == id) {
+				return Response.status(400).entity("User is blocked").build();
+			}
+		}
 		request.getSession().setAttribute("currentUser", loggedUser);
+		if(loggedUser.getRole() == Role.customer) {
+			Customer c = (Customer)loggedUser;
+			c.setShoppingCart(new ShoppingCart());
+			c.getShoppingCart().setUser(loggedUser);
+		}
 		return Response.status(200).build();
 	}
 	

@@ -41,7 +41,7 @@ Vue.component("registerPage",{
 					</div>
 					<div style="margin:10px">
 						<label>Date of birth*</label>
-						<input id="dateInput"  type="date" v-model="customer.dateOfBirth" style="float:right; font-size:17px"><br>
+						<input id="dateInput" type="date" min='1900-01-01' max='2006-01-01' v-model="customer.dateOfBirth" style="float:right; font-size:17px"><br>
 					</div>
 				</div>
 				<div style="width:80px; margin:auto">
@@ -54,6 +54,11 @@ Vue.component("registerPage",{
 	</div>
 	`,
 	mounted(){
+		let todaysDate = new Date()
+		let year = todaysDate.getFullYear() - 18
+		let month = todaysDate.getMonth()
+		let day = todaysDate.getDate()
+		document.getElementById("dateInput").max = new Date(year, month, day).toISOString().split("T")[0];
 	},
 	methods:{
 		registerCustomer: function(){
@@ -88,7 +93,7 @@ Vue.component("registerPage",{
 				return;
 			}
 			
-			axios.post("rest/customers/", this.customer)
+			axios.post("rest/users/", this.customer)
 			.then(response => ( router.push(`/`))).catch(error => this.errorMessage = error.response.data)
 		}
 	}

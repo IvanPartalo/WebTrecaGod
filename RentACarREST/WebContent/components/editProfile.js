@@ -2,8 +2,7 @@ Vue.component("editProfile",{
 	data:function(){
 		return{
 			id: null,
-			customer: {id: null,firstName: null, 
-			lastName: null, gender: null, role: null, dateOfBirth: null},
+			customer: {id: null,firstName: null, lastName: null, gender: null, role: null, dateOfBirth: null},
 			date: null,
 			errorMessage: ''
 		}
@@ -32,7 +31,7 @@ Vue.component("editProfile",{
 					</div>
 					<div style="margin:10px">
 						<label>Date of birth*</label>
-						<input type="date" v-model="customer.dateOfBirth" style="float:right; font-size:17px"><br>
+						<input id="dateInput" type="date" v-model="customer.dateOfBirth" style="float:right; font-size:17px"><br>
 					</div>
 				</div>
 				<div style="width:280px; margin:auto">
@@ -46,8 +45,12 @@ Vue.component("editProfile",{
 	</div>
 	`,
 	mounted: function() {
+	 let todaysDate = new Date()
+	 let year = todaysDate.getFullYear() - 18
+	 let month = todaysDate.getMonth()
+	 let day = todaysDate.getDate()
+	 document.getElementById("dateInput").max = new Date(year, month, day).toISOString().split("T")[0];
      this.loadData()
-     
      setTimeout(() => {
         this.formatDate()
       }, 1000);
@@ -70,7 +73,7 @@ Vue.component("editProfile",{
 			}
 			let conf = confirm("Are you sure? Click ok to confirm.")
 			if(conf){
-			axios.put("rest/customers/edit", this.customer).then(response => ( router.push(`/user/`)))
+			axios.put("rest/users/edit", this.customer).then(response => ( router.push(`/user/`))).catch(error => this.errorMessage = error.response.data)
 			}
 		},
 		loadData: function(){

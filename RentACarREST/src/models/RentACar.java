@@ -1,7 +1,14 @@
 package models;
 
+import java.util.ArrayList;
+
+import javax.persistence.Entity;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+@Entity
 public class RentACar {
 	private Integer id;
+	private int locationId;
 	private String name;
 	private int startHour;
 	private int startMinute;
@@ -9,24 +16,36 @@ public class RentACar {
 	private int endMinute;
 	private Status status;
 	private String logoImg;
+	private int logoId;
 	private double Grade;
 	private Location location;
+	private ArrayList<Purchase> rentings;
+	@JsonIgnoreProperties("rentACar")
+	private ArrayList<Vehicle> vehicles;
+	private double sumGrades;
+	private double gradesCount;
+	private int isDeleted;
 	public RentACar() {
-
+		rentings = new ArrayList<>();
+		vehicles = new ArrayList<Vehicle>();
 	}
-	
-	public RentACar(Integer id, String name, int startHour, int startMinute, int endHour, int endMinute, Status status,
-			String logoImg, double grade, Location location) {
+	public RentACar(Integer id, int locationId, String name, int startHour, int startMinute, int endHour, int endMinute, Status status,
+			int logoId, double grade, int isDeleted) {
 		this.id = id;
+		this.locationId = locationId;
 		this.name = name;
 		this.startHour = startHour;
 		this.startMinute = startMinute;
 		this.endHour = endHour;
 		this.endMinute = endMinute;
 		this.status = status;
-		this.logoImg = logoImg;
+		this.logoId = logoId;
 		Grade = grade;
-		this.location = location;
+		rentings = new ArrayList<>();
+		vehicles = new ArrayList<Vehicle>();
+		this.sumGrades = 0;
+		this.gradesCount = 0;
+		this.isDeleted = isDeleted;
 	}
 
 	public Integer getId() {
@@ -35,6 +54,21 @@ public class RentACar {
 	public void setId(Integer id) {
 		this.id = id;
 	}
+	
+	public int getLogoId() {
+		return logoId;
+	}
+	public void setLogoId(int logoId) {
+		this.logoId = logoId;
+	}
+	public int getLocationId() {
+		return locationId;
+	}
+
+	public void setLocationId(int locationId) {
+		this.locationId = locationId;
+	}
+
 	public String getName() {
 		return name;
 	}
@@ -88,6 +122,33 @@ public class RentACar {
 	}
 	public void setLocation(Location location) {
 		this.location = location;
+	}
+	public ArrayList<Purchase> getRentings() {
+		return rentings;
+	}
+	public void setRentings(ArrayList<Purchase> rentings) {
+		this.rentings = rentings;
+	}
+	public ArrayList<Vehicle> getVehicles() {
+		return vehicles;
+	}
+	public void setVehicles(ArrayList<Vehicle> vehicles) {
+		this.vehicles = vehicles;
+	}
+	public void addGrade(double g) {
+		this.sumGrades += g;
+		this.gradesCount++;
+		this.Grade = this.sumGrades/this.gradesCount;
+	}
+	public void setSumGradesCountZero() {
+		this.sumGrades = 0;
+		this.gradesCount = 0;
+	}
+	public int getIsDeleted() {
+		return isDeleted;
+	}
+	public void setIsDeleted(int isDeleted) {
+		this.isDeleted = isDeleted;
 	}
 	
 }
