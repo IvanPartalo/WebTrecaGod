@@ -292,16 +292,16 @@ Vue.component("profilePage",{
 								}
 							})
 							this.rentACar.vehicles = newList
-							this.isManager = true
-							axios.get('rest/rentacar/allcomments/'+this.rentACar.id)
-			      			.then(response => {
-								this.comments = response.data
-			      				if(this.comments.length != 0){
-									this.commentsEmpty = false
-								}
-			      			})
-			      			this.formatOutput()
 						}
+						this.isManager = true
+						axios.get('rest/rentacar/allcomments/'+this.rentACar.id)
+		      			.then(response => {
+							this.comments = response.data
+		      				if(this.comments.length != 0){
+								this.commentsEmpty = false
+							}
+		      			})
+		      			this.formatOutput()
 					}
 					else{
 						this.noObjectText = "You currently don't have rent a car shop assigned."

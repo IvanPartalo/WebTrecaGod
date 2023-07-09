@@ -94,7 +94,7 @@ Vue.component("createManager",{
 			}
 			
 			axios.post("rest/rentacar/newmanager", this.manager)
-			.then(response => ( router.push(`/user/`)))
+			.then(response => ( router.push(`/user/`))).catch(error => this.errorMessage = error.response.data)
 		}
 	}
 })

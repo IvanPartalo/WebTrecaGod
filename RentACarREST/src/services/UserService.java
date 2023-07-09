@@ -7,6 +7,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashSet;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.ServletContext;
@@ -102,7 +103,7 @@ public class UserService {
 	@GET
 	@Path("/userstoshow/{id}")
 	@Produces(MediaType.APPLICATION_JSON)
-	public ArrayList<UserDTO> getUsers(@PathParam("id") int rentId){
+	public Collection<UserDTO> getUsers(@PathParam("id") int rentId){
 		if(rentId == -1) {
 			UserDAO dao = (UserDAO) context.getAttribute("userDAO");
 			ArrayList<UserDTO> users = dao.getAllUsersDTO();
@@ -120,12 +121,22 @@ public class UserService {
 			PurchaseDAO pdao = (PurchaseDAO) context.getAttribute("purchaseDAO");
 			ArrayList<Purchase> purchases= pdao.getByRentId(rentId);
 			ArrayList<UserDTO> users = new ArrayList<UserDTO>();
+			boolean add = true;
 			for(Purchase p : purchases) {
-				UserDTO u = new UserDTO(p.getCustomer().getId(), p.getCustomer().getUsername(), p.getCustomer().getFirstName(), 
-				p.getCustomer().getLastName(), p.getCustomer().getGender(), p.getCustomer().getRole(), p.getCustomer().getDateOfBirth());
-				u.setCollectedPoints(p.getCustomer().getCollectedPoints());
-				u.setCustomerType(p.getCustomer().getCustomerType().getName());
-				users.add(u);
+				add = true;
+				for(UserDTO u : users) {
+					if(p.getCustomerId() == u.getId()) {
+						add = false;
+						break;
+					}
+				}
+				if(add) {
+					UserDTO u = new UserDTO(p.getCustomer().getId(), p.getCustomer().getUsername(), p.getCustomer().getFirstName(), 
+					p.getCustomer().getLastName(), p.getCustomer().getGender(), p.getCustomer().getRole(), p.getCustomer().getDateOfBirth());
+					u.setCollectedPoints(p.getCustomer().getCollectedPoints());
+					u.setCustomerType(p.getCustomer().getCustomerType().getName());
+					users.add(u);
+				}
 			}
 			return users;
 		}

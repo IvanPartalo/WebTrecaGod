@@ -255,11 +255,16 @@ public class RentACarService {
 	@POST
 	@Path("/newmanager")
 	@Produces(MediaType.APPLICATION_JSON)
-	public void saveManager(Manager manager){
+	public Response saveManager(Manager manager){
 		RentACarDAO dao = (RentACarDAO) ctx.getAttribute("rentACarDAO");
 		int rentacarId = dao.getNewId();
 		UserDAO uDao = (UserDAO) ctx.getAttribute("userDAO");
-		uDao.saveManager(manager, rentacarId);
+		String message = uDao.saveManager(manager, rentacarId);
+		if(!message.equals("ok")) {
+			return Response.status(400).entity(message).build();
+		}else {
+			return Response.status(200).build();
+		}
 	}
 	@PUT
 	@Path("/commentapproval/{id}")

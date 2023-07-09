@@ -185,6 +185,15 @@ public class UserDAO {
 		return users.get(id);
 	}
 	public String saveManager(Manager m, int idR){
+		if(m.getUsername() == null || m.getFirstName() == null || m.getPassword() == null || m.getDateOfBirth() == null) {
+			return "Can not register this user, not all fields have been filled correctly";
+		}
+		if(m.getUsername().isBlank() || m.getFirstName().isBlank() || m.getPassword().isBlank()) {
+			return "Can not register this user, not all fields have been filled correctly";
+		}
+		if(!isUsernameUnique(m.getUsername())) {
+			return "This username already exists, please choose a different one";
+		}
 		Integer maxId = 0;
 		for (Integer id : users.keySet()) {
 			if (id > maxId) {
