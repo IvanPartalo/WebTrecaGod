@@ -31,6 +31,7 @@ import models.Comment;
 import models.Customer;
 import models.Manager;
 import models.Purchase;
+import models.PurchaseStatus;
 import models.RentACar;
 import models.Role;
 import models.SubPurchase;
@@ -196,8 +197,10 @@ public class RentACarService {
 					(end.isAfter(p.getEnd()) && start.isEqual(p.getStart())) || (end.isEqual(p.getEnd()) && start.isAfter(p.getStart())) ||
 					(end.isEqual(p.getEnd()) && start.isBefore(p.getStart())) || (end.isBefore(p.getEnd()) && start.isEqual(p.getStart())) ||
 					(end.isEqual(p.getEnd()) && start.isEqual(p.getStart())) ) {
-				for(Vehicle v : p.getVehicles()) {
-					result.remove(v);
+				if(p.getStatus() != PurchaseStatus.canceled) {
+					for(Vehicle v : p.getVehicles()) {
+						result.remove(v);
+					}
 				}
 			}
 		}
