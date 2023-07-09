@@ -186,12 +186,11 @@ Vue.component("profilePage",{
 	`,
 	mounted: function() {
     	axios.get("rest/currentUser")
-			.then( response =>
+			.then( response =>{
 				this.user = response.data
-				)
-		setTimeout(() => {
-        	this.setAppearance()
-      	}, 200)
+				this.setAppearance()
+				})
+		
     },
 	methods:{
 		changedCancel: function(){
@@ -293,6 +292,15 @@ Vue.component("profilePage",{
 								}
 							})
 							this.rentACar.vehicles = newList
+							this.isManager = true
+							axios.get('rest/rentacar/allcomments/'+this.rentACar.id)
+			      			.then(response => {
+								this.comments = response.data
+			      				if(this.comments.length != 0){
+									this.commentsEmpty = false
+								}
+			      			})
+			      			this.formatOutput()
 						}
 					}
 					else{
@@ -300,19 +308,7 @@ Vue.component("profilePage",{
 						this.noObject = true
 					}
     			})
-				setTimeout(() => {
-				if(this.rentACar != ""){
-					this.isManager = true
-					axios.get('rest/rentacar/allcomments/'+this.rentACar.id)
-	      			.then(response => {
-						this.comments = response.data
-	      				if(this.comments.length != 0){
-							this.commentsEmpty = false
-						}
-	      			})
-	      			this.formatOutput()
-      			}
-      			}, 300)
+				
 			}
 		},
 		formatOutput: function(){
